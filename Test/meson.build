@@ -9,5 +9,5 @@ if get_option('buildtype').startswith('debug')
 
 endif
 
-executable( 'refactor', 'refactor.cpp' )
+executable( 'refactor', 'refactor.refactored.cpp' )
 

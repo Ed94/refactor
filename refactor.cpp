@@ -6,7 +6,6 @@ namespace File
 {
 	zpl_string        Source        = nullptr;
 	zpl_string        Destination   = nullptr;
-	
 	zpl_file_contents Content {};
 
 	zpl_arena Buffer;
@@ -92,7 +91,7 @@ namespace Spec
 	}
 
 	ct 
-	c8 strlen_tok( Tok tok )
+	char strlen_tok( Tok tok )
 	{
 		ct 
 		const u8 tok_to_len[ Tok::Num_Tok ] = 
@@ -632,6 +631,7 @@ void refactor()
 
 		content++;
 		left--;
+
 	Skip:
 		continue;
 	}

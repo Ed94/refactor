@@ -21,3 +21,6 @@ Syntax :
 TODO:  
 * Possibly come up with a better name.
 * Cleanup memory usage (it hogs quite a bit or what it does..)
+* Split lines of file and refactor it that way instead (better debug, problably negligable performance loss, worst case can have both depending on build type)
+
+

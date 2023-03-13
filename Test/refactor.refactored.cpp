@@ -1,5 +1,5 @@
 #define ZPL_IMPLEMENTATION
-#include "bloat.hpp"
+#include "bloat.refactored.hpp"
 
 
 namespace File
@@ -7,7 +7,8 @@ namespace File
 	string        Source        = nullptr;
 	string        Destination   = nullptr;
 	file_contents Content {};
-	zpl_arena     Buffer;
+
+	zpl_arena Buffer;
 
 	void cleanup()
 	{
@@ -28,7 +29,7 @@ namespace File
 
 			if ( fsize > 0 ) 
 			{
-				arena_init_from_allocator( & Buffer, heap(), (fsize % 64) * 2 );
+				arena_init_from_allocator( & Buffer, heap(), (fsize + fsize % 64) * 4 );
 				
 				Content.data = alloc( arena_allocator( & Buffer), fsize);
 				Content.size = fsize;
@@ -459,9 +460,11 @@ void refactor()
 
 				if ( string_are_equal( ignore->Sig, current ) )
 				{
-					char after = content[sig_length];
+					char before = content[-1];
+					char after  = content[sig_length];
 
-					if ( char_is_alphanumeric( after ) || after == '_' )
+					if (   char_is_alphanumeric( before ) || before == '_'
+						|| char_is_alphanumeric( after  ) || after  == '_' )
 					{
 						continue;
 					}
@@ -537,9 +540,11 @@ void refactor()
 
 				if ( string_are_equal( word->Sig, current ) )
 				{
-					char after = content[sig_length];
+					char before = content[-1];
+					char after  = content[sig_length];
 
-					if ( char_is_alphanumeric( after ) || after == '_' )
+					if (   char_is_alphanumeric( before ) || before == '_'
+						|| char_is_alphanumeric( after  ) || after  == '_' )
 					{
 						continue;
 					}
@@ -626,6 +631,7 @@ void refactor()
 
 		content++;
 		left--;
+		
 	Skip:
 		continue;
 	}
