@@ -6,10 +6,8 @@ namespace File
 {
 	string        Source        = nullptr;
 	string        Destination   = nullptr;
-	
 	file_contents Content {};
-
-	zpl_arena Buffer;
+	zpl_arena     Buffer;
 
 	void cleanup()
 	{
@@ -43,8 +41,7 @@ namespace File
 
 		if ( Content.data == nullptr )
 		{
-			zpl_printf( "Unable to open source file: %s\n", Source );
-			fatal();
+			fatal( "Unable to open source file: %s\n", Source );
 		}
 	}
 
@@ -58,8 +55,7 @@ namespace File
 
 		if ( error != ZPL_FILE_ERROR_NONE )
 		{
-			zpl_printf( "Unable to open destination file: %s\n", Destination );
-			fatal();
+			fatal( "Unable to open destination file: %s\n", Destination );
 		}
 
 		file_write( & file_dest, refactored, string_length(refactored) );
@@ -147,8 +143,7 @@ namespace Spec
 
 		if ( length == 0 )
 		{
-			zpl_printf("Failed to find valid initial token");
-			fatal();
+			fatal("Failed to find valid initial token");
 		}
 
 		token  = string_append_length( token, line, length );
@@ -163,21 +158,19 @@ namespace Spec
 
 		// Get the contents of the file.
 		{
-             zpl_file       file {};
+             zpl_file   file {};
              file_error error = file_open( & file, File);
 
 			 if ( error != ZPL_FILE_ERROR_NONE )
 			 {
-				zpl_printf("Could not open the specification file: %s", File);
-				fatal();
+				fatal("Could not open the specification file: %s", File);
 			 }
 
              sw fsize = scast( sw, file_size( & file ) );
 
 			 if ( fsize <= 0 )
 			 {
-				zpl_printf("No content in specificaiton to process");
-				fatal();
+				fatal("No content in specificaiton to process");
 			 }
 
 			 arena_init_from_allocator( & Buffer, heap(), (fsize + fsize % 64) * 10 + kilobytes(1) );
@@ -197,8 +190,7 @@ namespace Spec
 
 		if ( left == 0 )
 		{
-			zpl_printf("Spec::process: lines array imporoperly setup");
-			fatal();
+			fatal("Spec::process: lines array imporoperly setup");
 		}
 
 		// Skip the first line as its the version number and we only support __VERSION 1.
@@ -404,7 +396,7 @@ namespace Spec
 				}
 			}
 
-			zpl_printf("Specification Line: %d is missing valid keyword", array_count(lines) - left);
+			log_fmt("Specification Line: %d is missing valid keyword", array_count(lines) - left);
 			lines++;
 		}
 	}
@@ -465,12 +457,6 @@ void refactor()
 				u32 sig_length = string_length( ignore->Sig );
 				    current    = string_append_length( current, content, sig_length );
 
-				// bool match = false;
-				// if ( str_compare( "zpl_printf", current, sig_length ) == 0 )
-				// {
- 				// 	match = true;
-				// }
-
 				if ( string_are_equal( ignore->Sig, current ) )
 				{
 					char after = content[sig_length];
@@ -480,7 +466,7 @@ void refactor()
 						continue;
 					}
 
-					zpl_printf("\nIgnored   %-81s line %d", current, line );
+					log_fmt("\nIgnored   %-81s line %d", current, line );
 
 					content += sig_length;
 					left    -= sig_length;
@@ -521,7 +507,7 @@ void refactor()
 
 					string_clear( preview );
 					preview = string_append_length( preview, content, length );
-					zpl_printf("\nIgnored   %-40s %-40s line %d", preview, ignore->Sig, line);
+					log_fmt("\nIgnored   %-40s %-40s line %d", preview, ignore->Sig, line);
 
 					content += length;
 					left    -= length;
@@ -572,7 +558,7 @@ void refactor()
 
 					array_append( tokens, entry );
 
-					zpl_printf("\nFound     %-81s line %d", current, line);
+					log_fmt("\nFound     %-81s line %d", current, line);
 
 					content += sig_length;
 					left    -= sig_length;
@@ -629,7 +615,7 @@ void refactor()
 
 					string_clear( preview );
 					preview = string_append_length( preview, content, length);
-					zpl_printf("\nFound     %-40s %-40s line %d", preview, nspace->Sig, line);
+					log_fmt("\nFound     %-40s %-40s line %d", preview, nspace->Sig, line);
 
 					content += length;
 					left    -= length;
@@ -722,8 +708,7 @@ void parse_options( int num, char** arguments )
 		}
 		else
 		{
-			zpl_printf( "-source not provided\n" );
-			fatal();
+			fatal( "-source not provided\n" );
 		}
 
 		if ( opts_has_arg( & opts, "dst" ) )
@@ -749,8 +734,7 @@ void parse_options( int num, char** arguments )
 	}
 	else
 	{
-		zpl_printf( "Failed to parse arguments\n" );
-		fatal();
+		fatal( "Failed to parse arguments\n" );
 	}
 
 	opts_free( & opts);

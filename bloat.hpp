@@ -108,8 +108,39 @@ namespace Memory
 	}
 }
 
-void fatal()
+ sw log_fmt(char const *fmt, ...) 
+ {
+#if Build_Debug
+	sw res;
+	va_list va;
+	va_start(va, fmt);
+	res = zpl_printf_va(fmt, va);
+	va_end(va);
+	return res;
+
+#else
+	return 0;
+#endif
+}
+
+void fatal(char const *fmt, ...) 
 {
-	Memory::cleanup();
-	zpl_assert_crash("FATAL");
+	zpl_local_persist zpl_thread_local 
+	char buf[ZPL_PRINTF_MAXLEN] = { 0 };
+
+	va_list va;
+
+#if Build_Debug
+	va_start(va, fmt);
+	zpl_snprintf_va(buf, ZPL_PRINTF_MAXLEN, fmt, va);
+	va_end(va);
+
+	zpl_assert_crash(buf);
+#else
+	va_start(va, fmt);
+	zpl_printf_err_va( fmt, va);
+	va_end(va);
+
+	exit(1);
+#endif
 }
