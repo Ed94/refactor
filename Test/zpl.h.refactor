@@ -23,18 +23,18 @@ word zpl_strncmp, str_compare
 word zpl_strcmp,  str_compare
 
 // Undesired typedefs
-not word zpl_i8
-not word zpl_i16
-not word zpl_i32
-not word zpl_i64
-not word zpl_u8
-not word zpl_u16
-not word zpl_u32
-not word zpl_u64
-not word zpl_intptr
-not word zpl_uintptr
-not word zpl_usize
-not word zpl_isize
+word zpl_i8,  s8
+word zpl_i16, s16
+word zpl_i32, s32
+word zpl_i64, s64
+word zpl_u8,  u8
+word zpl_u16, u16
+word zpl_u32, u32
+word zpl_u64, u64
+word zpl_intptr, sptr
+word zpl_uintptr, uptr
+word zpl_usize, uw
+word zpl_isize, sw
 
 // Undesired exposures.
 not word zpl_allocator

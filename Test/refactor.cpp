@@ -26,7 +26,7 @@ namespace File
 
 		if ( error_src == ZPL_FILE_ERROR_NONE ) 
 		{
-			zpl_isize fsize = zpl_cast(zpl_isize) file_size( & file_src);
+			sw fsize = zpl_cast(sw) file_size( & file_src);
 
 			if ( fsize > 0 ) 
 			{
@@ -94,7 +94,7 @@ namespace Spec
 	}
 
 	ct 
-	c8 strlen_tok( Tok tok )
+	char strlen_tok( Tok tok )
 	{
 		ct 
 		const u8 tok_to_len[ Tok::Num_Tok ] = 

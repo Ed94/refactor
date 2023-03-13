@@ -22,7 +22,7 @@ Usage:
 #  include "zpl.h"
 
 Options:
-  ZPL_EXPOSE_TYPES - exposes all zpl defined types to the global namespace. This means type such as `zpl_u32` is now available as `u32` globally.
+  ZPL_EXPOSE_TYPES - exposes all zpl defined types to the global namespace. This means type such as `u32` is now available as `u32` globally.
   ZPL_DEFINE_NULL_MACRO - to let zpl define what NULL stands for in case it is undefined.
   ZPL_NO_MATH_H - disables the use of math.h library and replaces it with custom routines or SIMD.
   ZPL_HEAP_ANALYSIS - enables heap allocator analysis tools
@@ -2534,7 +2534,7 @@ License:
 
  #ifndef ZPL_ENDIAN_ORDER
  #    define ZPL_ENDIAN_ORDER
- #    define ZPL_IS_BIG_ENDIAN (!*(zpl_u8 *)&(zpl_u16){ 1 })
+ #    define ZPL_IS_BIG_ENDIAN (!*(u8 *)&(u16){ 1 })
  #    define ZPL_IS_LITTLE_ENDIAN (!ZPL_IS_BIG_ENDIAN)
  #endif
 
@@ -2705,56 +2705,56 @@ License:
 
  #if defined(ZPL_COMPILER_MSVC)
  #    if _MSC_VER < 1300
-         typedef unsigned char zpl_u8;
-         typedef signed char zpl_i8;
-         typedef unsigned short zpl_u16;
-         typedef signed short zpl_i16;
-         typedef unsigned int zpl_u32;
-         typedef signed int zpl_i32;
+         typedef unsigned char u8;
+         typedef signed char s8;
+         typedef unsigned short u16;
+         typedef signed short s16;
+         typedef unsigned int u32;
+         typedef signed int s32;
  #    else
-         typedef unsigned __int8 zpl_u8;
-         typedef signed __int8 zpl_i8;
-         typedef unsigned __int16 zpl_u16;
-         typedef signed __int16 zpl_i16;
-         typedef unsigned __int32 zpl_u32;
-         typedef signed __int32 zpl_i32;
+         typedef unsigned __int8 u8;
+         typedef signed __int8 s8;
+         typedef unsigned __int16 u16;
+         typedef signed __int16 s16;
+         typedef unsigned __int32 u32;
+         typedef signed __int32 s32;
  #    endif
-     typedef unsigned __int64 zpl_u64;
-     typedef signed __int64 zpl_i64;
+     typedef unsigned __int64 u64;
+     typedef signed __int64 s64;
  #else
  #    include <stdint.h>
 
-     typedef uint8_t zpl_u8;
-     typedef int8_t zpl_i8;
-     typedef uint16_t zpl_u16;
-     typedef int16_t zpl_i16;
-     typedef uint32_t zpl_u32;
-     typedef int32_t zpl_i32;
-     typedef uint64_t zpl_u64;
-     typedef int64_t zpl_i64;
+     typedef uint8_t u8;
+     typedef int8_t s8;
+     typedef uint16_t u16;
+     typedef int16_t s16;
+     typedef uint32_t u32;
+     typedef int32_t s32;
+     typedef uint64_t u64;
+     typedef int64_t s64;
  #endif
 
- ZPL_STATIC_ASSERT(sizeof(zpl_u8) == sizeof(zpl_i8), "sizeof(zpl_u8) != sizeof(zpl_i8)");
- ZPL_STATIC_ASSERT(sizeof(zpl_u16) == sizeof(zpl_i16), "sizeof(zpl_u16) != sizeof(zpl_i16)");
- ZPL_STATIC_ASSERT(sizeof(zpl_u32) == sizeof(zpl_i32), "sizeof(zpl_u32) != sizeof(zpl_i32)");
- ZPL_STATIC_ASSERT(sizeof(zpl_u64) == sizeof(zpl_i64), "sizeof(zpl_u64) != sizeof(zpl_i64)");
+ ZPL_STATIC_ASSERT(sizeof(u8) == sizeof(s8), "sizeof(u8) != sizeof(s8)");
+ ZPL_STATIC_ASSERT(sizeof(u16) == sizeof(s16), "sizeof(u16) != sizeof(s16)");
+ ZPL_STATIC_ASSERT(sizeof(u32) == sizeof(s32), "sizeof(u32) != sizeof(s32)");
+ ZPL_STATIC_ASSERT(sizeof(u64) == sizeof(s64), "sizeof(u64) != sizeof(s64)");
 
- ZPL_STATIC_ASSERT(sizeof(zpl_u8) == 1, "sizeof(zpl_u8) != 1");
- ZPL_STATIC_ASSERT(sizeof(zpl_u16) == 2, "sizeof(zpl_u16) != 2");
- ZPL_STATIC_ASSERT(sizeof(zpl_u32) == 4, "sizeof(zpl_u32) != 4");
- ZPL_STATIC_ASSERT(sizeof(zpl_u64) == 8, "sizeof(zpl_u64) != 8");
+ ZPL_STATIC_ASSERT(sizeof(u8) == 1, "sizeof(u8) != 1");
+ ZPL_STATIC_ASSERT(sizeof(u16) == 2, "sizeof(u16) != 2");
+ ZPL_STATIC_ASSERT(sizeof(u32) == 4, "sizeof(u32) != 4");
+ ZPL_STATIC_ASSERT(sizeof(u64) == 8, "sizeof(u64) != 8");
 
- typedef size_t zpl_usize;
- typedef ptrdiff_t zpl_isize;
+ typedef size_t uw;
+ typedef ptrdiff_t sw;
 
- ZPL_STATIC_ASSERT(sizeof(zpl_usize) == sizeof(zpl_isize), "sizeof(zpl_usize) != sizeof(zpl_isize)");
+ ZPL_STATIC_ASSERT(sizeof(uw) == sizeof(sw), "sizeof(uw) != sizeof(sw)");
 
- // NOTE: (u)zpl_intptr is only here for semantic reasons really as this library will only support 32/64 bit OSes.
+ // NOTE: (u)sptr is only here for semantic reasons really as this library will only support 32/64 bit OSes.
  #if defined(_WIN64)
-     typedef signed __int64 zpl_intptr;
-     typedef unsigned __int64 zpl_uintptr;
+     typedef signed __int64 sptr;
+     typedef unsigned __int64 uptr;
  #elif defined(_WIN32)
-     // NOTE; To mark types changing their size, e.g. zpl_intptr
+     // NOTE; To mark types changing their size, e.g. sptr
  #    ifndef _W64
  #        if !defined(__midl) && (defined(_X86_) || defined(_M_IX86)) && _MSC_VER >= 1300
  #            define _W64 __w64
@@ -2762,14 +2762,14 @@ License:
  #            define _W64
  #        endif
  #    endif
-     typedef _W64 signed int zpl_intptr;
-     typedef _W64 unsigned int zpl_uintptr;
+     typedef _W64 signed int sptr;
+     typedef _W64 unsigned int uptr;
  #else
-     typedef uintptr_t zpl_uintptr;
-     typedef intptr_t zpl_intptr;
+     typedef uintptr_t uptr;
+     typedef intptr_t sptr;
  #endif
 
- ZPL_STATIC_ASSERT(sizeof(zpl_uintptr) == sizeof(zpl_intptr), "sizeof(zpl_uintptr) != sizeof(zpl_intptr)");
+ ZPL_STATIC_ASSERT(sizeof(uptr) == sizeof(sptr), "sizeof(uptr) != sizeof(sptr)");
 
  typedef float f32;
  typedef double f64;
@@ -2777,16 +2777,16 @@ License:
  ZPL_STATIC_ASSERT(sizeof(f32) == 4, "sizeof(f32) != 4");
  ZPL_STATIC_ASSERT(sizeof(f64) == 8, "sizeof(f64) != 8");
 
- typedef zpl_i32 rune; // NOTE: Unicode codepoint
- typedef zpl_i32 char32;
+ typedef s32 rune; // NOTE: Unicode codepoint
+ typedef s32 char32;
  #define ZPL_RUNE_INVALID zpl_cast(rune)(0xfffd)
  #define ZPL_RUNE_MAX zpl_cast(rune)(0x0010ffff)
  #define ZPL_RUNE_BOM zpl_cast(rune)(0xfeff)
  #define ZPL_RUNE_EOF zpl_cast(rune)(-1)
 
- typedef zpl_i8 b8;
- typedef zpl_i16 b16;
- typedef zpl_i32 b32;
+ typedef s8 b8;
+ typedef s16 b16;
+ typedef s32 b32;
 
  #if !defined(__cplusplus)
  #    if (defined(_MSC_VER) && _MSC_VER < 1800) || (!defined(_MSC_VER) && !defined(__STDC_VERSION__))
@@ -2863,16 +2863,16 @@ License:
  #endif
 
  #ifndef size_of
- #    define size_of(x) (zpl_isize)(sizeof(x))
+ #    define size_of(x) (sw)(sizeof(x))
  #endif
 
  #ifndef count_of
- #    define count_of(x) ((size_of(x) / size_of(0 [x])) / ((zpl_isize)(!(size_of(x) % size_of(0 [x])))))
+ #    define count_of(x) ((size_of(x) / size_of(0 [x])) / ((sw)(!(size_of(x) % size_of(0 [x])))))
  #endif
 
  #ifndef offset_of
  #if defined(_MSC_VER) || defined(ZPL_COMPILER_TINYC)
- #    define offset_of(Type, element) ((zpl_isize) & (((Type *)0)->element))
+ #    define offset_of(Type, element) ((sw) & (((Type *)0)->element))
  #else
  #    define offset_of(Type, element) __builtin_offsetof(Type, element)
  #endif
@@ -2881,7 +2881,7 @@ License:
  #if defined(__cplusplus)
  #    ifndef align_of
  #        if __cplusplus >= 201103L
- #            define align_of(Type) (zpl_isize)alignof(Type)
+ #            define align_of(Type) (sw)alignof(Type)
  #        else
  extern "C++" {
      template <typename T> struct alignment_trick {
@@ -3032,7 +3032,7 @@ License:
      #    define ZPL_ASSERT_MSG(cond, msg, ...)                                                                             \
          do {                                                                                                               \
              if (!(cond)) {                                                                                                 \
-                 assert_handler(#cond, __FILE__, zpl_cast(zpl_i64) __LINE__, msg, ##__VA_ARGS__);                           \
+                 assert_handler(#cond, __FILE__, zpl_cast(s64) __LINE__, msg, ##__VA_ARGS__);                           \
                  ZPL_DEBUG_TRAP( );                                                                                         \
              }                                                                                                              \
          } while (0)
@@ -3057,9 +3057,9 @@ License:
 
      /* Functions */
 
-     ZPL_DEF void    assert_handler(char const *condition, char const *file, zpl_i32 line, char const *msg, ...);
-     ZPL_DEF zpl_i32 assert_crash(char const *condition);
-     ZPL_DEF void zpl_exit(zpl_u32 code);
+     ZPL_DEF void    assert_handler(char const *condition, char const *file, s32 line, char const *msg, ...);
+     ZPL_DEF s32 assert_crash(char const *condition);
+     ZPL_DEF void zpl_exit(u32 code);
 
      ZPL_END_C_DECLS
      // file: header/essentials/memory.h
@@ -3076,31 +3076,31 @@ License:
      ZPL_BEGIN_C_DECLS
 
      //! Checks if value is power of 2.
-     ZPL_DEF_INLINE b32 is_power_of_two(zpl_isize x);
+     ZPL_DEF_INLINE b32 is_power_of_two(sw x);
 
      //! Aligns address to specified alignment.
-     ZPL_DEF_INLINE void *align_forward(void *ptr, zpl_isize alignment);
+     ZPL_DEF_INLINE void *align_forward(void *ptr, sw alignment);
 
      //! Aligns value to a specified alignment.
-     ZPL_DEF_INLINE zpl_i64 align_forward_i64(zpl_i64 value, zpl_isize alignment);
+     ZPL_DEF_INLINE s64 align_forward_i64(s64 value, sw alignment);
 
      //! Aligns value to a specified alignment.
-     ZPL_DEF_INLINE zpl_u64 align_forward_u64(zpl_u64 value, zpl_usize alignment);
+     ZPL_DEF_INLINE u64 align_forward_u64(u64 value, uw alignment);
 
      //! Moves pointer forward by bytes.
-     ZPL_DEF_INLINE void *pointer_add(void *ptr, zpl_isize bytes);
+     ZPL_DEF_INLINE void *pointer_add(void *ptr, sw bytes);
 
      //! Moves pointer backward by bytes.
-     ZPL_DEF_INLINE void *pointer_sub(void *ptr, zpl_isize bytes);
+     ZPL_DEF_INLINE void *pointer_sub(void *ptr, sw bytes);
 
      //! Moves pointer forward by bytes.
-     ZPL_DEF_INLINE void const *pointer_add_const(void const *ptr, zpl_isize bytes);
+     ZPL_DEF_INLINE void const *pointer_add_const(void const *ptr, sw bytes);
 
      //! Moves pointer backward by bytes.
-     ZPL_DEF_INLINE void const *pointer_sub_const(void const *ptr, zpl_isize bytes);
+     ZPL_DEF_INLINE void const *pointer_sub_const(void const *ptr, sw bytes);
 
      //! Calculates difference between two addresses.
-     ZPL_DEF_INLINE zpl_isize pointer_diff(void const *begin, void const *end);
+     ZPL_DEF_INLINE sw pointer_diff(void const *begin, void const *end);
 
      #define ptr_add pointer_add
      #define ptr_sub pointer_sub
@@ -3112,7 +3112,7 @@ License:
 
      //! @param ptr Memory location to clear up.
      //! @param size The size to clear up with.
-     ZPL_DEF_INLINE void zero_size(void *ptr, zpl_isize size);
+     ZPL_DEF_INLINE void zero_size(void *ptr, sw size);
 
      #ifndef zero_item
      //! Clears up an item.
@@ -3123,25 +3123,25 @@ License:
      #endif
 
      //! Copy memory from source to destination.
-     ZPL_DEF_INLINE void *zpl_memmove(void *dest, void const *source, zpl_isize size);
+     ZPL_DEF_INLINE void *zpl_memmove(void *dest, void const *source, sw size);
 
      //! Set constant value at memory location with specified size.
-     ZPL_DEF_INLINE void *zpl_memset(void *data, zpl_u8 byte_value, zpl_isize size);
+     ZPL_DEF_INLINE void *zpl_memset(void *data, u8 byte_value, sw size);
 
      //! Compare two memory locations with specified size.
-     ZPL_DEF_INLINE zpl_i32 memcompare(void const *s1, void const *s2, zpl_isize size);
+     ZPL_DEF_INLINE s32 memcompare(void const *s1, void const *s2, sw size);
 
      //! Swap memory contents between 2 locations with size.
-     ZPL_DEF void zpl_memswap(void *i, void *j, zpl_isize size);
+     ZPL_DEF void zpl_memswap(void *i, void *j, sw size);
 
      //! Search for a constant value within the size limit at memory location.
-     ZPL_DEF void const *zpl_memchr(void const *data, zpl_u8 byte_value, zpl_isize size);
+     ZPL_DEF void const *zpl_memchr(void const *data, u8 byte_value, sw size);
 
      //! Search for a constant value within the size limit at memory location in backwards.
-     ZPL_DEF void const *memrchr(void const *data, zpl_u8 byte_value, zpl_isize size);
+     ZPL_DEF void const *memrchr(void const *data, u8 byte_value, sw size);
 
      //! Copy non-overlapping memory from source to destination.
-     ZPL_DEF void *zpl_memcopy(void *dest, void const *source, zpl_isize size);
+     ZPL_DEF void *zpl_memcopy(void *dest, void const *source, sw size);
 
      #ifndef memcopy_array
 
@@ -3163,87 +3163,87 @@ License:
      #endif
 
      #ifndef kilobytes
-     #define kilobytes(x) ((x)              * (zpl_i64)(1024))
-     #define megabytes(x) (kilobytes(x) * (zpl_i64)(1024))
-     #define gigabytes(x) (megabytes(x) * (zpl_i64)(1024))
-     #define terabytes(x) (gigabytes(x) * (zpl_i64)(1024))
+     #define kilobytes(x) ((x)              * (s64)(1024))
+     #define megabytes(x) (kilobytes(x) * (s64)(1024))
+     #define gigabytes(x) (megabytes(x) * (s64)(1024))
+     #define terabytes(x) (gigabytes(x) * (s64)(1024))
      #endif
 
 
      /* inlines */
 
-     #define ZPL__ONES (zpl_cast(zpl_usize) - 1 / ZPL_U8_MAX)
+     #define ZPL__ONES (zpl_cast(uw) - 1 / ZPL_U8_MAX)
      #define ZPL__HIGHS (ZPL__ONES * (ZPL_U8_MAX / 2 + 1))
      #define ZPL__HAS_ZERO(x) (((x)-ZPL__ONES) & ~(x)&ZPL__HIGHS)
 
-     ZPL_IMPL_INLINE void *align_forward(void *ptr, zpl_isize alignment) {
-         zpl_uintptr p;
+     ZPL_IMPL_INLINE void *align_forward(void *ptr, sw alignment) {
+         uptr p;
 
          ZPL_ASSERT(is_power_of_two(alignment));
 
-         p = zpl_cast(zpl_uintptr) ptr;
+         p = zpl_cast(uptr) ptr;
          return zpl_cast(void *)((p + (alignment - 1)) & ~(alignment - 1));
      }
 
-     ZPL_IMPL_INLINE zpl_i64 align_forward_i64(zpl_i64 value, zpl_isize alignment) {
+     ZPL_IMPL_INLINE s64 align_forward_i64(s64 value, sw alignment) {
          return value + (alignment - value % alignment) % alignment;
      }
 
-     ZPL_IMPL_INLINE zpl_u64 align_forward_u64(zpl_u64 value, zpl_usize alignment) {
+     ZPL_IMPL_INLINE u64 align_forward_u64(u64 value, uw alignment) {
          return value + (alignment - value % alignment) % alignment;
      }
 
-     ZPL_IMPL_INLINE void *pointer_add(void *ptr, zpl_isize bytes) { return zpl_cast(void *)(zpl_cast(zpl_u8 *) ptr + bytes); }
-     ZPL_IMPL_INLINE void *pointer_sub(void *ptr, zpl_isize bytes) { return zpl_cast(void *)(zpl_cast(zpl_u8 *) ptr - bytes); }
-     ZPL_IMPL_INLINE void const *pointer_add_const(void const *ptr, zpl_isize bytes) {
-         return zpl_cast(void const *)(zpl_cast(zpl_u8 const *) ptr + bytes);
+     ZPL_IMPL_INLINE void *pointer_add(void *ptr, sw bytes) { return zpl_cast(void *)(zpl_cast(u8 *) ptr + bytes); }
+     ZPL_IMPL_INLINE void *pointer_sub(void *ptr, sw bytes) { return zpl_cast(void *)(zpl_cast(u8 *) ptr - bytes); }
+     ZPL_IMPL_INLINE void const *pointer_add_const(void const *ptr, sw bytes) {
+         return zpl_cast(void const *)(zpl_cast(u8 const *) ptr + bytes);
      }
-     ZPL_IMPL_INLINE void const *pointer_sub_const(void const *ptr, zpl_isize bytes) {
-         return zpl_cast(void const *)(zpl_cast(zpl_u8 const *) ptr - bytes);
+     ZPL_IMPL_INLINE void const *pointer_sub_const(void const *ptr, sw bytes) {
+         return zpl_cast(void const *)(zpl_cast(u8 const *) ptr - bytes);
      }
-     ZPL_IMPL_INLINE zpl_isize pointer_diff(void const *begin, void const *end) {
-         return zpl_cast(zpl_isize)(zpl_cast(zpl_u8 const *) end - zpl_cast(zpl_u8 const *) begin);
+     ZPL_IMPL_INLINE sw pointer_diff(void const *begin, void const *end) {
+         return zpl_cast(sw)(zpl_cast(u8 const *) end - zpl_cast(u8 const *) begin);
      }
 
-     ZPL_IMPL_INLINE void zero_size(void *ptr, zpl_isize size) { zpl_memset(ptr, 0, size); }
+     ZPL_IMPL_INLINE void zero_size(void *ptr, sw size) { zpl_memset(ptr, 0, size); }
 
      #if defined(_MSC_VER) && !defined(__clang__)
      #pragma intrinsic(__movsb)
      #endif
 
-     ZPL_IMPL_INLINE void *zpl_memmove(void *dest, void const *source, zpl_isize n) {
+     ZPL_IMPL_INLINE void *zpl_memmove(void *dest, void const *source, sw n) {
          if (dest == NULL) { return NULL; }
 
-         zpl_u8 *d = zpl_cast(zpl_u8 *) dest;
-         zpl_u8 const *s = zpl_cast(zpl_u8 const *) source;
+         u8 *d = zpl_cast(u8 *) dest;
+         u8 const *s = zpl_cast(u8 const *) source;
 
          if (d == s) return d;
          if (s + n <= d || d + n <= s) // NOTE: Non-overlapping
              return zpl_memcopy(d, s, n);
 
          if (d < s) {
-             if (zpl_cast(zpl_uintptr) s % size_of(zpl_isize) == zpl_cast(zpl_uintptr) d % size_of(zpl_isize)) {
-                 while (zpl_cast(zpl_uintptr) d % size_of(zpl_isize)) {
+             if (zpl_cast(uptr) s % size_of(sw) == zpl_cast(uptr) d % size_of(sw)) {
+                 while (zpl_cast(uptr) d % size_of(sw)) {
                      if (!n--) return dest;
                      *d++ = *s++;
                  }
-                 while (n >= size_of(zpl_isize)) {
-                     *zpl_cast(zpl_isize *) d = *zpl_cast(zpl_isize *) s;
-                     n -= size_of(zpl_isize);
-                     d += size_of(zpl_isize);
-                     s += size_of(zpl_isize);
+                 while (n >= size_of(sw)) {
+                     *zpl_cast(sw *) d = *zpl_cast(sw *) s;
+                     n -= size_of(sw);
+                     d += size_of(sw);
+                     s += size_of(sw);
                  }
              }
              for (; n; n--) *d++ = *s++;
          } else {
-             if ((zpl_cast(zpl_uintptr) s % size_of(zpl_isize)) == (zpl_cast(zpl_uintptr) d % size_of(zpl_isize))) {
-                 while (zpl_cast(zpl_uintptr)(d + n) % size_of(zpl_isize)) {
+             if ((zpl_cast(uptr) s % size_of(sw)) == (zpl_cast(uptr) d % size_of(sw))) {
+                 while (zpl_cast(uptr)(d + n) % size_of(sw)) {
                      if (!n--) return dest;
                      d[n] = s[n];
                  }
-                 while (n >= size_of(zpl_isize)) {
-                     n -= size_of(zpl_isize);
-                     *zpl_cast(zpl_isize *)(d + n) = *zpl_cast(zpl_isize *)(s + n);
+                 while (n >= size_of(sw)) {
+                     n -= size_of(sw);
+                     *zpl_cast(sw *)(d + n) = *zpl_cast(sw *)(s + n);
                  }
              }
              while (n) n--, d[n] = s[n];
@@ -3252,12 +3252,12 @@ License:
          return dest;
      }
 
-     ZPL_IMPL_INLINE void *zpl_memset(void *dest, zpl_u8 c, zpl_isize n) {
+     ZPL_IMPL_INLINE void *zpl_memset(void *dest, u8 c, sw n) {
          if (dest == NULL) { return NULL; }
 
-         zpl_u8 *s = zpl_cast(zpl_u8 *) dest;
-         zpl_isize k;
-         zpl_u32 c32 = ((zpl_u32)-1) / 255 * c;
+         u8 *s = zpl_cast(u8 *) dest;
+         sw k;
+         u32 c32 = ((u32)-1) / 255 * c;
 
          if (n == 0) return dest;
          s[0] = s[n - 1] = c;
@@ -3268,39 +3268,39 @@ License:
          s[3] = s[n - 4] = c;
          if (n < 9) return dest;
 
-         k = -zpl_cast(zpl_intptr) s & 3;
+         k = -zpl_cast(sptr) s & 3;
          s += k;
          n -= k;
          n &= -4;
 
-         *zpl_cast(zpl_u32 *)(s + 0) = c32;
-         *zpl_cast(zpl_u32 *)(s + n - 4) = c32;
+         *zpl_cast(u32 *)(s + 0) = c32;
+         *zpl_cast(u32 *)(s + n - 4) = c32;
          if (n < 9) return dest;
-         *zpl_cast(zpl_u32 *)(s + 4) = c32;
-         *zpl_cast(zpl_u32 *)(s + 8) = c32;
-         *zpl_cast(zpl_u32 *)(s + n - 12) = c32;
-         *zpl_cast(zpl_u32 *)(s + n - 8) = c32;
+         *zpl_cast(u32 *)(s + 4) = c32;
+         *zpl_cast(u32 *)(s + 8) = c32;
+         *zpl_cast(u32 *)(s + n - 12) = c32;
+         *zpl_cast(u32 *)(s + n - 8) = c32;
          if (n < 25) return dest;
-         *zpl_cast(zpl_u32 *)(s + 12) = c32;
-         *zpl_cast(zpl_u32 *)(s + 16) = c32;
-         *zpl_cast(zpl_u32 *)(s + 20) = c32;
-         *zpl_cast(zpl_u32 *)(s + 24) = c32;
-         *zpl_cast(zpl_u32 *)(s + n - 28) = c32;
-         *zpl_cast(zpl_u32 *)(s + n - 24) = c32;
-         *zpl_cast(zpl_u32 *)(s + n - 20) = c32;
-         *zpl_cast(zpl_u32 *)(s + n - 16) = c32;
+         *zpl_cast(u32 *)(s + 12) = c32;
+         *zpl_cast(u32 *)(s + 16) = c32;
+         *zpl_cast(u32 *)(s + 20) = c32;
+         *zpl_cast(u32 *)(s + 24) = c32;
+         *zpl_cast(u32 *)(s + n - 28) = c32;
+         *zpl_cast(u32 *)(s + n - 24) = c32;
+         *zpl_cast(u32 *)(s + n - 20) = c32;
+         *zpl_cast(u32 *)(s + n - 16) = c32;
 
-         k = 24 + (zpl_cast(zpl_uintptr) s & 4);
+         k = 24 + (zpl_cast(uptr) s & 4);
          s += k;
          n -= k;
 
          {
-             zpl_u64 c64 = (zpl_cast(zpl_u64) c32 << 32) | c32;
+             u64 c64 = (zpl_cast(u64) c32 << 32) | c32;
              while (n > 31) {
-                 *zpl_cast(zpl_u64 *)(s + 0) = c64;
-                 *zpl_cast(zpl_u64 *)(s + 8) = c64;
-                 *zpl_cast(zpl_u64 *)(s + 16) = c64;
-                 *zpl_cast(zpl_u64 *)(s + 24) = c64;
+                 *zpl_cast(u64 *)(s + 0) = c64;
+                 *zpl_cast(u64 *)(s + 8) = c64;
+                 *zpl_cast(u64 *)(s + 16) = c64;
+                 *zpl_cast(u64 *)(s + 24) = c64;
 
                  n -= 32;
                  s += 32;
@@ -3310,20 +3310,20 @@ License:
          return dest;
      }
 
-     ZPL_IMPL_INLINE zpl_i32 memcompare(void const *s1, void const *s2, zpl_isize size) {
-         zpl_u8 const *s1p8 = zpl_cast(zpl_u8 const *) s1;
-         zpl_u8 const *s2p8 = zpl_cast(zpl_u8 const *) s2;
+     ZPL_IMPL_INLINE s32 memcompare(void const *s1, void const *s2, sw size) {
+         u8 const *s1p8 = zpl_cast(u8 const *) s1;
+         u8 const *s2p8 = zpl_cast(u8 const *) s2;
 
          if (s1 == NULL || s2 == NULL) { return 0; }
 
          while (size--) {
-             zpl_isize d;
-             if ((d = (*s1p8++ - *s2p8++)) != 0) return zpl_cast(zpl_i32) d;
+             sw d;
+             if ((d = (*s1p8++ - *s2p8++)) != 0) return zpl_cast(s32) d;
          }
          return 0;
      }
 
-     ZPL_IMPL_INLINE b32 is_power_of_two(zpl_isize x) {
+     ZPL_IMPL_INLINE b32 is_power_of_two(sw x) {
          if (x <= 0) return false;
          return !(x & (x - 1));
      }
@@ -3348,8 +3348,8 @@ License:
 
      // NOTE: This is useful so you can define an allocator of the same type and parameters
      #define ZPL_ALLOCATOR_PROC(name)                                                                                       \
-     void *name(void *allocator_data, alloc_type type, zpl_isize size, zpl_isize alignment, void *old_memory,            \
-     zpl_isize old_size, zpl_u64 flags)
+     void *name(void *allocator_data, alloc_type type, sw size, sw alignment, void *old_memory,            \
+     sw old_size, u64 flags)
      typedef ZPL_ALLOCATOR_PROC(allocator_proc);
 
 
@@ -3371,10 +3371,10 @@ License:
      #endif
 
      //! Allocate memory with specified alignment.
-     ZPL_DEF_INLINE void *alloc_align(zpl_allocator a, zpl_isize size, zpl_isize alignment);
+     ZPL_DEF_INLINE void *alloc_align(zpl_allocator a, sw size, sw alignment);
 
      //! Allocate memory with default alignment.
-     ZPL_DEF_INLINE void *alloc(zpl_allocator a, zpl_isize size);
+     ZPL_DEF_INLINE void *alloc(zpl_allocator a, sw size);
 
      //! Free allocated memory.
      ZPL_DEF_INLINE void free(zpl_allocator a, void *ptr);
@@ -3383,22 +3383,22 @@ License:
      ZPL_DEF_INLINE void free_all(zpl_allocator a);
 
      //! Resize an allocated memory.
-     ZPL_DEF_INLINE void *resize(zpl_allocator a, void *ptr, zpl_isize old_size, zpl_isize new_size);
+     ZPL_DEF_INLINE void *resize(zpl_allocator a, void *ptr, sw old_size, sw new_size);
 
      //! Resize an allocated memory with specified alignment.
-     ZPL_DEF_INLINE void *resize_align(zpl_allocator a, void *ptr, zpl_isize old_size, zpl_isize new_size, zpl_isize alignment);
+     ZPL_DEF_INLINE void *resize_align(zpl_allocator a, void *ptr, sw old_size, sw new_size, sw alignment);
 
      //! Allocate memory and copy data into it.
-     ZPL_DEF_INLINE void *alloc_copy(zpl_allocator a, void const *src, zpl_isize size);
+     ZPL_DEF_INLINE void *alloc_copy(zpl_allocator a, void const *src, sw size);
 
      //! Allocate memory with specified alignment and copy data into it.
-     ZPL_DEF_INLINE void *alloc_copy_align(zpl_allocator a, void const *src, zpl_isize size, zpl_isize alignment);
+     ZPL_DEF_INLINE void *alloc_copy_align(zpl_allocator a, void const *src, sw size, sw alignment);
 
      //! Allocate memory for null-terminated C-String.
      ZPL_DEF char *alloc_str(zpl_allocator a, char const *str);
 
      //! Allocate memory for C-String with specified size.
-     ZPL_DEF_INLINE char *alloc_str_len(zpl_allocator a, char const *str, zpl_isize len);
+     ZPL_DEF_INLINE char *alloc_str_len(zpl_allocator a, char const *str, sw len);
 
      #ifndef alloc_item
 
@@ -3414,14 +3414,14 @@ License:
      /* call heap_stats_init at the beginning of the entry point */
      /* you can call heap_stats_check near the end of the execution to validate any possible leaks */
      ZPL_DEF void heap_stats_init(void);
-     ZPL_DEF zpl_isize heap_stats_used_memory(void);
-     ZPL_DEF zpl_isize heap_stats_alloc_count(void);
+     ZPL_DEF sw heap_stats_used_memory(void);
+     ZPL_DEF sw heap_stats_alloc_count(void);
      ZPL_DEF void heap_stats_check(void);
 
      //! Allocate/Resize memory using default options.
 
      //! Use this if you don't need a "fancy" resize allocation
-     ZPL_DEF_INLINE void *default_resize_align(zpl_allocator a, void *ptr, zpl_isize old_size, zpl_isize new_size, zpl_isize alignment);
+     ZPL_DEF_INLINE void *default_resize_align(zpl_allocator a, void *ptr, sw old_size, sw new_size, sw alignment);
 
      //! The heap allocator backed by operating system's memory manager.
      ZPL_DEF_INLINE zpl_allocator heap_allocator(void);
@@ -3446,29 +3446,29 @@ License:
      typedef struct zpl_arena {
          zpl_allocator backing;
          void *physical_start;
-         zpl_isize total_size;
-         zpl_isize total_allocated;
-         zpl_isize temp_count;
+         sw total_size;
+         sw total_allocated;
+         sw temp_count;
      } zpl_arena;
 
      //! Initialize memory arena from existing memory region.
-     ZPL_DEF_INLINE void arena_init_from_memory(zpl_arena *arena, void *start, zpl_isize size);
+     ZPL_DEF_INLINE void arena_init_from_memory(zpl_arena *arena, void *start, sw size);
 
      //! Initialize memory arena using existing memory allocator.
-     ZPL_DEF_INLINE void arena_init_from_allocator(zpl_arena *arena, zpl_allocator backing, zpl_isize size);
+     ZPL_DEF_INLINE void arena_init_from_allocator(zpl_arena *arena, zpl_allocator backing, sw size);
 
      //! Initialize memory arena within an existing parent memory arena.
-     ZPL_DEF_INLINE void arena_init_sub(zpl_arena *arena, zpl_arena *parent_arena, zpl_isize size);
+     ZPL_DEF_INLINE void arena_init_sub(zpl_arena *arena, zpl_arena *parent_arena, sw size);
 
      //! Release the memory used by memory arena.
      ZPL_DEF_INLINE void arena_free(zpl_arena *arena);
 
 
      //! Retrieve memory arena's aligned allocation address.
-     ZPL_DEF_INLINE zpl_isize arena_alignment_of(zpl_arena *arena, zpl_isize alignment);
+     ZPL_DEF_INLINE sw arena_alignment_of(zpl_arena *arena, sw alignment);
 
      //! Retrieve memory arena's remaining size.
-     ZPL_DEF_INLINE zpl_isize arena_size_remaining(zpl_arena *arena, zpl_isize alignment);
+     ZPL_DEF_INLINE sw arena_size_remaining(zpl_arena *arena, sw alignment);
 
      //! Check whether memory arena has any temporary snapshots.
      ZPL_DEF_INLINE void arena_check(zpl_arena *arena);
@@ -3480,7 +3480,7 @@ License:
 
      typedef struct arena_snapshot {
          zpl_arena *arena;
-         zpl_isize original_count;
+         sw original_count;
      } arena_snapshot;
 
      //! Capture a snapshot of used memory in a memory arena.
@@ -3498,19 +3498,19 @@ License:
          zpl_allocator backing;
          void *physical_start;
          void *free_list;
-         zpl_isize block_size;
-         zpl_isize block_align;
-         zpl_isize total_size;
-         zpl_isize num_blocks;
+         sw block_size;
+         sw block_align;
+         sw total_size;
+         sw num_blocks;
      } zpl_pool;
 
 
      //! Initialize pool allocator.
-     ZPL_DEF_INLINE void pool_init(zpl_pool *pool, zpl_allocator backing, zpl_isize num_blocks, zpl_isize block_size);
+     ZPL_DEF_INLINE void pool_init(zpl_pool *pool, zpl_allocator backing, sw num_blocks, sw block_size);
 
      //! Initialize pool allocator with specific block alignment.
-     ZPL_DEF void pool_init_align(zpl_pool *pool, zpl_allocator backing, zpl_isize num_blocks, zpl_isize block_size,
-                                      zpl_isize block_align);
+     ZPL_DEF void pool_init_align(zpl_pool *pool, zpl_allocator backing, sw num_blocks, sw block_size,
+                                      sw block_align);
 
      //! Release the resources used by pool allocator.
      ZPL_DEF_INLINE void pool_free(zpl_pool *pool);
@@ -3524,11 +3524,11 @@ License:
      //
 
      typedef struct allocation_header_ev {
-         zpl_isize size;
+         sw size;
      } allocation_header_ev;
 
      ZPL_DEF_INLINE allocation_header_ev *allocation_header(void *data);
-     ZPL_DEF_INLINE void allocation_header_fill(allocation_header_ev *header, void *data, zpl_isize size);
+     ZPL_DEF_INLINE void allocation_header_fill(allocation_header_ev *header, void *data, sw size);
 
      #if defined(ZPL_ARCH_32_BIT)
      #define ZPL_ISIZE_HIGH_BIT 0x80000000
@@ -3540,13 +3540,13 @@ License:
 
      typedef struct scratch_memory {
          void *physical_start;
-         zpl_isize total_size;
+         sw total_size;
          void *alloc_point;
          void *free_point;
      } scratch_memory;
 
      //! Initialize ring buffer arena.
-     ZPL_DEF void scratch_memory_init(scratch_memory *s, void *start, zpl_isize size);
+     ZPL_DEF void scratch_memory_init(scratch_memory *s, void *start, sw size);
 
      //! Check whether ring buffer arena is in use.
      ZPL_DEF b32 scratch_memory_is_in_use(scratch_memory *s, void *ptr);
@@ -3564,15 +3564,15 @@ License:
          zpl_allocator backing;
          
          void *physical_start;
-         zpl_usize total_size;
-         zpl_usize allocated;
+         uw total_size;
+         uw allocated;
      } stack_memory;
 
      //! Initialize stack allocator from existing memory.
-     ZPL_DEF_INLINE void stack_memory_init_from_memory(stack_memory *s, void *start, zpl_isize size);
+     ZPL_DEF_INLINE void stack_memory_init_from_memory(stack_memory *s, void *start, sw size);
 
      //! Initialize stack allocator using existing memory allocator.
-     ZPL_DEF_INLINE void stack_memory_init(stack_memory *s, zpl_allocator backing, zpl_isize size);
+     ZPL_DEF_INLINE void stack_memory_init(stack_memory *s, zpl_allocator backing, sw size);
 
      //! Check whether stack allocator is in use.
      ZPL_DEF_INLINE b32 stack_memory_is_in_use(stack_memory *s, void *ptr);
@@ -3586,10 +3586,10 @@ License:
 
      /* inlines */
 
-     ZPL_IMPL_INLINE void *alloc_align(zpl_allocator a, zpl_isize size, zpl_isize alignment) {
+     ZPL_IMPL_INLINE void *alloc_align(zpl_allocator a, sw size, sw alignment) {
          return a.proc(a.data, ZPL_ALLOCATION_ALLOC, size, alignment, NULL, 0, ZPL_DEFAULT_ALLOCATOR_FLAGS);
      }
-     ZPL_IMPL_INLINE void *alloc(zpl_allocator a, zpl_isize size) {
+     ZPL_IMPL_INLINE void *alloc(zpl_allocator a, sw size) {
          return alloc_align(a, size, ZPL_DEFAULT_MEMORY_ALIGNMENT);
      }
      ZPL_IMPL_INLINE void free(zpl_allocator a, void *ptr) {
@@ -3598,21 +3598,21 @@ License:
      ZPL_IMPL_INLINE void free_all(zpl_allocator a) {
          a.proc(a.data, ZPL_ALLOCATION_FREE_ALL, 0, 0, NULL, 0, ZPL_DEFAULT_ALLOCATOR_FLAGS);
      }
-     ZPL_IMPL_INLINE void *resize(zpl_allocator a, void *ptr, zpl_isize old_size, zpl_isize new_size) {
+     ZPL_IMPL_INLINE void *resize(zpl_allocator a, void *ptr, sw old_size, sw new_size) {
          return resize_align(a, ptr, old_size, new_size, ZPL_DEFAULT_MEMORY_ALIGNMENT);
      }
-     ZPL_IMPL_INLINE void *resize_align(zpl_allocator a, void *ptr, zpl_isize old_size, zpl_isize new_size, zpl_isize alignment) {
+     ZPL_IMPL_INLINE void *resize_align(zpl_allocator a, void *ptr, sw old_size, sw new_size, sw alignment) {
          return a.proc(a.data, ZPL_ALLOCATION_RESIZE, new_size, alignment, ptr, old_size, ZPL_DEFAULT_ALLOCATOR_FLAGS);
      }
 
-     ZPL_IMPL_INLINE void *alloc_copy(zpl_allocator a, void const *src, zpl_isize size) {
+     ZPL_IMPL_INLINE void *alloc_copy(zpl_allocator a, void const *src, sw size) {
          return zpl_memcopy(alloc(a, size), src, size);
      }
-     ZPL_IMPL_INLINE void *alloc_copy_align(zpl_allocator a, void const *src, zpl_isize size, zpl_isize alignment) {
+     ZPL_IMPL_INLINE void *alloc_copy_align(zpl_allocator a, void const *src, sw size, sw alignment) {
          return zpl_memcopy(alloc_align(a, size, alignment), src, size);
      }
 
-     ZPL_IMPL_INLINE char *alloc_str_len(zpl_allocator a, char const *str, zpl_isize len) {
+     ZPL_IMPL_INLINE char *alloc_str_len(zpl_allocator a, char const *str, sw len) {
          char *result;
          result = zpl_cast(char *) alloc(a, len + 1);
          zpl_memmove(result, str, len);
@@ -3620,8 +3620,8 @@ License:
          return result;
      }
 
-     ZPL_IMPL_INLINE void *default_resize_align(zpl_allocator a, void *old_memory, zpl_isize old_size, zpl_isize new_size,
-                                                    zpl_isize alignment) {
+     ZPL_IMPL_INLINE void *default_resize_align(zpl_allocator a, void *old_memory, sw old_size, sw new_size,
+                                                    sw alignment) {
          if (!old_memory) return alloc_align(a, new_size, alignment);
          
          if (new_size == 0) {
@@ -3657,7 +3657,7 @@ License:
      // Arena Allocator
      //
 
-     ZPL_IMPL_INLINE void arena_init_from_memory(zpl_arena *arena, void *start, zpl_isize size) {
+     ZPL_IMPL_INLINE void arena_init_from_memory(zpl_arena *arena, void *start, sw size) {
          arena->backing.proc = NULL;
          arena->backing.data = NULL;
          arena->physical_start = start;
@@ -3666,7 +3666,7 @@ License:
          arena->temp_count = 0;
      }
 
-     ZPL_IMPL_INLINE void arena_init_from_allocator(zpl_arena *arena, zpl_allocator backing, zpl_isize size) {
+     ZPL_IMPL_INLINE void arena_init_from_allocator(zpl_arena *arena, zpl_allocator backing, sw size) {
          arena->backing = backing;
          arena->physical_start = alloc(backing, size); // NOTE: Uses default alignment
          arena->total_size = size;
@@ -3674,7 +3674,7 @@ License:
          arena->temp_count = 0;
      }
 
-     ZPL_IMPL_INLINE void arena_init_sub(zpl_arena *arena, zpl_arena *parent_arena, zpl_isize size) {
+     ZPL_IMPL_INLINE void arena_init_sub(zpl_arena *arena, zpl_arena *parent_arena, sw size) {
          arena_init_from_allocator(arena, arena_allocator(parent_arena), size);
      }
 
@@ -3685,20 +3685,20 @@ License:
          }
      }
 
-     ZPL_IMPL_INLINE zpl_isize arena_alignment_of(zpl_arena *arena, zpl_isize alignment) {
-         zpl_isize alignment_offset, result_pointer, mask;
+     ZPL_IMPL_INLINE sw arena_alignment_of(zpl_arena *arena, sw alignment) {
+         sw alignment_offset, result_pointer, mask;
          ZPL_ASSERT(is_power_of_two(alignment));
          
          alignment_offset = 0;
-         result_pointer = zpl_cast(zpl_isize) arena->physical_start + arena->total_allocated;
+         result_pointer = zpl_cast(sw) arena->physical_start + arena->total_allocated;
          mask = alignment - 1;
          if (result_pointer & mask) alignment_offset = alignment - (result_pointer & mask);
          
          return alignment_offset;
      }
 
-     ZPL_IMPL_INLINE zpl_isize arena_size_remaining(zpl_arena *arena, zpl_isize alignment) {
-         zpl_isize result = arena->total_size - (arena->total_allocated + arena_alignment_of(arena, alignment));
+     ZPL_IMPL_INLINE sw arena_size_remaining(zpl_arena *arena, sw alignment) {
+         sw result = arena->total_size - (arena->total_allocated + arena_alignment_of(arena, alignment));
          return result;
      }
 
@@ -3730,7 +3730,7 @@ License:
      // Pool Allocator
      //
 
-     ZPL_IMPL_INLINE void pool_init(zpl_pool *pool, zpl_allocator backing, zpl_isize num_blocks, zpl_isize block_size) {
+     ZPL_IMPL_INLINE void pool_init(zpl_pool *pool, zpl_allocator backing, sw num_blocks, sw block_size) {
          pool_init_align(pool, backing, num_blocks, block_size, ZPL_DEFAULT_MEMORY_ALIGNMENT);
      }
 
@@ -3746,32 +3746,32 @@ License:
      }
 
      ZPL_IMPL_INLINE allocation_header_ev *allocation_header(void *data) {
-         zpl_isize *p = zpl_cast(zpl_isize *) data;
-         while (p[-1] == zpl_cast(zpl_isize)(-1)) p--;
+         sw *p = zpl_cast(sw *) data;
+         while (p[-1] == zpl_cast(sw)(-1)) p--;
          return zpl_cast(allocation_header_ev *) p - 1;
      }
 
-     ZPL_IMPL_INLINE void allocation_header_fill(allocation_header_ev *header, void *data, zpl_isize size) {
-         zpl_isize *ptr;
+     ZPL_IMPL_INLINE void allocation_header_fill(allocation_header_ev *header, void *data, sw size) {
+         sw *ptr;
          header->size = size;
-         ptr = zpl_cast(zpl_isize *)(header + 1);
-         while (zpl_cast(void *) ptr < data) *ptr++ = zpl_cast(zpl_isize)(-1);
+         ptr = zpl_cast(sw *)(header + 1);
+         while (zpl_cast(void *) ptr < data) *ptr++ = zpl_cast(sw)(-1);
      }
 
      //
      // Stack Memory Allocator
      //
 
-     #define ZPL_STACK_ALLOC_OFFSET sizeof(zpl_u64)
+     #define ZPL_STACK_ALLOC_OFFSET sizeof(u64)
      ZPL_STATIC_ASSERT(ZPL_STACK_ALLOC_OFFSET == 8, "ZPL_STACK_ALLOC_OFFSET != 8");
 
-     ZPL_IMPL_INLINE void stack_memory_init_from_memory(stack_memory *s, void *start, zpl_isize size) {
+     ZPL_IMPL_INLINE void stack_memory_init_from_memory(stack_memory *s, void *start, sw size) {
          s->physical_start = start;
          s->total_size = size;
          s->allocated = 0;
      }
 
-     ZPL_IMPL_INLINE void stack_memory_init(stack_memory *s, zpl_allocator backing, zpl_isize size) {
+     ZPL_IMPL_INLINE void stack_memory_init(stack_memory *s, zpl_allocator backing, sw size) {
          s->backing = backing;
          s->physical_start = alloc(backing, size);
          s->total_size = size;
@@ -3827,7 +3827,7 @@ License:
 
      #if 0 // Example
      void foo(void) {
-         zpl_isize i;
+         sw i;
          int test_values[] = {4, 2, 1, 7};
          zpl_allocator a = heap_allocator();
          zpl_array(int) items;
@@ -3867,9 +3867,9 @@ License:
      ZPL_BEGIN_C_DECLS
 
      typedef struct array_header {
-         zpl_isize elem_size;
-         zpl_isize count;
-         zpl_isize capacity;
+         sw elem_size;
+         sw count;
+         sw capacity;
          zpl_allocator allocator;
      } array_header;
 
@@ -3890,7 +3890,7 @@ License:
      #define array_capacity(x)  (ZPL_ARRAY_HEADER(x)->capacity)
      #define array_end(x)       (x + (array_count(x) - 1))
 
-     ZPL_IMPL_INLINE b8 zpl__array_init_reserve(void **zpl__array_, zpl_allocator allocator_, zpl_isize elem_size, zpl_isize cap) {
+     ZPL_IMPL_INLINE b8 zpl__array_init_reserve(void **zpl__array_, zpl_allocator allocator_, sw elem_size, sw cap) {
          array_header *zpl__ah =
          zpl_cast(array_header *) alloc(allocator_, size_of(array_header) + elem_size * cap);
          if (!zpl__ah) return false;
@@ -3915,11 +3915,11 @@ License:
          }                                                                                                              \
      } while (0)
 
-     ZPL_IMPL_INLINE b8 zpl__array_set_capacity(void **array, zpl_isize capacity) {
+     ZPL_IMPL_INLINE b8 zpl__array_set_capacity(void **array, sw capacity) {
          array_header *h = ZPL_ARRAY_HEADER(*array);
          if (capacity == h->capacity) return true;
          if (capacity < h->count) h->count = capacity;
-         zpl_isize size = size_of(array_header) + h->elem_size * capacity;
+         sw size = size_of(array_header) + h->elem_size * capacity;
          array_header *nh = zpl_cast(array_header *) alloc(h->allocator, size);
          if (!nh) return false;
          zpl_memmove(nh, h, size_of(array_header) + h->elem_size * h->count);
@@ -3934,8 +3934,8 @@ License:
 
      #define array_set_capacity(x, capacity) zpl__array_set_capacity(zpl_cast(void **) & (x), (capacity))
 
-     ZPL_IMPL_INLINE b8 zpl__array_grow(void **x, zpl_isize min_capacity) {
-         zpl_isize new_capacity = ZPL_ARRAY_GROW_FORMULA(array_capacity(*x));
+     ZPL_IMPL_INLINE b8 zpl__array_grow(void **x, sw min_capacity) {
+         sw new_capacity = ZPL_ARRAY_GROW_FORMULA(array_capacity(*x));
          if (new_capacity < min_capacity) new_capacity = min_capacity;
          return zpl__array_set_capacity(x, new_capacity);
      }
@@ -3951,40 +3951,40 @@ License:
 
      #define array_append(x, item) (zpl__array_append_helper(zpl_cast(void **) & (x)) && (((x)[array_count(x)++] = (item)), true))
 
-     ZPL_IMPL_INLINE b8 zpl__array_append_at_helper(void **x, zpl_isize ind) {
+     ZPL_IMPL_INLINE b8 zpl__array_append_at_helper(void **x, sw ind) {
          if (ind >= array_count(*x)) ind = array_count(*x) - 1;
          if (ind < 0) ind = 0;
          if (array_capacity(*x) < array_count(*x) + 1) {
              if (!zpl__array_grow(x, 0)) return false;
          }
-         zpl_i8 *s = (zpl_cast(zpl_i8*)*x) + ind*array_elem_size(*x);
+         s8 *s = (zpl_cast(s8*)*x) + ind*array_elem_size(*x);
          zpl_memmove(s + array_elem_size(*x), s, array_elem_size(*x) * (array_count(*x) - ind));
          return true;
      }
 
      #define array_append_at(x, item, ind) (zpl__array_append_at_helper(zpl_cast(void **) & (x), (ind)) && (((x)[ind] = (item)), array_count(x)++, true))
 
-     ZPL_IMPL_INLINE b8 zpl__array_appendv(void **x, void *items, zpl_isize item_size, zpl_isize item_count) {
+     ZPL_IMPL_INLINE b8 zpl__array_appendv(void **x, void *items, sw item_size, sw item_count) {
          ZPL_ASSERT(item_size == array_elem_size(*x));
          if (array_capacity(*x) < array_count(*x) + item_count) {
              if (!zpl__array_grow(x, array_count(*x) + item_count)) return false;
          }
-         zpl_memcopy((zpl_cast(zpl_i8*)*x) + array_count(*x)*array_elem_size(*x), items, array_elem_size(*x) * item_count);
+         zpl_memcopy((zpl_cast(s8*)*x) + array_count(*x)*array_elem_size(*x), items, array_elem_size(*x) * item_count);
          array_count(*x) += item_count;
          return true;
      }
 
      #define array_appendv(x, items, item_count) zpl__array_appendv(zpl_cast(void **) & (x), (items), size_of((items)[0]), (item_count))
 
-     ZPL_IMPL_INLINE b8 zpl__array_appendv_at(void **x, void *items, zpl_isize item_size, zpl_isize item_count, zpl_isize ind) {
+     ZPL_IMPL_INLINE b8 zpl__array_appendv_at(void **x, void *items, sw item_size, sw item_count, sw ind) {
          if (ind >= array_count(*x)) return zpl__array_appendv(x, items, item_size, item_count);
          ZPL_ASSERT(item_size == array_elem_size(*x));
          if (array_capacity(*x) < array_count(*x) + item_count) {
              if (!zpl__array_grow(x, array_count(*x) + item_count)) return false;
          }
-         zpl_memmove((zpl_cast(zpl_i8*)*x) + (ind + item_count)*array_elem_size(*x),
-         (zpl_cast(zpl_i8*)*x) + ind*array_elem_size(*x), array_elem_size(*x) * (array_count(*x) - ind));
-         zpl_memcopy((zpl_cast(zpl_i8*)*x) + ind*array_elem_size(*x), items, array_elem_size(*x) * item_count);
+         zpl_memmove((zpl_cast(s8*)*x) + (ind + item_count)*array_elem_size(*x),
+         (zpl_cast(s8*)*x) + ind*array_elem_size(*x), array_elem_size(*x) * (array_count(*x) - ind));
+         zpl_memcopy((zpl_cast(s8*)*x) + ind*array_elem_size(*x), items, array_elem_size(*x) * item_count);
          array_count(*x) += item_count;
          return true;
      }
@@ -3995,7 +3995,7 @@ License:
      do {                                                                                                               \
          ZPL_ASSERT((begin) >= 0 && (end) < array_count(x));                                               \
          ZPL_ASSERT(size_of(value) == size_of((x)[0]));                                                    \
-         for (zpl_isize i = (begin); i < (end); i++) { x[i] = value; }                                                  \
+         for (sw i = (begin); i < (end); i++) { x[i] = value; }                                                  \
      } while (0)
 
      #define array_remove_at(x, index)                                                                                  \
@@ -4026,7 +4026,7 @@ License:
      #define array_clear(x)                                                                                             \
      do { ZPL_ARRAY_HEADER(x)->count = 0; } while (0)
 
-     ZPL_IMPL_INLINE b8 zpl__array_resize(void **x, zpl_isize new_count) {
+     ZPL_IMPL_INLINE b8 zpl__array_resize(void **x, sw new_count) {
          if (ZPL_ARRAY_HEADER(*x)->capacity < new_count) {
              if (!zpl__array_grow(x, new_count)) return false;
          }
@@ -4036,7 +4036,7 @@ License:
 
      #define array_resize(x, new_count) zpl__array_resize(zpl_cast(void **) & (x), (new_count))
 
-     ZPL_IMPL_INLINE b8 zpl__array_reserve(void **x, zpl_isize new_capacity) {
+     ZPL_IMPL_INLINE b8 zpl__array_reserve(void **x, sw new_capacity) {
          if (ZPL_ARRAY_HEADER(*x)->capacity < new_capacity) return zpl__array_set_capacity(x, new_capacity);
          return true;
      }
@@ -4067,8 +4067,8 @@ License:
 
      typedef struct buffer_header {
          zpl_allocator backing;
-         zpl_isize count;
-         zpl_isize capacity;
+         sw count;
+         sw capacity;
      } buffer_header;
 
      #define buffer(Type) Type *
@@ -4216,14 +4216,14 @@ License:
           FUNC    - the name will prefix function names
           VALUE   - the type of the value to be stored
 
-     funcname_init(VALUE * pad, zpl_allocator a, zpl_isize max_size) 
+     funcname_init(VALUE * pad, zpl_allocator a, sw max_size) 
       funcname_free(VALUE * pad)                                  
       funcname_full(VALUE * pad)                                   
       funcname_empty(VALUE * pad)                                  
       funcname_append(VALUE * pad, type data)                     
       funcname_append_array(VALUE * pad, zpl_array(type) data)    
       funcname_get(VALUE * pad)                                  
-     funcname_get_array(VALUE * pad, zpl_usize max_size, zpl_allocator a)
+     funcname_get_array(VALUE * pad, uw max_size, zpl_allocator a)
      */
      ZPL_BEGIN_C_DECLS
 
@@ -4235,11 +4235,11 @@ License:
      typedef struct {                                                                                                   \
      zpl_allocator backing;                                                                                         \
      buffer(type) buf;                                                                                          \
-     zpl_usize head, tail;                                                                                              \
-     zpl_usize capacity;                                                                                                \
+     uw head, tail;                                                                                              \
+     uw capacity;                                                                                                \
      } ZPL_JOIN2(func, type);                                                                                      \
      \
-     prefix void ZPL_JOIN2(func, init)(ZPL_JOIN2(func, type) * pad, zpl_allocator a, zpl_isize max_size); \
+     prefix void ZPL_JOIN2(func, init)(ZPL_JOIN2(func, type) * pad, zpl_allocator a, sw max_size); \
      prefix void ZPL_JOIN2(func, free)(ZPL_JOIN2(func, type) * pad);                                  \
      prefix b32 ZPL_JOIN2(func, full)(ZPL_JOIN2(func, type) * pad);                                   \
      prefix b32 ZPL_JOIN2(func, empty)(ZPL_JOIN2(func, type) * pad);                                  \
@@ -4247,10 +4247,10 @@ License:
      prefix void ZPL_JOIN2(func, append_array)(ZPL_JOIN2(func, type) * pad, zpl_array(type) data);    \
      prefix type *ZPL_JOIN2(func, get)(ZPL_JOIN2(func, type) * pad);                                  \
      prefix zpl_array(type)                                                                                            \
-     ZPL_JOIN2(func, get_array)(ZPL_JOIN2(func, type) * pad, zpl_usize max_size, zpl_allocator a);
+     ZPL_JOIN2(func, get_array)(ZPL_JOIN2(func, type) * pad, uw max_size, zpl_allocator a);
 
      #define ZPL_RING_DEFINE(func,type)                                                                                          \
-     void ZPL_JOIN2(func, init)(ZPL_JOIN2(func, type) * pad, zpl_allocator a, zpl_isize max_size) {        \
+     void ZPL_JOIN2(func, init)(ZPL_JOIN2(func, type) * pad, zpl_allocator a, sw max_size) {        \
      ZPL_JOIN2(func, type) pad_ = { 0 };                                                                       \
      *pad = pad_;                                                                                                   \
      \
@@ -4277,8 +4277,8 @@ License:
      }                                                                                                                  \
      \
      void ZPL_JOIN2(func, append_array)(ZPL_JOIN2(func, type) * pad, zpl_array(type) data) {           \
-     zpl_usize c = array_count(data);                                                                               \
-     for (zpl_usize i = 0; i < c; ++i) { ZPL_JOIN2(func, append)(pad, data[i]); }                           \
+     uw c = array_count(data);                                                                               \
+     for (uw i = 0; i < c; ++i) { ZPL_JOIN2(func, append)(pad, data[i]); }                           \
      }                                                                                                                  \
      \
      type *ZPL_JOIN2(func, get)(ZPL_JOIN2(func, type) * pad) {                                         \
@@ -4291,7 +4291,7 @@ License:
      }                                                                                                                  \
      \
      zpl_array(type)                                                                                                    \
-     ZPL_JOIN2(func, get_array)(ZPL_JOIN2(func, type) * pad, zpl_usize max_size, zpl_allocator a) {    \
+     ZPL_JOIN2(func, get_array)(ZPL_JOIN2(func, type) * pad, uw max_size, zpl_allocator a) {    \
      zpl_array(type) vals = 0;                                                                                          \
      array_init(vals, a);                                                                                       \
      while (--max_size && !ZPL_JOIN2(func, empty)(pad)) {                                               \
@@ -4309,7 +4309,7 @@ License:
 
 
       This is an attempt to implement a templated hash table
-      NOTE: The key is always a zpl_u64 for simplicity and you will _probably_ _never_ need anything bigger.
+      NOTE: The key is always a u64 for simplicity and you will _probably_ _never_ need anything bigger.
 
       Hash table type and function declaration, call: ZPL_TABLE_DECLARE(PREFIX, NAME, FUNC, VALUE)
       Hash table function definitions, call: ZPL_TABLE_DEFINE(NAME, FUNC, VALUE)
@@ -4321,13 +4321,13 @@ License:
 
          tablename_init(NAME * h, zpl_allocator a);
          tablename_destroy(NAME * h);
-         tablename_get(NAME * h, zpl_u64 key);
-         tablename_set(NAME * h, zpl_u64 key, VALUE value);
+         tablename_get(NAME * h, u64 key);
+         tablename_set(NAME * h, u64 key, VALUE value);
          tablename_grow(NAME * h);
-         tablename_map(NAME * h, void (*map_proc)(zpl_u64 key, VALUE value))
-         tablename_map_mut(NAME * h, void (*map_proc)(zpl_u64 key, VALUE * value))
-         tablename_rehash(NAME * h, zpl_isize new_count);
-         tablename_remove(NAME * h, zpl_u64 key);
+         tablename_map(NAME * h, void (*map_proc)(u64 key, VALUE value))
+         tablename_map_mut(NAME * h, void (*map_proc)(u64 key, VALUE * value))
+         tablename_rehash(NAME * h, sw new_count);
+         tablename_remove(NAME * h, u64 key);
 
       @{
      */
@@ -4336,9 +4336,9 @@ License:
      ZPL_BEGIN_C_DECLS
 
      typedef struct hash_table_find_result {
-         zpl_isize hash_index;
-         zpl_isize entry_prev;
-         zpl_isize entry_index;
+         sw hash_index;
+         sw entry_prev;
+         sw entry_index;
      } hash_table_find_result;
 
      /**
@@ -4355,29 +4355,29 @@ License:
 
      #define ZPL_TABLE_DECLARE(PREFIX, NAME, FUNC, VALUE)                                                                \
          typedef struct ZPL_JOIN2(NAME, Entry) {                                                                         \
-             zpl_u64 key;                                                                                                \
-             zpl_isize next;                                                                                             \
+             u64 key;                                                                                                \
+             sw next;                                                                                             \
              VALUE value;                                                                                                \
          } ZPL_JOIN2(NAME, Entry);                                                                                       \
                                                                                                                          \
          typedef struct NAME {                                                                                           \
-             zpl_array(zpl_isize) hashes;                                                                                \
+             zpl_array(sw) hashes;                                                                                \
              zpl_array(ZPL_JOIN2(NAME, Entry)) entries;                                                                  \
          } NAME;                                                                                                         \
                                                                                                                          \
          PREFIX void      ZPL_JOIN2(FUNC, init)          (NAME *h, zpl_allocator a);                                     \
          PREFIX void      ZPL_JOIN2(FUNC, destroy)       (NAME *h);                                                      \
          PREFIX void      ZPL_JOIN2(FUNC, clear)         (NAME *h);                                                      \
-         PREFIX VALUE    *ZPL_JOIN2(FUNC, get)           (NAME *h, zpl_u64 key);                                         \
-         PREFIX zpl_isize ZPL_JOIN2(FUNC, slot)          (NAME *h, zpl_u64 key);                                         \
-         PREFIX void      ZPL_JOIN2(FUNC, set)           (NAME *h, zpl_u64 key, VALUE value);                            \
+         PREFIX VALUE    *ZPL_JOIN2(FUNC, get)           (NAME *h, u64 key);                                         \
+         PREFIX sw ZPL_JOIN2(FUNC, slot)          (NAME *h, u64 key);                                         \
+         PREFIX void      ZPL_JOIN2(FUNC, set)           (NAME *h, u64 key, VALUE value);                            \
          PREFIX void      ZPL_JOIN2(FUNC, grow)          (NAME *h);                                                      \
-         PREFIX void      ZPL_JOIN2(FUNC, rehash)        (NAME *h, zpl_isize new_count);                                 \
+         PREFIX void      ZPL_JOIN2(FUNC, rehash)        (NAME *h, sw new_count);                                 \
          PREFIX void      ZPL_JOIN2(FUNC, rehash_fast)   (NAME *h);                                                      \
-         PREFIX void      ZPL_JOIN2(FUNC, map)           (NAME *h, void (*map_proc) (zpl_u64 key, VALUE value));         \
-         PREFIX void      ZPL_JOIN2(FUNC, map_mut)       (NAME *h, void (*map_proc) (zpl_u64 key, VALUE * value));       \
-         PREFIX void      ZPL_JOIN2(FUNC, remove)        (NAME *h, zpl_u64 key);                                         \
-         PREFIX void      ZPL_JOIN2(FUNC, remove_entry)  (NAME *h, zpl_isize idx);
+         PREFIX void      ZPL_JOIN2(FUNC, map)           (NAME *h, void (*map_proc) (u64 key, VALUE value));         \
+         PREFIX void      ZPL_JOIN2(FUNC, map_mut)       (NAME *h, void (*map_proc) (u64 key, VALUE * value));       \
+         PREFIX void      ZPL_JOIN2(FUNC, remove)        (NAME *h, u64 key);                                         \
+         PREFIX void      ZPL_JOIN2(FUNC, remove_entry)  (NAME *h, sw idx);
 
      /**
       * Table definition interfaces that generates the implementation
@@ -4399,8 +4399,8 @@ License:
              array_clear(h->entries);                                                                                \
          }                                                                                                               \
                                                                                                                          \
-         zpl_isize ZPL_JOIN2(FUNC, slot)(NAME * h, zpl_u64 key) {                                                        \
-             for (zpl_isize i = 0; i < array_count(h->entries); i++) {                                               \
+         sw ZPL_JOIN2(FUNC, slot)(NAME * h, u64 key) {                                                        \
+             for (sw i = 0; i < array_count(h->entries); i++) {                                               \
                  if (h->entries[i].key == key) {                                                                         \
                      return i;                                                                                           \
                  }                                                                                                       \
@@ -4408,8 +4408,8 @@ License:
              return -1;                                                                                                  \
          }                                                                                                               \
                                                                                                                          \
-         internal zpl_isize ZPL_JOIN2(FUNC, _add_entry)(NAME * h, zpl_u64 key) {                                     \
-             zpl_isize index;                                                                                            \
+         internal sw ZPL_JOIN2(FUNC, _add_entry)(NAME * h, u64 key) {                                     \
+             sw index;                                                                                            \
              ZPL_JOIN2(NAME, Entry) e = { 0 };                                                                           \
              e.key = key;                                                                                                \
              e.next = -1;                                                                                                \
@@ -4418,7 +4418,7 @@ License:
              return index;                                                                                               \
          }                                                                                                               \
                                                                                                                          \
-         internal hash_table_find_result ZPL_JOIN2(FUNC, _find)(NAME * h, zpl_u64 key) {                         \
+         internal hash_table_find_result ZPL_JOIN2(FUNC, _find)(NAME * h, u64 key) {                         \
              hash_table_find_result r = { -1, -1, -1 };                                                              \
              if (array_count(h->hashes) > 0) {                                                                       \
                  r.hash_index = key % array_count(h->hashes);                                                        \
@@ -4437,12 +4437,12 @@ License:
          }                                                                                                               \
                                                                                                                          \
          void ZPL_JOIN2(FUNC, grow)(NAME * h) {                                                                          \
-             zpl_isize new_count = ZPL_ARRAY_GROW_FORMULA(array_count(h->entries));                                  \
+             sw new_count = ZPL_ARRAY_GROW_FORMULA(array_count(h->entries));                                  \
              ZPL_JOIN2(FUNC, rehash)(h, new_count);                                                                      \
          }                                                                                                               \
                                                                                                                          \
-         void ZPL_JOIN2(FUNC, rehash)(NAME * h, zpl_isize new_count) {                                                   \
-             zpl_isize i, j;                                                                                             \
+         void ZPL_JOIN2(FUNC, rehash)(NAME * h, sw new_count) {                                                   \
+             sw i, j;                                                                                             \
              NAME nh = { 0 };                                                                                            \
              ZPL_JOIN2(FUNC, init)(&nh, array_allocator(h->hashes));                                                 \
              array_resize(nh.hashes, new_count);                                                                     \
@@ -4468,7 +4468,7 @@ License:
          }                                                                                                               \
                                                                                                                          \
          void ZPL_JOIN2(FUNC, rehash_fast)(NAME * h) {                                                                   \
-             zpl_isize i;                                                                                                \
+             sw i;                                                                                                \
              for (i = 0; i < array_count(h->entries); i++) h->entries[i].next = -1;                                  \
              for (i = 0; i < array_count(h->hashes); i++) h->hashes[i] = -1;                                         \
              for (i = 0; i < array_count(h->entries); i++) {                                                         \
@@ -4483,13 +4483,13 @@ License:
              }                                                                                                           \
          }                                                                                                               \
                                                                                                                          \
-         VALUE *ZPL_JOIN2(FUNC, get)(NAME * h, zpl_u64 key) {                                                            \
-             zpl_isize index = ZPL_JOIN2(FUNC, _find)(h, key).entry_index;                                               \
+         VALUE *ZPL_JOIN2(FUNC, get)(NAME * h, u64 key) {                                                            \
+             sw index = ZPL_JOIN2(FUNC, _find)(h, key).entry_index;                                               \
              if (index >= 0) return &h->entries[index].value;                                                            \
              return NULL;                                                                                                \
          }                                                                                                               \
                                                                                                                          \
-         void ZPL_JOIN2(FUNC, remove)(NAME * h, zpl_u64 key) {                                                           \
+         void ZPL_JOIN2(FUNC, remove)(NAME * h, u64 key) {                                                           \
              hash_table_find_result fr = ZPL_JOIN2(FUNC, _find)(h, key);                                             \
              if (fr.entry_index >= 0) {                                                                                  \
                  array_remove_at(h->entries, fr.entry_index);                                                        \
@@ -4497,28 +4497,28 @@ License:
              }                                                                                                           \
          }                                                                                                               \
                                                                                                                          \
-         void ZPL_JOIN2(FUNC, remove_entry)(NAME * h, zpl_isize idx) {                                                   \
+         void ZPL_JOIN2(FUNC, remove_entry)(NAME * h, sw idx) {                                                   \
              array_remove_at(h->entries, idx);                                                                       \
          }                                                                                                               \
                                                                                                                          \
-         void ZPL_JOIN2(FUNC, map)(NAME * h, void (*map_proc)(zpl_u64 key, VALUE value)) {                               \
+         void ZPL_JOIN2(FUNC, map)(NAME * h, void (*map_proc)(u64 key, VALUE value)) {                               \
              ZPL_ASSERT_NOT_NULL(h);                                                                                     \
              ZPL_ASSERT_NOT_NULL(map_proc);                                                                              \
-             for (zpl_isize i = 0; i < array_count(h->entries); ++i) {                                               \
+             for (sw i = 0; i < array_count(h->entries); ++i) {                                               \
                  map_proc(h->entries[i].key, h->entries[i].value);                                                       \
              }                                                                                                           \
          }                                                                                                               \
                                                                                                                          \
-         void ZPL_JOIN2(FUNC, map_mut)(NAME * h, void (*map_proc)(zpl_u64 key, VALUE * value)) {                         \
+         void ZPL_JOIN2(FUNC, map_mut)(NAME * h, void (*map_proc)(u64 key, VALUE * value)) {                         \
              ZPL_ASSERT_NOT_NULL(h);                                                                                     \
              ZPL_ASSERT_NOT_NULL(map_proc);                                                                              \
-             for (zpl_isize i = 0; i < array_count(h->entries); ++i) {                                               \
+             for (sw i = 0; i < array_count(h->entries); ++i) {                                               \
                  map_proc(h->entries[i].key, &h->entries[i].value);                                                      \
              }                                                                                                           \
          }                                                                                                               \
                                                                                                                          \
-         void ZPL_JOIN2(FUNC, set)(NAME * h, zpl_u64 key, VALUE value) {                                                 \
-             zpl_isize index;                                                                                            \
+         void ZPL_JOIN2(FUNC, set)(NAME * h, u64 key, VALUE value) {                                                 \
+             sw index;                                                                                            \
              hash_table_find_result fr;                                                                              \
              if (array_count(h->hashes) == 0) ZPL_JOIN2(FUNC, grow)(h);                                              \
              fr = ZPL_JOIN2(FUNC, _find)(h, key);                                                                        \
@@ -4553,29 +4553,29 @@ License:
 
          typedef struct virtual_memory {
              void *data;
-             zpl_isize size;
+             sw size;
          } virtual_memory;
 
          //! Initialize virtual memory from existing data.
-         ZPL_DEF virtual_memory vm(void *data, zpl_isize size);
+         ZPL_DEF virtual_memory vm(void *data, sw size);
 
          //! Allocate virtual memory at address with size.
 
          //! @param addr The starting address of the region to reserve. If NULL, it lets operating system to decide where to allocate it.
          //! @param size The size to serve.
-         ZPL_DEF virtual_memory vm_alloc(void *addr, zpl_isize size);
+         ZPL_DEF virtual_memory vm_alloc(void *addr, sw size);
 
          //! Release the virtual memory.
          ZPL_DEF b32 vm_free(virtual_memory vm);
 
          //! Trim virtual memory.
-         ZPL_DEF virtual_memory vm_trim(virtual_memory vm, zpl_isize lead_size, zpl_isize size);
+         ZPL_DEF virtual_memory vm_trim(virtual_memory vm, sw lead_size, sw size);
 
          //! Purge virtual memory.
          ZPL_DEF b32 vm_purge(virtual_memory vm);
 
          //! Retrieve VM's page size and alignment.
-         ZPL_DEF zpl_isize virtual_memory_page_size(zpl_isize *alignment_out);
+         ZPL_DEF sw virtual_memory_page_size(sw *alignment_out);
 
          ZPL_END_C_DECLS
          // file: header/core/string.h
@@ -4605,9 +4605,9 @@ License:
          ZPL_DEF_INLINE b32 char_is_hex_digit(char c);
          ZPL_DEF_INLINE b32 char_is_alpha(char c);
          ZPL_DEF_INLINE b32 char_is_alphanumeric(char c);
-         ZPL_DEF_INLINE zpl_i32 digit_to_int(char c);
-         ZPL_DEF_INLINE zpl_i32 hex_digit_to_int(char c);
-         ZPL_DEF_INLINE zpl_u8  char_to_hex_digit(char c);
+         ZPL_DEF_INLINE s32 digit_to_int(char c);
+         ZPL_DEF_INLINE s32 hex_digit_to_int(char c);
+         ZPL_DEF_INLINE u8  char_to_hex_digit(char c);
          ZPL_DEF_INLINE b32 char_is_control(char c);
 
          // NOTE: ASCII only
@@ -4620,19 +4620,19 @@ License:
          ZPL_DEF_INLINE char const *str_skip_literal(char const *str, char c);
          ZPL_DEF_INLINE char const *str_control_skip(char const *str, char c);
 
-         ZPL_DEF_INLINE zpl_isize   zpl_strlen(const char *str);
-         ZPL_DEF_INLINE zpl_isize   zpl_strnlen(const char *str, zpl_isize max_len);
-         ZPL_DEF_INLINE zpl_i32     str_compare(const char *s1, const char *s2);
-         ZPL_DEF_INLINE zpl_i32     str_compare(const char *s1, const char *s2, zpl_isize len);
+         ZPL_DEF_INLINE sw   zpl_strlen(const char *str);
+         ZPL_DEF_INLINE sw   zpl_strnlen(const char *str, sw max_len);
+         ZPL_DEF_INLINE s32     str_compare(const char *s1, const char *s2);
+         ZPL_DEF_INLINE s32     str_compare(const char *s1, const char *s2, sw len);
          ZPL_DEF_INLINE char       *strcpy(char *dest, const char *source);
          ZPL_DEF_INLINE char       *strcat(char *dest, const char *source);
-         ZPL_DEF_INLINE char       *strncpy(char *dest, const char *source, zpl_isize len);
-         ZPL_DEF_INLINE zpl_isize   strlcpy(char *dest, const char *source, zpl_isize len);
+         ZPL_DEF_INLINE char       *strncpy(char *dest, const char *source, sw len);
+         ZPL_DEF_INLINE sw   strlcpy(char *dest, const char *source, sw len);
          ZPL_DEF_INLINE char       *strrev(char *str); // NOTE: ASCII only
          ZPL_DEF_INLINE const char *strtok(char *output, const char *src, const char *delimit);
-         ZPL_DEF_INLINE const char *strntok(char *output, zpl_isize len, const char *src, const char *delimit);
+         ZPL_DEF_INLINE const char *strntok(char *output, sw len, const char *src, const char *delimit);
 
-         ZPL_DEF_INLINE char   *strdup(zpl_allocator a, char *src, zpl_isize max_len);
+         ZPL_DEF_INLINE char   *strdup(zpl_allocator a, char *src, sw max_len);
          ZPL_DEF_INLINE char  **str_split_lines(zpl_allocator allocator, char *source, b32 strip_whitespace);
 
          #define str_expand(str) str, zpl_strlen(str)
@@ -4648,13 +4648,13 @@ License:
          ZPL_DEF_INLINE const char *char_last_occurence(const char *str, char c);
          #define strchr char_first_occurence
 
-         ZPL_DEF_INLINE void str_concat(char *dest, zpl_isize dest_len, const char *src_a, zpl_isize src_a_len, const char *src_b, zpl_isize src_b_len);
+         ZPL_DEF_INLINE void str_concat(char *dest, sw dest_len, const char *src_a, sw src_a_len, const char *src_b, sw src_b_len);
 
-         ZPL_DEF zpl_u64 str_to_u64(const char *str, char **end_ptr, zpl_i32 base); // TODO: Support more than just decimal and hexadecimal
-         ZPL_DEF zpl_i64 str_to_i64(const char *str, char **end_ptr, zpl_i32 base); // TODO: Support more than just decimal and hexadecimal
+         ZPL_DEF u64 str_to_u64(const char *str, char **end_ptr, s32 base); // TODO: Support more than just decimal and hexadecimal
+         ZPL_DEF s64 str_to_i64(const char *str, char **end_ptr, s32 base); // TODO: Support more than just decimal and hexadecimal
          ZPL_DEF f64 str_to_f64(const char *str, char **end_ptr);
-         ZPL_DEF void    i64_to_str(zpl_i64 value, char *string, zpl_i32 base);
-         ZPL_DEF void    u64_to_str(zpl_u64 value, char *string, zpl_i32 base);
+         ZPL_DEF void    i64_to_str(s64 value, char *string, s32 base);
+         ZPL_DEF void    u64_to_str(u64 value, char *string, s32 base);
 
          ZPL_DEF_INLINE f32 str_to_f32(const char *str, char **end_ptr);
 
@@ -4665,19 +4665,19 @@ License:
          //
 
          // NOTE: Does not check if utf-8 string is valid
-         ZPL_IMPL_INLINE zpl_isize utf8_strlen(zpl_u8 const *str);
-         ZPL_IMPL_INLINE zpl_isize utf8_strnlen(zpl_u8 const *str, zpl_isize max_len);
+         ZPL_IMPL_INLINE sw utf8_strlen(u8 const *str);
+         ZPL_IMPL_INLINE sw utf8_strnlen(u8 const *str, sw max_len);
 
          // NOTE: Windows doesn't handle 8 bit filenames well
-         ZPL_DEF zpl_u16 *utf8_to_ucs2(zpl_u16 *buffer, zpl_isize len, zpl_u8 const *str);
-         ZPL_DEF zpl_u8  *ucs2_to_utf8(zpl_u8 *buffer, zpl_isize len, zpl_u16 const *str);
-         ZPL_DEF zpl_u16 *utf8_to_ucs2_buf(zpl_u8 const *str); // NOTE: Uses locally persisting buffer
-         ZPL_DEF zpl_u8  *ucs2_to_utf8_buf(zpl_u16 const *str); // NOTE: Uses locally persisting buffer
+         ZPL_DEF u16 *utf8_to_ucs2(u16 *buffer, sw len, u8 const *str);
+         ZPL_DEF u8  *ucs2_to_utf8(u8 *buffer, sw len, u16 const *str);
+         ZPL_DEF u16 *utf8_to_ucs2_buf(u8 const *str); // NOTE: Uses locally persisting buffer
+         ZPL_DEF u8  *ucs2_to_utf8_buf(u16 const *str); // NOTE: Uses locally persisting buffer
 
          // NOTE: Returns size of codepoint in bytes
-         ZPL_DEF zpl_isize utf8_decode(zpl_u8 const *str, zpl_isize str_len, rune *codepoint);
-         ZPL_DEF zpl_isize utf8_codepoint_size(zpl_u8 const *str, zpl_isize str_len);
-         ZPL_DEF zpl_isize utf8_encode_rune(zpl_u8 buf[4], rune r);
+         ZPL_DEF sw utf8_decode(u8 const *str, sw str_len, rune *codepoint);
+         ZPL_DEF sw utf8_codepoint_size(u8 const *str, sw str_len);
+         ZPL_DEF sw utf8_encode_rune(u8 buf[4], rune r);
 
          /* inlines */
 
@@ -4713,9 +4713,9 @@ License:
 
          ZPL_IMPL_INLINE b32 char_is_alphanumeric(char c) { return char_is_alpha(c) || char_is_digit(c); }
 
-         ZPL_IMPL_INLINE zpl_i32 digit_to_int(char c) { return char_is_digit(c) ? c - '0' : c - 'W'; }
+         ZPL_IMPL_INLINE s32 digit_to_int(char c) { return char_is_digit(c) ? c - '0' : c - 'W'; }
 
-         ZPL_IMPL_INLINE zpl_i32 hex_digit_to_int(char c) {
+         ZPL_IMPL_INLINE s32 hex_digit_to_int(char c) {
              if (char_is_digit(c))
                  return digit_to_int(c);
              else if (is_between(c, 'a', 'f'))
@@ -4725,13 +4725,13 @@ License:
              return -1;
          }
 
-         ZPL_IMPL_INLINE zpl_u8 char_to_hex_digit(char c) {
+         ZPL_IMPL_INLINE u8 char_to_hex_digit(char c) {
              if (c >= '0' && c <= '9')
-                 return (zpl_u8)(c - '0');
+                 return (u8)(c - '0');
              if (c >= 'a' && c <= 'f')
-                 return (zpl_u8)(c - 'a');
+                 return (u8)(c - 'a');
              if (c >= 'A' && c <= 'F')
-                 return (zpl_u8)(c - 'A');
+                 return (u8)(c - 'A');
              return 0;
          }
 
@@ -4751,24 +4751,24 @@ License:
              }
          }
 
-         ZPL_IMPL_INLINE zpl_isize zpl_strlen(const char *str) {
+         ZPL_IMPL_INLINE sw zpl_strlen(const char *str) {
              if (str == NULL) { return 0; }
              const char *p = str;
              while (*str) str++;
              return str-p;
          }
 
-         ZPL_IMPL_INLINE zpl_isize zpl_strnlen(const char *str, zpl_isize max_len) {
+         ZPL_IMPL_INLINE sw zpl_strnlen(const char *str, sw max_len) {
              const char *end = zpl_cast(const char *) zpl_memchr(str, 0, max_len);
              if (end) return end - str;
              return max_len;
          }
 
-         ZPL_IMPL_INLINE zpl_isize utf8_strlen(zpl_u8 const *str) {
-             zpl_isize count = 0;
+         ZPL_IMPL_INLINE sw utf8_strlen(u8 const *str) {
+             sw count = 0;
              for (; *str; count++) {
-                 zpl_u8 c = *str;
-                 zpl_isize inc = 0;
+                 u8 c = *str;
+                 sw inc = 0;
                  if (c < 0x80)
                      inc = 1;
                  else if ((c & 0xe0) == 0xc0)
@@ -4785,11 +4785,11 @@ License:
              return count;
          }
 
-         ZPL_IMPL_INLINE zpl_isize utf8_strnlen(zpl_u8 const *str, zpl_isize max_len) {
-             zpl_isize count = 0;
+         ZPL_IMPL_INLINE sw utf8_strnlen(u8 const *str, sw max_len) {
+             sw count = 0;
              for (; *str && max_len > 0; count++) {
-                 zpl_u8 c = *str;
-                 zpl_isize inc = 0;
+                 u8 c = *str;
+                 sw inc = 0;
                  if (c < 0x80)
                      inc = 1;
                  else if ((c & 0xe0) == 0xc0)
@@ -4807,9 +4807,9 @@ License:
              return count;
          }
 
-         ZPL_IMPL_INLINE zpl_i32 str_compare(const char *s1, const char *s2) {
+         ZPL_IMPL_INLINE s32 str_compare(const char *s1, const char *s2) {
              while (*s1 && (*s1 == *s2)) { s1++, s2++; }
-             return *(zpl_u8 *)s1 - *(zpl_u8 *)s2;
+             return *(u8 *)s1 - *(u8 *)s2;
          }
 
          ZPL_IMPL_INLINE char *strcpy(char *dest, const char *source) {
@@ -4831,7 +4831,7 @@ License:
              return dest;
          }
 
-         ZPL_IMPL_INLINE char *strncpy(char *dest, const char *source, zpl_isize len) {
+         ZPL_IMPL_INLINE char *strncpy(char *dest, const char *source, sw len) {
              ZPL_ASSERT_NOT_NULL(dest);
              if (source) {
                  char *str = dest;
@@ -4847,8 +4847,8 @@ License:
              return dest;
          }
 
-         ZPL_IMPL_INLINE zpl_isize strlcpy(char *dest, const char *source, zpl_isize len) {
-             zpl_isize result = 0;
+         ZPL_IMPL_INLINE sw strlcpy(char *dest, const char *source, sw len) {
+             sw result = 0;
              ZPL_ASSERT_NOT_NULL(dest);
              if (source) {
                  const char *source_start = source;
@@ -4868,7 +4868,7 @@ License:
          }
 
          ZPL_IMPL_INLINE char *strrev(char *str) {
-             zpl_isize len = zpl_strlen(str);
+             sw len = zpl_strlen(str);
              char *a = str + 0;
              char *b = str + len - 1;
              len /= 2;
@@ -4879,7 +4879,7 @@ License:
              return str;
          }
 
-         ZPL_IMPL_INLINE zpl_i32 str_compare(const char *s1, const char *s2, zpl_isize len) {
+         ZPL_IMPL_INLINE s32 str_compare(const char *s1, const char *s2, sw len) {
              for (; len > 0; s1++, s2++, len--) {
                  if (*s1 != *s2)
                      return ((s1 < s2) ? -1 : +1);
@@ -4896,7 +4896,7 @@ License:
              return *src ? src + 1 : src;
          }
 
-         ZPL_IMPL_INLINE const char *strntok(char *output, zpl_isize len, const char *src, const char *delimit) {
+         ZPL_IMPL_INLINE const char *strntok(char *output, sw len, const char *src, const char *delimit) {
              ZPL_ASSERT(len > 0);
              *(output+len-1) = 0;
              while (*src && char_first_occurence(delimit, *src) == NULL && len > 0) {
@@ -4933,8 +4933,8 @@ License:
          }
 
          ZPL_IMPL_INLINE b32 str_has_suffix(const char *str, const char *suffix) {
-             zpl_isize i = zpl_strlen(str);
-             zpl_isize j = zpl_strlen(suffix);
+             sw i = zpl_strlen(str);
+             sw j = zpl_strlen(suffix);
              if (j <= i) return str_compare(str + i - j, suffix) == 0;
              return false;
          }
@@ -4969,8 +4969,8 @@ License:
 
          ZPL_IMPL_INLINE char const *str_skip_any(char const *str, char const*char_list) {
              char const *closest_ptr = zpl_cast(char const *) ptr_add((void*)str, zpl_strlen(str));
-             zpl_isize char_list_count = zpl_strlen(char_list);
-             for (zpl_isize i = 0; i < char_list_count; i++) {
+             sw char_list_count = zpl_strlen(char_list);
+             for (sw i = 0; i < char_list_count; i++) {
                  char const *p = str_skip(str, char_list[i]);
                  closest_ptr = min(closest_ptr, p);
              }
@@ -4982,8 +4982,8 @@ License:
              return str;
          }
 
-         ZPL_IMPL_INLINE void str_concat(char *dest, zpl_isize dest_len, const char *src_a, zpl_isize src_a_len, const char *src_b,
-                                        zpl_isize src_b_len) {
+         ZPL_IMPL_INLINE void str_concat(char *dest, sw dest_len, const char *src_a, sw src_a_len, const char *src_b,
+                                        sw src_b_len) {
              ZPL_ASSERT(dest_len >= src_a_len + src_b_len + 1);
              if (dest) {
                  zpl_memcopy(dest, src_a, src_a_len);
@@ -4998,9 +4998,9 @@ License:
              return r;
          }
 
-         ZPL_IMPL_INLINE char *strdup(zpl_allocator a, char *src, zpl_isize max_len) {
+         ZPL_IMPL_INLINE char *strdup(zpl_allocator a, char *src, sw max_len) {
              ZPL_ASSERT_NOT_NULL(src);
-             zpl_isize len = zpl_strlen(src);
+             sw len = zpl_strlen(src);
              char *dest = zpl_cast(char *) alloc(a, max_len);
              zpl_memset(dest + len, 0, max_len - len);
              strncpy(dest, src, max_len);
@@ -5038,22 +5038,22 @@ License:
 
          typedef struct string_header {
              zpl_allocator allocator;
-             zpl_isize length;
-             zpl_isize capacity;
+             sw length;
+             sw capacity;
          } string_header;
 
          #define ZPL_STRING_HEADER(str) (zpl_cast(string_header *)(str) - 1)
 
-         ZPL_DEF string string_make_reserve(zpl_allocator a, zpl_isize capacity);
-         ZPL_DEF string string_make_length(zpl_allocator a, void const *str, zpl_isize num_bytes);
-         ZPL_DEF string string_sprintf(zpl_allocator a, char *buf, zpl_isize num_bytes, const char *fmt, ...);
+         ZPL_DEF string string_make_reserve(zpl_allocator a, sw capacity);
+         ZPL_DEF string string_make_length(zpl_allocator a, void const *str, sw num_bytes);
+         ZPL_DEF string string_sprintf(zpl_allocator a, char *buf, sw num_bytes, const char *fmt, ...);
          ZPL_DEF string string_sprintf_buf(zpl_allocator a, const char *fmt, ...); // NOTE: Uses locally persistent buffer
-         ZPL_DEF string string_append_length(string str, void const *other, zpl_isize num_bytes);
+         ZPL_DEF string string_append_length(string str, void const *other, sw num_bytes);
          ZPL_DEF string string_appendc(string str, const char *other);
-         ZPL_DEF string string_join(zpl_allocator a, const char **parts, zpl_isize count, const char *glue);
+         ZPL_DEF string string_join(zpl_allocator a, const char **parts, sw count, const char *glue);
          ZPL_DEF string string_set(string str, const char *cstr);
-         ZPL_DEF string string_make_space_for(string str, zpl_isize add_len);
-         ZPL_DEF zpl_isize  string_allocation_size(string const str);
+         ZPL_DEF string string_make_space_for(string str, sw add_len);
+         ZPL_DEF sw  string_allocation_size(string const str);
          ZPL_DEF b32    string_are_equal(string const lhs, string const rhs);
          ZPL_DEF string string_trim(string str, const char *cut_set);
          ZPL_DEF string string_append_rune(string str, rune r);
@@ -5063,18 +5063,18 @@ License:
          ZPL_DEF_INLINE void       string_free(string str);
          ZPL_DEF_INLINE void       string_clear(string str);
          ZPL_DEF_INLINE string string_duplicate(zpl_allocator a, string const str);
-         ZPL_DEF_INLINE zpl_isize  string_length(string const str);
-         ZPL_DEF_INLINE zpl_isize  string_capacity(string const str);
-         ZPL_DEF_INLINE zpl_isize  string_available_space(string const str);
+         ZPL_DEF_INLINE sw  string_length(string const str);
+         ZPL_DEF_INLINE sw  string_capacity(string const str);
+         ZPL_DEF_INLINE sw  string_available_space(string const str);
          ZPL_DEF_INLINE string string_append(string str, string const other);
          ZPL_DEF_INLINE string string_trim_space(string str); // Whitespace ` \t\r\n\v\f`
-         ZPL_DEF_INLINE void       zpl__set_string_length(string str, zpl_isize len);
-         ZPL_DEF_INLINE void       zpl__set_string_capacity(string str, zpl_isize cap);
+         ZPL_DEF_INLINE void       zpl__set_string_length(string str, sw len);
+         ZPL_DEF_INLINE void       zpl__set_string_capacity(string str, sw cap);
 
-         ZPL_IMPL_INLINE void zpl__set_string_length(string str, zpl_isize len) { ZPL_STRING_HEADER(str)->length = len; }
-         ZPL_IMPL_INLINE void zpl__set_string_capacity(string str, zpl_isize cap) { ZPL_STRING_HEADER(str)->capacity = cap; }
+         ZPL_IMPL_INLINE void zpl__set_string_length(string str, sw len) { ZPL_STRING_HEADER(str)->length = len; }
+         ZPL_IMPL_INLINE void zpl__set_string_capacity(string str, sw cap) { ZPL_STRING_HEADER(str)->capacity = cap; }
          ZPL_IMPL_INLINE string string_make(zpl_allocator a, const char *str) {
-             zpl_isize len = str ? zpl_strlen(str) : 0;
+             sw len = str ? zpl_strlen(str) : 0;
              return string_make_length(a, str, len);
          }
 
@@ -5089,10 +5089,10 @@ License:
              return string_make_length(a, str, string_length(str));
          }
 
-         ZPL_IMPL_INLINE zpl_isize string_length(string const str) { return ZPL_STRING_HEADER(str)->length; }
-         ZPL_IMPL_INLINE zpl_isize string_capacity(string const str) { return ZPL_STRING_HEADER(str)->capacity; }
+         ZPL_IMPL_INLINE sw string_length(string const str) { return ZPL_STRING_HEADER(str)->length; }
+         ZPL_IMPL_INLINE sw string_capacity(string const str) { return ZPL_STRING_HEADER(str)->capacity; }
 
-         ZPL_IMPL_INLINE zpl_isize string_available_space(string const str) {
+         ZPL_IMPL_INLINE sw string_available_space(string const str) {
              string_header *h = ZPL_STRING_HEADER(str);
              if (h->capacity > h->length) return h->capacity - h->length;
              return 0;
@@ -5124,7 +5124,7 @@ License:
 
          ZPL_BEGIN_C_DECLS
 
-         typedef zpl_u32 file_mode;
+         typedef u32 file_mode;
 
          typedef enum file_mode_flag {
              ZPL_FILE_MODE_READ   = ZPL_BIT(0),
@@ -5156,16 +5156,16 @@ License:
 
          typedef union file_descriptor {
              void *p;
-             zpl_intptr i;
-             zpl_uintptr u;
+             sptr i;
+             uptr u;
          } file_descriptor;
 
          typedef struct file_operations file_operations;
 
          #define ZPL_FILE_OPEN_PROC(name) file_error name(file_descriptor *fd, file_operations *ops, file_mode mode, char const *filename)
-         #define ZPL_FILE_READ_AT_PROC(name) b32 name(file_descriptor fd, void *buffer, zpl_isize size, zpl_i64 offset, zpl_isize *bytes_read, b32 stop_at_newline)
-         #define ZPL_FILE_WRITE_AT_PROC(name) b32 name(file_descriptor fd, void const *buffer, zpl_isize size, zpl_i64 offset, zpl_isize *bytes_written)
-         #define ZPL_FILE_SEEK_PROC(name) b32 name(file_descriptor fd, zpl_i64 offset, seek_whence_type whence, zpl_i64 *new_offset)
+         #define ZPL_FILE_READ_AT_PROC(name) b32 name(file_descriptor fd, void *buffer, sw size, s64 offset, sw *bytes_read, b32 stop_at_newline)
+         #define ZPL_FILE_WRITE_AT_PROC(name) b32 name(file_descriptor fd, void const *buffer, sw size, s64 offset, sw *bytes_written)
+         #define ZPL_FILE_SEEK_PROC(name) b32 name(file_descriptor fd, s64 offset, seek_whence_type whence, s64 *new_offset)
          #define ZPL_FILE_CLOSE_PROC(name) void name(file_descriptor fd)
 
          typedef ZPL_FILE_OPEN_PROC(file_open_proc);
@@ -5183,7 +5183,7 @@ License:
 
          extern file_operations const default_file_operations;
 
-         typedef zpl_u64 file_time;
+         typedef u64 file_time;
          typedef enum dir_type {
              ZPL_DIR_TYPE_FILE,
              ZPL_DIR_TYPE_FOLDER,
@@ -5195,7 +5195,7 @@ License:
          typedef struct dir_entry {
              char const *filename;
              struct dir_info *dir_info;
-             zpl_u8 type;
+             u8 type;
          } dir_entry;
 
          typedef struct dir_info {
@@ -5275,7 +5275,7 @@ License:
           * @param  file
           * @return      File size
           */
-         ZPL_DEF zpl_i64        file_size(zpl_file *file);
+         ZPL_DEF s64        file_size(zpl_file *file);
 
          /**
           * Returns the currently opened file's name
@@ -5288,7 +5288,7 @@ License:
           * @param  file
           * @param  size Size to truncate
           */
-         ZPL_DEF file_error file_truncate(zpl_file *file, zpl_i64 size);
+         ZPL_DEF file_error file_truncate(zpl_file *file, s64 size);
 
          /**
           * Checks whether a file's been changed since the last check
@@ -5322,7 +5322,7 @@ License:
           * @param  offset     Offset to read from
           * @param  bytes_read How much data we've actually read
           */
-         ZPL_DEF_INLINE b32 file_read_at_check(zpl_file *file, void *buffer, zpl_isize size, zpl_i64 offset, zpl_isize *bytes_read);
+         ZPL_DEF_INLINE b32 file_read_at_check(zpl_file *file, void *buffer, sw size, s64 offset, sw *bytes_read);
 
          /**
           * Writes to file safely
@@ -5332,7 +5332,7 @@ License:
           * @param  offset        Offset to write to
           * @param  bytes_written How much data we've actually written
           */
-         ZPL_DEF_INLINE b32 file_write_at_check(zpl_file *file, void const *buffer, zpl_isize size, zpl_i64 offset, zpl_isize *bytes_written);
+         ZPL_DEF_INLINE b32 file_write_at_check(zpl_file *file, void const *buffer, sw size, s64 offset, sw *bytes_written);
 
 
          /**
@@ -5343,7 +5343,7 @@ License:
           * @param  offset     Offset to read from
           * @param  bytes_read How much data we've actually read
           */
-         ZPL_DEF_INLINE b32 file_read_at(zpl_file *file, void *buffer, zpl_isize size, zpl_i64 offset);
+         ZPL_DEF_INLINE b32 file_read_at(zpl_file *file, void *buffer, sw size, s64 offset);
 
          /**
           * Writes to file at a specific offset
@@ -5353,34 +5353,34 @@ License:
           * @param  offset        Offset to write to
           * @param  bytes_written How much data we've actually written
           */
-         ZPL_DEF_INLINE b32 file_write_at(zpl_file *file, void const *buffer, zpl_isize size, zpl_i64 offset);
+         ZPL_DEF_INLINE b32 file_write_at(zpl_file *file, void const *buffer, sw size, s64 offset);
 
          /**
           * Seeks the file cursor from the beginning of file to a specific position
           * @param  file
           * @param  offset Offset to seek to
           */
-         ZPL_DEF_INLINE zpl_i64 file_seek(zpl_file *file, zpl_i64 offset);
+         ZPL_DEF_INLINE s64 file_seek(zpl_file *file, s64 offset);
 
          /**
           * Seeks the file cursor to the end of the file
           * @param  file
           */
-         ZPL_DEF_INLINE zpl_i64 file_seek_to_end(zpl_file *file);
+         ZPL_DEF_INLINE s64 file_seek_to_end(zpl_file *file);
 
          /**
           * Skips N bytes at the current position
           * @param  file
           * @param  bytes Bytes to skip
           */
-         ZPL_DEF_INLINE zpl_i64 file_skip(zpl_file *file, zpl_i64 bytes); // NOTE: Skips a certain amount of bytes
+         ZPL_DEF_INLINE s64 file_skip(zpl_file *file, s64 bytes); // NOTE: Skips a certain amount of bytes
 
          /**
           * Returns the length from the beginning of the file we've read so far
           * @param  file
           * @return      Our current position in file
           */
-         ZPL_DEF_INLINE zpl_i64 file_tell(zpl_file *file);
+         ZPL_DEF_INLINE s64 file_tell(zpl_file *file);
 
          /**
           * Reads from a file
@@ -5388,7 +5388,7 @@ License:
           * @param  buffer Buffer to read to
           * @param  size   Size to read
           */
-         ZPL_DEF_INLINE b32 file_read(zpl_file *file, void *buffer, zpl_isize size);
+         ZPL_DEF_INLINE b32 file_read(zpl_file *file, void *buffer, sw size);
 
          /**
           * Writes to a file
@@ -5396,13 +5396,13 @@ License:
           * @param  buffer Buffer to read from
           * @param  size   Size to read
           */
-         ZPL_DEF_INLINE b32 file_write(zpl_file *file, void const *buffer, zpl_isize size);
+         ZPL_DEF_INLINE b32 file_write(zpl_file *file, void const *buffer, sw size);
 
 
          typedef struct file_contents {
              zpl_allocator allocator;
              void *data;
-             zpl_isize size;
+             sw size;
          } file_contents;
 
          /**
@@ -5423,7 +5423,7 @@ License:
          /**
           * Writes content to a file
           */
-         ZPL_DEF b32           file_write_contents(char const* filepath, void const* buffer, zpl_isize size, file_error* err);
+         ZPL_DEF b32           file_write_contents(char const* filepath, void const* buffer, sw size, file_error* err);
 
          /**
           * Reads the file as array of lines
@@ -5442,62 +5442,62 @@ License:
          /* inlines */
 
 
-         ZPL_IMPL_INLINE b32 file_read_at_check(zpl_file *f, void *buffer, zpl_isize size, zpl_i64 offset, zpl_isize *bytes_read) {
+         ZPL_IMPL_INLINE b32 file_read_at_check(zpl_file *f, void *buffer, sw size, s64 offset, sw *bytes_read) {
              if (!f->ops.read_at) f->ops = default_file_operations;
              return f->ops.read_at(f->fd, buffer, size, offset, bytes_read, false);
          }
 
-         ZPL_IMPL_INLINE b32 file_write_at_check(zpl_file *f, void const *buffer, zpl_isize size, zpl_i64 offset, zpl_isize *bytes_written) {
+         ZPL_IMPL_INLINE b32 file_write_at_check(zpl_file *f, void const *buffer, sw size, s64 offset, sw *bytes_written) {
              if (!f->ops.read_at) f->ops = default_file_operations;
              return f->ops.write_at(f->fd, buffer, size, offset, bytes_written);
          }
 
-         ZPL_IMPL_INLINE b32 file_read_at(zpl_file *f, void *buffer, zpl_isize size, zpl_i64 offset) {
+         ZPL_IMPL_INLINE b32 file_read_at(zpl_file *f, void *buffer, sw size, s64 offset) {
              return file_read_at_check(f, buffer, size, offset, NULL);
          }
 
-         ZPL_IMPL_INLINE b32 file_write_at(zpl_file *f, void const *buffer, zpl_isize size, zpl_i64 offset) {
+         ZPL_IMPL_INLINE b32 file_write_at(zpl_file *f, void const *buffer, sw size, s64 offset) {
              return file_write_at_check(f, buffer, size, offset, NULL);
          }
 
-         ZPL_IMPL_INLINE zpl_i64 file_seek(zpl_file *f, zpl_i64 offset) {
-             zpl_i64 new_offset = 0;
+         ZPL_IMPL_INLINE s64 file_seek(zpl_file *f, s64 offset) {
+             s64 new_offset = 0;
              if (!f->ops.read_at) f->ops = default_file_operations;
              f->ops.seek(f->fd, offset, ZPL_SEEK_WHENCE_BEGIN, &new_offset);
              return new_offset;
          }
 
-         ZPL_IMPL_INLINE zpl_i64 file_seek_to_end(zpl_file *f) {
-             zpl_i64 new_offset = 0;
+         ZPL_IMPL_INLINE s64 file_seek_to_end(zpl_file *f) {
+             s64 new_offset = 0;
              if (!f->ops.read_at) f->ops = default_file_operations;
              f->ops.seek(f->fd, 0, ZPL_SEEK_WHENCE_END, &new_offset);
              return new_offset;
          }
 
          // NOTE: Skips a certain amount of bytes
-         ZPL_IMPL_INLINE zpl_i64 file_skip(zpl_file *f, zpl_i64 bytes) {
-             zpl_i64 new_offset = 0;
+         ZPL_IMPL_INLINE s64 file_skip(zpl_file *f, s64 bytes) {
+             s64 new_offset = 0;
              if (!f->ops.read_at) f->ops = default_file_operations;
              f->ops.seek(f->fd, bytes, ZPL_SEEK_WHENCE_CURRENT, &new_offset);
              return new_offset;
          }
 
-         ZPL_IMPL_INLINE zpl_i64 file_tell(zpl_file *f) {
-             zpl_i64 new_offset = 0;
+         ZPL_IMPL_INLINE s64 file_tell(zpl_file *f) {
+             s64 new_offset = 0;
              if (!f->ops.read_at) f->ops = default_file_operations;
              f->ops.seek(f->fd, 0, ZPL_SEEK_WHENCE_CURRENT, &new_offset);
              return new_offset;
          }
 
-         ZPL_IMPL_INLINE b32 file_read(zpl_file *f, void *buffer, zpl_isize size) {
-             zpl_i64 cur_offset = file_tell(f);
+         ZPL_IMPL_INLINE b32 file_read(zpl_file *f, void *buffer, sw size) {
+             s64 cur_offset = file_tell(f);
              b32 result = file_read_at(f, buffer, size, file_tell(f));
              file_seek(f, cur_offset + size);
              return result;
          }
 
-         ZPL_IMPL_INLINE b32 file_write(zpl_file *f, void const *buffer, zpl_isize size) {
-             zpl_i64 cur_offset = file_tell(f);
+         ZPL_IMPL_INLINE b32 file_write(zpl_file *f, void const *buffer, sw size) {
+             s64 cur_offset = file_tell(f);
              b32 result = file_write_at(f, buffer, size, file_tell(f));
              file_seek(f, cur_offset + size);
              return result;
@@ -5541,14 +5541,14 @@ License:
           * @param  size     Buffer's size
           * @param  flags
           */
-         ZPL_DEF b8 file_stream_open(zpl_file* file, zpl_allocator allocator, zpl_u8 *buffer, zpl_isize size, file_stream_flags flags);
+         ZPL_DEF b8 file_stream_open(zpl_file* file, zpl_allocator allocator, u8 *buffer, sw size, file_stream_flags flags);
 
          /**
           * Retrieves the stream's underlying buffer and buffer size.
           * @param file memory stream
           * @param size (Optional) buffer size
           */
-         ZPL_DEF zpl_u8 *file_stream_buf(zpl_file* file, zpl_isize *size);
+         ZPL_DEF u8 *file_stream_buf(zpl_file* file, sw *size);
 
          extern file_operations const memory_file_operations;
 
@@ -5588,7 +5588,7 @@ License:
           * Retrieves node's type (file, folder, ...)
           * @param  path
           */
-         ZPL_DEF zpl_u8        fs_get_type(char const *path);
+         ZPL_DEF u8        fs_get_type(char const *path);
 
          /**
           * Retrieves file's last write time
@@ -5626,8 +5626,8 @@ License:
 
          ZPL_DEF void    path_fix_slashes(char *path);
 
-         ZPL_DEF file_error path_mkdir(char const *path, zpl_i32 mode);
-         ZPL_DEF zpl_isize path_mkdir_recursive(char const *path, zpl_i32 mode);
+         ZPL_DEF file_error path_mkdir(char const *path, s32 mode);
+         ZPL_DEF sw path_mkdir_recursive(char const *path, s32 mode);
          ZPL_DEF file_error path_rmdir(char const *path);
 
          ZPL_DEF char       *path_get_full_name(zpl_allocator a, char const *path);
@@ -5738,12 +5738,12 @@ License:
          typedef struct {
              char type;
              char *path;
-             zpl_i64 offset;
-             zpl_i64 length;
-             zpl_isize error;
+             s64 offset;
+             s64 length;
+             sw error;
          } tar_record;
 
-         #define ZPL_TAR_UNPACK_PROC(name) zpl_isize name(zpl_file *archive, tar_record *file, void* user_data)
+         #define ZPL_TAR_UNPACK_PROC(name) sw name(zpl_file *archive, tar_record *file, void* user_data)
          typedef ZPL_TAR_UNPACK_PROC(tar_unpack_proc);
 
          /**
@@ -5755,7 +5755,7 @@ License:
           * @param paths_len number of files provided
           * @return error
           */
-         ZPL_DEF zpl_isize tar_pack(zpl_file *archive, char const **paths, zpl_isize paths_len);
+         ZPL_DEF sw tar_pack(zpl_file *archive, char const **paths, sw paths_len);
 
          /**
           * @brief Packs an entire directory
@@ -5765,7 +5765,7 @@ License:
           * @param allocator memory allocator to use (ex. heap())
           * @return error
           */
-         ZPL_DEF zpl_isize tar_pack_dir(zpl_file *archive, char const *path, zpl_allocator allocator);
+         ZPL_DEF sw tar_pack_dir(zpl_file *archive, char const *path, zpl_allocator allocator);
 
          /**
           * @brief Unpacks an existing archive
@@ -5776,7 +5776,7 @@ License:
           * @param user_data user provided data
           * @return error
           */
-         ZPL_DEF zpl_isize tar_unpack(zpl_file *archive, tar_unpack_proc *unpack_proc, void *user_data);
+         ZPL_DEF sw tar_unpack(zpl_file *archive, tar_unpack_proc *unpack_proc, void *user_data);
 
          /**
           * @brief Unpacks an existing archive into directory
@@ -5785,14 +5785,14 @@ License:
           * @param dest directory to unpack files to
           * @return error
           */
-         ZPL_DEF_INLINE zpl_isize tar_unpack_dir(zpl_file *archive, char const *dest);
+         ZPL_DEF_INLINE sw tar_unpack_dir(zpl_file *archive, char const *dest);
 
          ZPL_DEF ZPL_TAR_UNPACK_PROC(tar_default_list_file);
          ZPL_DEF ZPL_TAR_UNPACK_PROC(tar_default_unpack_file);
 
          //! @}
 
-         ZPL_IMPL_INLINE zpl_isize tar_unpack_dir(zpl_file *archive, char const *dest) {
+         ZPL_IMPL_INLINE sw tar_unpack_dir(zpl_file *archive, char const *dest) {
              return tar_unpack(archive, tar_default_unpack_file, zpl_cast(void*)dest);
          }
 
@@ -5813,12 +5813,12 @@ License:
          #define ZPL_PRINTF_MAXLEN 65536
          #endif
 
-         ZPL_DEF zpl_isize zpl_printf(char const *fmt, ...);
-         ZPL_DEF zpl_isize zpl_printf_va(char const *fmt, va_list va);
-         ZPL_DEF zpl_isize zpl_printf_err(char const *fmt, ...);
-         ZPL_DEF zpl_isize zpl_printf_err_va(char const *fmt, va_list va);
-         ZPL_DEF zpl_isize zpl_fprintf(zpl_file *f, char const *fmt, ...);
-         ZPL_DEF zpl_isize zpl_fprintf_va(zpl_file *f, char const *fmt, va_list va);
+         ZPL_DEF sw zpl_printf(char const *fmt, ...);
+         ZPL_DEF sw zpl_printf_va(char const *fmt, va_list va);
+         ZPL_DEF sw zpl_printf_err(char const *fmt, ...);
+         ZPL_DEF sw zpl_printf_err_va(char const *fmt, va_list va);
+         ZPL_DEF sw zpl_fprintf(zpl_file *f, char const *fmt, ...);
+         ZPL_DEF sw zpl_fprintf_va(zpl_file *f, char const *fmt, va_list va);
 
          // NOTE: A locally persisting buffer is used internally
          ZPL_DEF char *bprintf(char const *fmt, ...);
@@ -5826,11 +5826,11 @@ License:
          // NOTE: A locally persisting buffer is used internally
          ZPL_DEF char *bprintf_va(char const *fmt, va_list va);
 
-         ZPL_DEF zpl_isize asprintf(zpl_allocator allocator, char **buffer, char const *fmt, ...);
-         ZPL_DEF zpl_isize asprintf_va(zpl_allocator allocator, char **buffer, char const *fmt, va_list va);
+         ZPL_DEF sw asprintf(zpl_allocator allocator, char **buffer, char const *fmt, ...);
+         ZPL_DEF sw asprintf_va(zpl_allocator allocator, char **buffer, char const *fmt, va_list va);
 
-         ZPL_DEF zpl_isize zpl_snprintf(char *str, zpl_isize n, char const *fmt, ...);
-         ZPL_DEF zpl_isize zpl_snprintf_va(char *str, zpl_isize n, char const *fmt, va_list va);
+         ZPL_DEF sw zpl_snprintf(char *str, sw n, char const *fmt, ...);
+         ZPL_DEF sw zpl_snprintf_va(char *str, sw n, char const *fmt, va_list va);
 
          ZPL_END_C_DECLS
          // file: header/core/time.h
@@ -5848,34 +5848,34 @@ License:
          ZPL_BEGIN_C_DECLS
 
          //! Return CPU timestamp.
-         ZPL_DEF zpl_u64 rdtsc(void);
+         ZPL_DEF u64 rdtsc(void);
 
          //! Return relative time (in seconds) since the application start.
          ZPL_DEF f64 time_rel(void);
 
          //! Return relative time since the application start.
-         ZPL_DEF zpl_u64 time_rel_ms(void);
+         ZPL_DEF u64 time_rel_ms(void);
 
          //! Return time (in seconds) since 1601-01-01 UTC.
          ZPL_DEF f64 time_utc(void);
 
          //! Return time since 1601-01-01 UTC.
-         ZPL_DEF zpl_u64 time_utc_ms(void);
+         ZPL_DEF u64 time_utc_ms(void);
 
          //! Return local system time since 1601-01-01
-         ZPL_DEF zpl_u64 time_tz_ms(void);
+         ZPL_DEF u64 time_tz_ms(void);
 
          //! Return local system time in seconds since 1601-01-01
          ZPL_DEF f64 time_tz(void);
 
          //! Convert Win32 epoch (1601-01-01 UTC) to UNIX (1970-01-01 UTC)
-         ZPL_DEF_INLINE zpl_u64 time_win32_to_unix(zpl_u64 ms);
+         ZPL_DEF_INLINE u64 time_win32_to_unix(u64 ms);
 
          //! Convert UNIX (1970-01-01 UTC) to Win32 epoch (1601-01-01 UTC)
-         ZPL_DEF_INLINE zpl_u64 time_unix_to_win32(zpl_u64 ms);
+         ZPL_DEF_INLINE u64 time_unix_to_win32(u64 ms);
 
          //! Sleep for specified number of milliseconds.
-         ZPL_DEF void sleep_ms(zpl_u32 ms);
+         ZPL_DEF void sleep_ms(u32 ms);
 
          //! Sleep for specified number of seconds.
          ZPL_DEF_INLINE void sleep(f32 s);
@@ -5892,16 +5892,16 @@ License:
          #define ZPL__UNIX_TO_WIN32_EPOCH 11644473600000ull
          #endif
 
-         ZPL_IMPL_INLINE zpl_u64 time_win32_to_unix(zpl_u64 ms) {
+         ZPL_IMPL_INLINE u64 time_win32_to_unix(u64 ms) {
              return ms - ZPL__UNIX_TO_WIN32_EPOCH;
          }
 
-         ZPL_IMPL_INLINE zpl_u64 time_unix_to_win32(zpl_u64 ms) {
+         ZPL_IMPL_INLINE u64 time_unix_to_win32(u64 ms) {
              return ms + ZPL__UNIX_TO_WIN32_EPOCH;
          }
 
          ZPL_IMPL_INLINE void sleep(f32 s) {
-             sleep_ms((zpl_u32)(s * 1000));
+             sleep_ms((u32)(s * 1000));
          }
 
          ZPL_IMPL_INLINE f64 time_now() {
@@ -5919,18 +5919,18 @@ License:
          ZPL_BEGIN_C_DECLS
 
          typedef struct random {
-             zpl_u32 offsets[8];
-             zpl_u32 value;
+             u32 offsets[8];
+             u32 value;
          } random;
 
          // NOTE: Generates from numerous sources to produce a decent pseudo-random seed
          ZPL_DEF void      random_init(random *r);
-         ZPL_DEF zpl_u32   random_gen_u32(random *r);
-         ZPL_DEF zpl_u32   random_gen_u32_unique(random *r);
-         ZPL_DEF zpl_u64   random_gen_u64(random *r); // NOTE: (random_gen_u32() << 32) | random_gen_u32()
-         ZPL_DEF zpl_isize random_gen_isize(random *r);
-         ZPL_DEF zpl_i64   random_range_i64(random *r, zpl_i64 lower_inc, zpl_i64 higher_inc);
-         ZPL_DEF zpl_isize random_range_isize(random *r, zpl_isize lower_inc, zpl_isize higher_inc);
+         ZPL_DEF u32   random_gen_u32(random *r);
+         ZPL_DEF u32   random_gen_u32_unique(random *r);
+         ZPL_DEF u64   random_gen_u64(random *r); // NOTE: (random_gen_u32() << 32) | random_gen_u32()
+         ZPL_DEF sw random_gen_isize(random *r);
+         ZPL_DEF s64   random_range_i64(random *r, s64 lower_inc, s64 higher_inc);
+         ZPL_DEF sw random_range_isize(random *r, sw lower_inc, sw higher_inc);
          ZPL_DEF f64   random_range_f64(random *r, f64 lower_inc, f64 higher_inc);
 
          ZPL_END_C_DECLS
@@ -5956,35 +5956,35 @@ License:
          ZPL_DEF void        set_env(const char *name, const char *value);
          ZPL_DEF void        unset_env(const char *name);
 
-         ZPL_DEF zpl_u32    system_command(const char *command, zpl_usize buffer_len, char *buffer);
+         ZPL_DEF u32    system_command(const char *command, uw buffer_len, char *buffer);
          ZPL_DEF string system_command_str(const char *command, zpl_allocator backing);
 
-         ZPL_DEF_INLINE zpl_u16 endian_swap16(zpl_u16 i);
-         ZPL_DEF_INLINE zpl_u32 endian_swap32(zpl_u32 i);
-         ZPL_DEF_INLINE zpl_u64 endian_swap64(zpl_u64 i);
+         ZPL_DEF_INLINE u16 endian_swap16(u16 i);
+         ZPL_DEF_INLINE u32 endian_swap32(u32 i);
+         ZPL_DEF_INLINE u64 endian_swap64(u64 i);
 
-         ZPL_DEF_INLINE zpl_isize count_set_bits(zpl_u64 mask);
+         ZPL_DEF_INLINE sw count_set_bits(u64 mask);
 
          //! @}
          //$$
 
-         ZPL_IMPL_INLINE zpl_u16 endian_swap16(zpl_u16 i) {
+         ZPL_IMPL_INLINE u16 endian_swap16(u16 i) {
              return (i>>8) | (i<<8);
          }
 
-         ZPL_IMPL_INLINE zpl_u32 endian_swap32(zpl_u32 i) {
+         ZPL_IMPL_INLINE u32 endian_swap32(u32 i) {
              return (i>>24) |(i<<24) |
                  ((i&0x00ff0000u)>>8)  | ((i&0x0000ff00u)<<8);
          }
 
-         ZPL_IMPL_INLINE zpl_u64 endian_swap64(zpl_u64 i) {
+         ZPL_IMPL_INLINE u64 endian_swap64(u64 i) {
              return (i>>56) | (i<<56) |
                  ((i&0x00ff000000000000ull)>>40) | ((i&0x000000000000ff00ull)<<40) |
                  ((i&0x0000ff0000000000ull)>>24) | ((i&0x0000000000ff0000ull)<<24) |
                  ((i&0x000000ff00000000ull)>>8)  | ((i&0x00000000ff000000ull)<<8);
          }
 
-         ZPL_IMPL_INLINE zpl_i32 next_pow2(zpl_i32 x) {
+         ZPL_IMPL_INLINE s32 next_pow2(s32 x) {
              x--;
              x |= x >> 1;
              x |= x >> 2;
@@ -5994,12 +5994,12 @@ License:
              return x + 1;
          }
 
-         ZPL_IMPL_INLINE void bit_set(zpl_u32* x, zpl_u32 bit) { *x = *x | (1 << bit); }
-         ZPL_IMPL_INLINE b8 bit_get(zpl_u32 x, zpl_u32 bit) { return (x & (1 << bit)); }
-         ZPL_IMPL_INLINE void bit_reset(zpl_u32* x, zpl_u32 bit) { *x = *x & ~(1 << bit); }
+         ZPL_IMPL_INLINE void bit_set(u32* x, u32 bit) { *x = *x | (1 << bit); }
+         ZPL_IMPL_INLINE b8 bit_get(u32 x, u32 bit) { return (x & (1 << bit)); }
+         ZPL_IMPL_INLINE void bit_reset(u32* x, u32 bit) { *x = *x & ~(1 << bit); }
 
-         ZPL_IMPL_INLINE zpl_isize count_set_bits(zpl_u64 mask) {
-             zpl_isize count = 0;
+         ZPL_IMPL_INLINE sw count_set_bits(u64 mask) {
+             sw count = 0;
              while (mask) {
                  count += (mask & 1);
                  mask >>= 1;
@@ -6031,14 +6031,14 @@ License:
          // e.g. i32_cmp(offset_of(Thing, value))
          // Use 0 if it's just the type instead.
 
-         ZPL_DEF ZPL_COMPARE_PROC_PTR(i16_cmp(zpl_isize offset));
-         ZPL_DEF ZPL_COMPARE_PROC_PTR(u8_cmp(zpl_isize offset));
-         ZPL_DEF ZPL_COMPARE_PROC_PTR(i32_cmp(zpl_isize offset));
-         ZPL_DEF ZPL_COMPARE_PROC_PTR(i64_cmp(zpl_isize offset));
-         ZPL_DEF ZPL_COMPARE_PROC_PTR(isize_cmp(zpl_isize offset));
-         ZPL_DEF ZPL_COMPARE_PROC_PTR(str_cmp(zpl_isize offset));
-         ZPL_DEF ZPL_COMPARE_PROC_PTR(f32_cmp(zpl_isize offset));
-         ZPL_DEF ZPL_COMPARE_PROC_PTR(f64_cmp(zpl_isize offset));
+         ZPL_DEF ZPL_COMPARE_PROC_PTR(i16_cmp(sw offset));
+         ZPL_DEF ZPL_COMPARE_PROC_PTR(u8_cmp(sw offset));
+         ZPL_DEF ZPL_COMPARE_PROC_PTR(i32_cmp(sw offset));
+         ZPL_DEF ZPL_COMPARE_PROC_PTR(i64_cmp(sw offset));
+         ZPL_DEF ZPL_COMPARE_PROC_PTR(isize_cmp(sw offset));
+         ZPL_DEF ZPL_COMPARE_PROC_PTR(str_cmp(sw offset));
+         ZPL_DEF ZPL_COMPARE_PROC_PTR(f32_cmp(sw offset));
+         ZPL_DEF ZPL_COMPARE_PROC_PTR(f64_cmp(sw offset));
 
          // TODO: Better sorting algorithms
 
@@ -6048,16 +6048,16 @@ License:
          #define sort_array(array, count, compare_proc) sort(array, count, size_of(*(array)), compare_proc)
 
          //! Perform sorting operation on a memory location with a specified item count and size.
-         ZPL_DEF void sort(void *base, zpl_isize count, zpl_isize size, compare_proc compare_proc);
+         ZPL_DEF void sort(void *base, sw count, sw size, compare_proc compare_proc);
 
          // NOTE: the count of temp == count of items
          #define radix_sort(Type) radix_sort_##Type
-         #define ZPL_RADIX_SORT_PROC(Type) void radix_sort(Type)(Type * items, Type * temp, zpl_isize count)
+         #define ZPL_RADIX_SORT_PROC(Type) void radix_sort(Type)(Type * items, Type * temp, sw count)
 
-         ZPL_DEF ZPL_RADIX_SORT_PROC(zpl_u8);
-         ZPL_DEF ZPL_RADIX_SORT_PROC(zpl_u16);
-         ZPL_DEF ZPL_RADIX_SORT_PROC(zpl_u32);
-         ZPL_DEF ZPL_RADIX_SORT_PROC(zpl_u64);
+         ZPL_DEF ZPL_RADIX_SORT_PROC(u8);
+         ZPL_DEF ZPL_RADIX_SORT_PROC(u16);
+         ZPL_DEF ZPL_RADIX_SORT_PROC(u32);
+         ZPL_DEF ZPL_RADIX_SORT_PROC(u64);
 
          //! Performs binary search on an array.
 
@@ -6066,30 +6066,30 @@ License:
          binary_search(array, count, size_of(*(array)), key, compare_proc)
 
          //! Performs binary search on a memory location with specified item count and size.
-         ZPL_DEF_INLINE zpl_isize binary_search(void const *base, zpl_isize count, zpl_isize size, void const *key,
+         ZPL_DEF_INLINE sw binary_search(void const *base, sw count, sw size, void const *key,
                                          compare_proc compare_proc);
 
          #define shuffle_array(array, count) shuffle(array, count, size_of(*(array)))
 
          //! Shuffles a memory.
-         ZPL_DEF void shuffle(void *base, zpl_isize count, zpl_isize size);
+         ZPL_DEF void shuffle(void *base, sw count, sw size);
 
          #define reverse_array(array, count) reverse(array, count, size_of(*(array)))
 
          //! Reverses memory's contents
-         ZPL_DEF void reverse(void *base, zpl_isize count, zpl_isize size);
+         ZPL_DEF void reverse(void *base, sw count, sw size);
 
          //! @}
 
 
-         ZPL_IMPL_INLINE zpl_isize binary_search(void const *base, zpl_isize count, zpl_isize size, void const *key,
+         ZPL_IMPL_INLINE sw binary_search(void const *base, sw count, sw size, void const *key,
                                             compare_proc compare_proc) {
-             zpl_isize start = 0;
-             zpl_isize end = count;
+             sw start = 0;
+             sw end = count;
 
              while (start < end) {
-                 zpl_isize mid = start + (end - start) / 2;
-                 zpl_isize result = compare_proc(key, zpl_cast(zpl_u8 *) base + mid * size);
+                 sw mid = start + (end - start) / 2;
+                 sw result = compare_proc(key, zpl_cast(u8 *) base + mid * size);
                  if (result < 0)
                      end = mid;
                  else if (result > 0)
@@ -6120,36 +6120,36 @@ License:
 
      ZPL_BEGIN_C_DECLS
 
-     ZPL_DEF zpl_u32 adler32(void const *data, zpl_isize len);
+     ZPL_DEF u32 adler32(void const *data, sw len);
 
-     ZPL_DEF zpl_u32 crc32(void const *data, zpl_isize len);
-     ZPL_DEF zpl_u64 crc64(void const *data, zpl_isize len);
+     ZPL_DEF u32 crc32(void const *data, sw len);
+     ZPL_DEF u64 crc64(void const *data, sw len);
 
      // These use FNV-1 algorithm
-     ZPL_DEF zpl_u32 fnv32(void const *data, zpl_isize len);
-     ZPL_DEF zpl_u64 fnv64(void const *data, zpl_isize len);
-     ZPL_DEF zpl_u32 fnv32a(void const *data, zpl_isize len);
-     ZPL_DEF zpl_u64 fnv64a(void const *data, zpl_isize len);
+     ZPL_DEF u32 fnv32(void const *data, sw len);
+     ZPL_DEF u64 fnv64(void const *data, sw len);
+     ZPL_DEF u32 fnv32a(void const *data, sw len);
+     ZPL_DEF u64 fnv64a(void const *data, sw len);
 
-     ZPL_DEF zpl_u8 *base64_encode(zpl_allocator a, void const *data, zpl_isize len);
-     ZPL_DEF zpl_u8 *base64_decode(zpl_allocator a, void const *data, zpl_isize len);
+     ZPL_DEF u8 *base64_encode(zpl_allocator a, void const *data, sw len);
+     ZPL_DEF u8 *base64_decode(zpl_allocator a, void const *data, sw len);
 
      //! Based on MurmurHash3
-     ZPL_DEF zpl_u32 murmur32_seed(void const *data, zpl_isize len, zpl_u32 seed);
+     ZPL_DEF u32 murmur32_seed(void const *data, sw len, u32 seed);
 
      //! Based on MurmurHash2
-     ZPL_DEF zpl_u64 murmur64_seed(void const *data, zpl_isize len, zpl_u64 seed);
+     ZPL_DEF u64 murmur64_seed(void const *data, sw len, u64 seed);
 
      //! Default seed of 0x9747b28c
-     ZPL_DEF_INLINE zpl_u32 murmur32(void const *data, zpl_isize len);
+     ZPL_DEF_INLINE u32 murmur32(void const *data, sw len);
 
      //! Default seed of 0x9747b28c
-     ZPL_DEF_INLINE zpl_u64 murmur64(void const *data, zpl_isize len);
+     ZPL_DEF_INLINE u64 murmur64(void const *data, sw len);
 
      //! @}
 
-     ZPL_IMPL_INLINE zpl_u32 murmur32(void const *data, zpl_isize len) { return murmur32_seed(data, len, 0x9747b28c); }
-     ZPL_IMPL_INLINE zpl_u64 murmur64(void const *data, zpl_isize len) { return murmur64_seed(data, len, 0x9747b28c); }
+     ZPL_IMPL_INLINE u32 murmur32(void const *data, sw len) { return murmur32_seed(data, len, 0x9747b28c); }
+     ZPL_IMPL_INLINE u64 murmur64(void const *data, sw len) { return murmur64_seed(data, len, 0x9747b28c); }
 
      ZPL_END_C_DECLS
 #endif
@@ -6203,15 +6203,15 @@ License:
 
      typedef struct re {
          zpl_allocator backing;
-         zpl_isize capture_count;
+         sw capture_count;
          char *buf;
-         zpl_isize buf_len, buf_cap;
+         sw buf_len, buf_cap;
          b32 can_realloc;
      } re;
 
      typedef struct re_capture {
          char const *str;
-         zpl_isize len;
+         sw len;
      } re_capture;
 
      #define zplRegexError regex_error
@@ -6227,22 +6227,22 @@ License:
      } regex_error;
 
      //! Compile regex pattern.
-     ZPL_DEF regex_error re_compile(re *re, zpl_allocator backing, char const *pattern, zpl_isize pattern_len);
+     ZPL_DEF regex_error re_compile(re *re, zpl_allocator backing, char const *pattern, sw pattern_len);
 
      //! Compile regex pattern using a buffer.
-     ZPL_DEF regex_error re_compile_from_buffer(re *re, char const *pattern, zpl_isize pattern_len, void *buffer, zpl_isize buffer_len);
+     ZPL_DEF regex_error re_compile_from_buffer(re *re, char const *pattern, sw pattern_len, void *buffer, sw buffer_len);
 
      //! Destroy regex object.
      ZPL_DEF void            re_destroy(re *re);
 
      //! Retrieve number of retrievable captures.
-     ZPL_DEF zpl_isize       re_capture_count(re *re);
+     ZPL_DEF sw       re_capture_count(re *re);
 
      //! Match input string and output captures of the occurence.
-     ZPL_DEF b32         re_match(re *re, char const *str, zpl_isize str_len, re_capture *captures, zpl_isize max_capture_count, zpl_isize *offset);
+     ZPL_DEF b32         re_match(re *re, char const *str, sw str_len, re_capture *captures, sw max_capture_count, sw *offset);
 
      //! Match all occurences in an input string and output them into captures. Array of captures is allocated on the heap and needs to be freed afterwards.
-     ZPL_DEF b32         re_match_all(re *re, char const *str, zpl_isize str_len, zpl_isize max_capture_count, re_capture **out_captures);
+     ZPL_DEF b32         re_match_all(re *re, char const *str, sw str_len, sw max_capture_count, re_capture **out_captures);
 
      ZPL_END_C_DECLS
 #endif
@@ -6295,13 +6295,13 @@ License:
 
      typedef struct {
          char const *name, *lname, *desc;
-         zpl_u8 type;
+         u8 type;
          b32 met, pos;
 
          //! values
          union {
              string text;
-             zpl_i64 integer;
+             s64 integer;
              f64 real;
          };
      } opts_entry;
@@ -6315,7 +6315,7 @@ License:
 
      typedef struct {
          char *val;
-         zpl_u8 type;
+         u8 type;
      } opts_err;
 
      typedef struct {
@@ -6346,7 +6346,7 @@ License:
      //! @param desc Description shown in the help screen.
      //! @param type Option's type (see opts_types)
      //! @see opts_types
-     ZPL_DEF void opts_add(zpl_opts *opts, char const *name, char const *lname, const char *desc, zpl_u8 type);
+     ZPL_DEF void opts_add(zpl_opts *opts, char const *name, char const *lname, const char *desc, u8 type);
 
      //! Registers option as positional.
 
@@ -6392,7 +6392,7 @@ License:
      //! @param opts
      //! @param name Name of an option.
      //! @param fallback Fallback integer number we return if option was not found.
-     ZPL_DEF zpl_i64 opts_integer(zpl_opts *opts, char const *name, zpl_i64 fallback);
+     ZPL_DEF s64 opts_integer(zpl_opts *opts, char const *name, s64 fallback);
 
      //! Checks whether an option was used.
 
@@ -6444,21 +6444,21 @@ License:
          char *con_title;
          char *workdir;
 
-         zpl_isize env_count;
+         sw env_count;
          char **env; // format: "var=name"
 
-         zpl_u32 posx, posy;
-         zpl_u32 resx, resy;
-         zpl_u32 bufx, bufy;
-         zpl_u32 fill_attr;
-         zpl_u32 flags;
+         u32 posx, posy;
+         u32 resx, resy;
+         u32 bufx, bufy;
+         u32 fill_attr;
+         u32 flags;
          b32 show_window;
      } pr_si;
 
-     ZPL_DEF zpl_i32 pr_create(pr *process, const char **args, zpl_isize argc, pr_si si, pr_opts options);
+     ZPL_DEF s32 pr_create(pr *process, const char **args, sw argc, pr_si si, pr_opts options);
      ZPL_DEF void    pr_destroy(pr *process);
-     ZPL_DEF void    pr_terminate(pr *process, zpl_i32 err_code);
-     ZPL_DEF zpl_i32 pr_join(pr *process);
+     ZPL_DEF void    pr_terminate(pr *process, s32 err_code);
+     ZPL_DEF s32 pr_join(pr *process);
 
      //! @}
      ZPL_END_C_DECLS
@@ -7225,15 +7225,15 @@ License:
          struct adt_node *parent;
 
          /* properties */
-         zpl_u8 type        :4;
-         zpl_u8 props       :4;
+         u8 type        :4;
+         u8 props       :4;
      #ifndef ZPL_PARSER_DISABLE_ANALYSIS
-         zpl_u8 cfg_mode    :1;
-         zpl_u8 name_style  :2;
-         zpl_u8 assign_style:2;
-         zpl_u8 delim_style :2;
-         zpl_u8 delim_line_width :4;
-         zpl_u8 assign_line_width:4;
+         u8 cfg_mode    :1;
+         u8 name_style  :2;
+         u8 assign_style:2;
+         u8 delim_style :2;
+         u8 delim_line_width :4;
+         u8 assign_line_width:4;
      #endif
 
          /* adt data */
@@ -7243,17 +7243,17 @@ License:
              struct {
                  union {
                      f64 real;
-                     zpl_i64 integer;
+                     s64 integer;
                  };
 
      #ifndef ZPL_PARSER_DISABLE_ANALYSIS
                  /* number analysis */
-                 zpl_i32 base;
-                 zpl_i32 base2;
-                 zpl_u8 base2_offset:4;
-                 zpl_i8 exp         :4;
-                 zpl_u8 neg_zero  :1;
-                 zpl_u8 lead_digit:1;
+                 s32 base;
+                 s32 base2;
+                 u8 base2_offset:4;
+                 s8 exp         :4;
+                 u8 neg_zero  :1;
+                 u8 lead_digit:1;
      #endif
              };
          };
@@ -7274,7 +7274,7 @@ License:
       * @param is_array
       * @return error code
       */
-     ZPL_DEF zpl_u8 adt_make_branch(adt_node *node, zpl_allocator backing, char const *name, b32 is_array);
+     ZPL_DEF u8 adt_make_branch(adt_node *node, zpl_allocator backing, char const *name, b32 is_array);
 
      /**
       * @brief Destroy an ADT branch and its descendants
@@ -7282,7 +7282,7 @@ License:
       * @param node
       * @return error code
       */
-     ZPL_DEF zpl_u8 adt_destroy_branch(adt_node *node);
+     ZPL_DEF u8 adt_destroy_branch(adt_node *node);
 
      /**
       * @brief Initialise an ADT leaf
@@ -7292,7 +7292,7 @@ License:
       * @param type Node's type (use adt_make_branch for container nodes)
       * @return error code
       */
-     ZPL_DEF zpl_u8 adt_make_leaf(adt_node *node, char const *name, zpl_u8 type);
+     ZPL_DEF u8 adt_make_leaf(adt_node *node, char const *name, u8 type);
 
 
      /**
@@ -7331,7 +7331,7 @@ License:
       * @param index
       * @return adt_node * node
       */
-     ZPL_DEF adt_node *adt_alloc_at(adt_node *parent, zpl_isize index);
+     ZPL_DEF adt_node *adt_alloc_at(adt_node *parent, sw index);
 
      /**
       * @brief Allocate an unitialised node within a container.
@@ -7349,7 +7349,7 @@ License:
       * @param index
       * @return adt_node * node
       */
-     ZPL_DEF adt_node *adt_move_node_at(adt_node *node, adt_node *new_parent, zpl_isize index);
+     ZPL_DEF adt_node *adt_move_node_at(adt_node *node, adt_node *new_parent, sw index);
 
      /**
       * @brief Move an existing node to a new container.
@@ -7425,7 +7425,7 @@ License:
       * @param value
       * @return
       */
-     ZPL_DEF b8 adt_set_int(adt_node *obj, char const *name, zpl_i64 value);
+     ZPL_DEF b8 adt_set_int(adt_node *obj, char const *name, s64 value);
 
      /**
       * @brief Append a new node to a container as an object
@@ -7473,7 +7473,7 @@ License:
       * @param value
       * @return*
       */
-     ZPL_DEF adt_node *adt_append_int(adt_node *parent, char const *name, zpl_i64 value);
+     ZPL_DEF adt_node *adt_append_int(adt_node *parent, char const *name, s64 value);
 
      /* parser helpers */
 
@@ -7568,7 +7568,7 @@ License:
      }
 
      ZPL_DEPRECATED_FOR(17.0.0, adt_append_int)
-     ZPL_IMPL_INLINE adt_node *adt_inset_int(adt_node *parent, char const *name, zpl_i64 value) {
+     ZPL_IMPL_INLINE adt_node *adt_inset_int(adt_node *parent, char const *name, s64 value) {
          return adt_append_int(parent, name, value);
      }
 
@@ -7594,10 +7594,10 @@ License:
 
      typedef adt_node json_object;
 
-     ZPL_DEF zpl_u8 json_parse(json_object *root, char *text, zpl_allocator allocator);
+     ZPL_DEF u8 json_parse(json_object *root, char *text, zpl_allocator allocator);
      ZPL_DEF void json_free(json_object *obj);
-     ZPL_DEF b8 json_write(zpl_file *file, json_object *obj, zpl_isize indent);
-     ZPL_DEF string json_write_string(zpl_allocator a, json_object *obj, zpl_isize indent);
+     ZPL_DEF b8 json_write(zpl_file *file, json_object *obj, sw indent);
+     ZPL_DEF string json_write_string(zpl_allocator a, json_object *obj, sw indent);
 
      ZPL_END_C_DECLS
      // file: header/parsers/csv.h
@@ -7614,8 +7614,8 @@ License:
 
      typedef adt_node csv_object;
 
-     ZPL_DEF_INLINE zpl_u8 csv_parse(csv_object *root, char *text, zpl_allocator allocator, b32 has_header);
-     ZPL_DEF zpl_u8 csv_parse_delimiter(csv_object *root, char *text, zpl_allocator allocator, b32 has_header, char delim);
+     ZPL_DEF_INLINE u8 csv_parse(csv_object *root, char *text, zpl_allocator allocator, b32 has_header);
+     ZPL_DEF u8 csv_parse_delimiter(csv_object *root, char *text, zpl_allocator allocator, b32 has_header, char delim);
      ZPL_DEF void csv_free(csv_object *obj);
 
      ZPL_DEF_INLINE void csv_write(zpl_file *file, csv_object *obj);
@@ -7625,7 +7625,7 @@ License:
 
      /* inline */
 
-     ZPL_IMPL_INLINE zpl_u8 csv_parse(csv_object *root, char *text, zpl_allocator allocator, b32 has_header) {
+     ZPL_IMPL_INLINE u8 csv_parse(csv_object *root, char *text, zpl_allocator allocator, b32 has_header) {
          return csv_parse_delimiter(root, text, allocator, has_header, ',');
      }
 
@@ -7682,8 +7682,8 @@ License:
      ZPL_BEGIN_C_DECLS
 
      #if defined(ZPL_COMPILER_MSVC)
-         typedef struct atomic32  { atomic(zpl_i32) value; } atomic32;
-         typedef struct atomic64  { atomic(zpl_i64) value; } atomic64;
+         typedef struct atomic32  { atomic(s32) value; } atomic32;
+         typedef struct atomic64  { atomic(s64) value; } atomic64;
          typedef struct atomic_ptr { atomic(void*) value; } atomic_ptr;
      #else
      #    if defined(ZPL_ARCH_32_BIT)
@@ -7694,31 +7694,31 @@ License:
      #        error Unknown architecture
      #    endif
 
-         typedef struct atomic32   { atomic(zpl_i32) value; } __attribute__ ((aligned(4))) atomic32;
-         typedef struct atomic64   { atomic(zpl_i64) value; } __attribute__ ((aligned(8))) atomic64;
+         typedef struct atomic32   { atomic(s32) value; } __attribute__ ((aligned(4))) atomic32;
+         typedef struct atomic64   { atomic(s64) value; } __attribute__ ((aligned(8))) atomic64;
          typedef struct atomic_ptr { atomic(void*) value; }     __attribute__ ((aligned(ZPL_ATOMIC_PTR_ALIGNMENT))) atomic_ptr;
      #endif
 
-     ZPL_DEF zpl_i32  atomic32_load            (atomic32 const *a);
-     ZPL_DEF void     atomic32_store           (atomic32 *a, atomicarg(zpl_i32) value);
-     ZPL_DEF zpl_i32  atomic32_compare_exchange(atomic32 *a, atomicarg(zpl_i32) expected, atomicarg(zpl_i32) desired);
-     ZPL_DEF zpl_i32  atomic32_exchange        (atomic32 *a, atomicarg(zpl_i32) desired);
-     ZPL_DEF zpl_i32  atomic32_fetch_add       (atomic32 *a, atomicarg(zpl_i32) operand);
-     ZPL_DEF zpl_i32  atomic32_fetch_and       (atomic32 *a, atomicarg(zpl_i32) operand);
-     ZPL_DEF zpl_i32  atomic32_fetch_or        (atomic32 *a, atomicarg(zpl_i32) operand);
-     ZPL_DEF b32  atomic32_spin_lock       (atomic32 *a, zpl_isize time_out); // NOTE: time_out = -1 as default
+     ZPL_DEF s32  atomic32_load            (atomic32 const *a);
+     ZPL_DEF void     atomic32_store           (atomic32 *a, atomicarg(s32) value);
+     ZPL_DEF s32  atomic32_compare_exchange(atomic32 *a, atomicarg(s32) expected, atomicarg(s32) desired);
+     ZPL_DEF s32  atomic32_exchange        (atomic32 *a, atomicarg(s32) desired);
+     ZPL_DEF s32  atomic32_fetch_add       (atomic32 *a, atomicarg(s32) operand);
+     ZPL_DEF s32  atomic32_fetch_and       (atomic32 *a, atomicarg(s32) operand);
+     ZPL_DEF s32  atomic32_fetch_or        (atomic32 *a, atomicarg(s32) operand);
+     ZPL_DEF b32  atomic32_spin_lock       (atomic32 *a, sw time_out); // NOTE: time_out = -1 as default
      ZPL_DEF void     atomic32_spin_unlock     (atomic32 *a);
      ZPL_DEF b32  atomic32_try_acquire_lock(atomic32 *a);
 
 
-     ZPL_DEF zpl_i64  atomic64_load            (atomic64 const *a);
-     ZPL_DEF void     atomic64_store           (atomic64 *a, atomicarg(zpl_i64) value);
-     ZPL_DEF zpl_i64  atomic64_compare_exchange(atomic64 *a, atomicarg(zpl_i64) expected, atomicarg(zpl_i64) desired);
-     ZPL_DEF zpl_i64  atomic64_exchange        (atomic64 *a, atomicarg(zpl_i64) desired);
-     ZPL_DEF zpl_i64  atomic64_fetch_add       (atomic64 *a, atomicarg(zpl_i64) operand);
-     ZPL_DEF zpl_i64  atomic64_fetch_and       (atomic64 *a, atomicarg(zpl_i64) operand);
-     ZPL_DEF zpl_i64  atomic64_fetch_or        (atomic64 *a, atomicarg(zpl_i64) operand);
-     ZPL_DEF b32  atomic64_spin_lock       (atomic64 *a, zpl_isize time_out); // NOTE: time_out = -1 as default
+     ZPL_DEF s64  atomic64_load            (atomic64 const *a);
+     ZPL_DEF void     atomic64_store           (atomic64 *a, atomicarg(s64) value);
+     ZPL_DEF s64  atomic64_compare_exchange(atomic64 *a, atomicarg(s64) expected, atomicarg(s64) desired);
+     ZPL_DEF s64  atomic64_exchange        (atomic64 *a, atomicarg(s64) desired);
+     ZPL_DEF s64  atomic64_fetch_add       (atomic64 *a, atomicarg(s64) operand);
+     ZPL_DEF s64  atomic64_fetch_and       (atomic64 *a, atomicarg(s64) operand);
+     ZPL_DEF s64  atomic64_fetch_or        (atomic64 *a, atomicarg(s64) operand);
+     ZPL_DEF b32  atomic64_spin_lock       (atomic64 *a, sw time_out); // NOTE: time_out = -1 as default
      ZPL_DEF void     atomic64_spin_unlock     (atomic64 *a);
      ZPL_DEF b32  atomic64_try_acquire_lock(atomic64 *a);
 
@@ -7730,7 +7730,7 @@ License:
      ZPL_DEF void *atomic_ptr_fetch_add       (atomic_ptr *a, atomicarg(void *)operand);
      ZPL_DEF void *atomic_ptr_fetch_and       (atomic_ptr *a, atomicarg(void *)operand);
      ZPL_DEF void *atomic_ptr_fetch_or        (atomic_ptr *a, atomicarg(void *)operand);
-     ZPL_DEF b32   atomic_ptr_spin_lock       (atomic_ptr *a, zpl_isize time_out); // NOTE: time_out = -1 as default
+     ZPL_DEF b32   atomic_ptr_spin_lock       (atomic_ptr *a, sw time_out); // NOTE: time_out = -1 as default
      ZPL_DEF void      atomic_ptr_spin_unlock     (atomic_ptr *a);
      ZPL_DEF b32   atomic_ptr_try_acquire_lock(atomic_ptr *a);
 
@@ -7770,10 +7770,10 @@ License:
 
      ZPL_DEF void semaphore_init   (semaphore *s);
      ZPL_DEF void semaphore_destroy(semaphore *s);
-     ZPL_DEF void semaphore_post   (semaphore *s, zpl_i32 count);
+     ZPL_DEF void semaphore_post   (semaphore *s, s32 count);
      ZPL_DEF void semaphore_release(semaphore *s); // NOTE: semaphore_post(s, 1)
      ZPL_DEF void semaphore_wait   (semaphore *s);
-     ZPL_DEF zpl_i32 semaphore_trywait(semaphore *s);
+     ZPL_DEF s32 semaphore_trywait(semaphore *s);
 
      ZPL_END_C_DECLS
      // file: header/threading/mutex.h
@@ -7783,7 +7783,7 @@ License:
 
      typedef struct mutex {
      #if defined(ZPL_SYSTEM_WINDOWS)
-         zpl_u64 win32_critical_section[sizeof(zpl_usize) / 2 + 1];
+         u64 win32_critical_section[sizeof(uw) / 2 + 1];
      #else
          pthread_mutex_t pthread_mutex;
      #endif
@@ -7806,7 +7806,7 @@ License:
 
      ZPL_BEGIN_C_DECLS
 
-     typedef zpl_isize (*thread_proc)(struct thread *thread);
+     typedef sw (*thread_proc)(struct thread *thread);
 
      typedef struct thread {
      #if defined(ZPL_SYSTEM_WINDOWS)
@@ -7817,11 +7817,11 @@ License:
 
          thread_proc  proc;
          void *           user_data;
-         zpl_isize        user_index;
-         zpl_isize        return_value;
+         sw        user_index;
+         sw        return_value;
 
          semaphore    semaphore;
-         zpl_isize        stack_size;
+         sw        stack_size;
          b32          is_running;
          b32          nowait;
      } thread;
@@ -7830,10 +7830,10 @@ License:
      ZPL_DEF void     thread_init_nowait     (thread *t);
      ZPL_DEF void     thread_destroy         (thread *t);
      ZPL_DEF void     thread_start           (thread *t, thread_proc proc, void *data);
-     ZPL_DEF void     thread_start_with_stack(thread *t, thread_proc proc, void *data, zpl_isize stack_size);
+     ZPL_DEF void     thread_start_with_stack(thread *t, thread_proc proc, void *data, sw stack_size);
      ZPL_DEF void     thread_join            (thread *t);
      ZPL_DEF b32  thread_is_running      (thread const *t);
-     ZPL_DEF zpl_u32  thread_current_id      (void);
+     ZPL_DEF u32  thread_current_id      (void);
      ZPL_DEF void     thread_set_name        (thread *t, char const *name);
 
      ZPL_END_C_DECLS
@@ -7845,9 +7845,9 @@ License:
      ZPL_BEGIN_C_DECLS
 
      typedef struct sync {
-         zpl_i32 target;  // Target Number of threads
-         zpl_i32 current; // Threads to hit
-         zpl_i32 waiting; // Threads waiting
+         s32 target;  // Target Number of threads
+         s32 current; // Threads to hit
+         s32 waiting; // Threads waiting
 
          mutex start;
          mutex mutex;
@@ -7856,9 +7856,9 @@ License:
 
      ZPL_DEF void     sync_init          (sync *s);
      ZPL_DEF void     sync_destroy       (sync *s);
-     ZPL_DEF void     sync_set_target    (sync *s, zpl_i32 count);
+     ZPL_DEF void     sync_set_target    (sync *s, s32 count);
      ZPL_DEF void     sync_release       (sync *s);
-     ZPL_DEF zpl_i32  sync_reach         (sync *s);
+     ZPL_DEF s32  sync_reach         (sync *s);
      ZPL_DEF void     sync_reach_and_wait(sync *s);
 
      ZPL_END_C_DECLS
@@ -7871,29 +7871,29 @@ License:
 
          typedef struct affinity {
              b32   is_accurate;
-             zpl_isize core_count;
-             zpl_isize thread_count;
+             sw core_count;
+             sw thread_count;
 
-     #    define ZPL_WIN32_MAX_THREADS (8 * size_of(zpl_usize))
-             zpl_usize core_masks[ZPL_WIN32_MAX_THREADS];
+     #    define ZPL_WIN32_MAX_THREADS (8 * size_of(uw))
+             uw core_masks[ZPL_WIN32_MAX_THREADS];
          } affinity;
 
      #elif defined(ZPL_SYSTEM_OSX)
 
          typedef struct affinity {
              b32   is_accurate;
-             zpl_isize core_count;
-             zpl_isize thread_count;
-             zpl_isize threads_per_core;
+             sw core_count;
+             sw thread_count;
+             sw threads_per_core;
          } affinity;
 
      #elif defined(ZPL_SYSTEM_LINUX) || defined(ZPL_SYSTEM_FREEBSD) || defined(ZPL_SYSTEM_EMSCRIPTEN) || defined(ZPL_SYSTEM_OPENBSD)
 
          typedef struct affinity {
              b32   is_accurate;
-             zpl_isize core_count;
-             zpl_isize thread_count;
-             zpl_isize threads_per_core;
+             sw core_count;
+             sw thread_count;
+             sw threads_per_core;
          } affinity;
 
      #else
@@ -7902,8 +7902,8 @@ License:
 
      ZPL_DEF void      affinity_init   (affinity *a);
      ZPL_DEF void      affinity_destroy(affinity *a);
-     ZPL_DEF b32   affinity_set    (affinity *a, zpl_isize core, zpl_isize thread);
-     ZPL_DEF zpl_isize affinity_thread_count_for_core(affinity *a, zpl_isize core);
+     ZPL_DEF b32   affinity_set    (affinity *a, sw core, sw thread);
+     ZPL_DEF sw affinity_thread_count_for_core(affinity *a, sw core);
 
      ZPL_END_C_DECLS
 
@@ -7962,31 +7962,31 @@ License:
              atomic32 status;
              thread_job job;
          #ifdef ZPL_JOBS_DEBUG
-             zpl_u32 hits;
-             zpl_u32 idle;
+             u32 hits;
+             u32 idle;
          #endif
          } thread_worker;
 
          typedef struct {
              zpl__jobs_ring_zpl_thread_job jobs; ///< ring
-             zpl_u32 chance;
+             u32 chance;
          #ifdef ZPL_JOBS_DEBUG
-             zpl_u32 hits;
+             u32 hits;
          #endif
          } thread_queue;
 
          typedef struct {
              zpl_allocator allocator;
-             zpl_u32 max_threads, max_jobs, counter;
+             u32 max_threads, max_jobs, counter;
              thread_worker *workers; ///< buffer
              thread_queue queues[ZPL_JOBS_MAX_PRIORITIES];
          } jobs_system;
 
          //! Initialize thread pool with specified amount of fixed threads.
-         ZPL_DEF void    jobs_init(jobs_system *pool, zpl_allocator a, zpl_u32 max_threads);
+         ZPL_DEF void    jobs_init(jobs_system *pool, zpl_allocator a, u32 max_threads);
 
          //! Initialize thread pool with specified amount of fixed threads and custom job limit.
-         ZPL_DEF void    jobs_init_with_limit(jobs_system *pool, zpl_allocator a, zpl_u32 max_threads, zpl_u32 max_jobs);
+         ZPL_DEF void    jobs_init_with_limit(jobs_system *pool, zpl_allocator a, u32 max_threads, u32 max_jobs);
 
          //! Release the resources use by thread pool.
          ZPL_DEF void    jobs_free(jobs_system *pool);
@@ -8102,7 +8102,7 @@ License:
 
      ZPL_BEGIN_C_DECLS
 
-     void assert_handler(char const *condition, char const *file, zpl_i32 line, char const *msg, ...) {
+     void assert_handler(char const *condition, char const *file, s32 line, char const *msg, ...) {
          zpl__printf_err("%s:(%d): Assert Failure: ", file, line);
 
          if (condition) zpl__printf_err("`%s` ", condition);
@@ -8117,7 +8117,7 @@ License:
          zpl__printf_err("%s", "\n");
      }
 
-     zpl_i32 assert_crash(char const *condition) {
+     s32 assert_crash(char const *condition) {
          ZPL_PANIC(condition);
          return 0;
      }
@@ -8127,10 +8127,10 @@ License:
      #endif
 
      #if defined(ZPL_SYSTEM_WINDOWS)
-         void zpl_exit(zpl_u32 code) { ExitProcess(code); }
+         void zpl_exit(u32 code) { ExitProcess(code); }
      #else
      #    include <stdlib.h>
-         void zpl_exit(zpl_u32 code) { exit(code); }
+         void zpl_exit(u32 code) { exit(code); }
      #endif
 
      ZPL_END_C_DECLS
@@ -8142,18 +8142,18 @@ License:
      ZPL_BEGIN_C_DECLS
 
 
-     void zpl_memswap(void *i, void *j, zpl_isize size) {
+     void zpl_memswap(void *i, void *j, sw size) {
          if (i == j) return;
 
          if (size == 4) {
-             swap(zpl_u32, *zpl_cast(zpl_u32 *) i, *zpl_cast(zpl_u32 *) j);
+             swap(u32, *zpl_cast(u32 *) i, *zpl_cast(u32 *) j);
          } else if (size == 8) {
-             swap(zpl_u64, *zpl_cast(zpl_u64 *) i, *zpl_cast(zpl_u64 *) j);
+             swap(u64, *zpl_cast(u64 *) i, *zpl_cast(u64 *) j);
          } else if (size < 8) {
-             zpl_u8 *a = zpl_cast(zpl_u8 *) i;
-             zpl_u8 *b = zpl_cast(zpl_u8 *) j;
+             u8 *a = zpl_cast(u8 *) i;
+             u8 *b = zpl_cast(u8 *) j;
              if (a != b) {
-                 while (size--) { swap(zpl_u8, *a++, *b++); }
+                 while (size--) { swap(u8, *a++, *b++); }
              }
          } else {
              char buffer[256];
@@ -8171,21 +8171,21 @@ License:
          }
      }
 
-     void const *zpl_memchr(void const *data, zpl_u8 c, zpl_isize n) {
-         zpl_u8 const *s = zpl_cast(zpl_u8 const *) data;
-         while ((zpl_cast(zpl_uintptr) s & (sizeof(zpl_usize) - 1)) && n && *s != c) {
+     void const *zpl_memchr(void const *data, u8 c, sw n) {
+         u8 const *s = zpl_cast(u8 const *) data;
+         while ((zpl_cast(uptr) s & (sizeof(uw) - 1)) && n && *s != c) {
              s++;
              n--;
          }
          if (n && *s != c) {
-             zpl_isize const *w;
-             zpl_isize k = ZPL__ONES * c;
-             w = zpl_cast(zpl_isize const *) s;
-             while (n >= size_of(zpl_isize) && !ZPL__HAS_ZERO(*w ^ k)) {
+             sw const *w;
+             sw k = ZPL__ONES * c;
+             w = zpl_cast(sw const *) s;
+             while (n >= size_of(sw) && !ZPL__HAS_ZERO(*w ^ k)) {
                  w++;
-                 n -= size_of(zpl_isize);
+                 n -= size_of(sw);
              }
-             s = zpl_cast(zpl_u8 const *) w;
+             s = zpl_cast(u8 const *) w;
              while (n && *s != c) {
                  s++;
                  n--;
@@ -8195,15 +8195,15 @@ License:
          return n ? zpl_cast(void const *) s : NULL;
      }
 
-     void const *memrchr(void const *data, zpl_u8 c, zpl_isize n) {
-         zpl_u8 const *s = zpl_cast(zpl_u8 const *) data;
+     void const *memrchr(void const *data, u8 c, sw n) {
+         u8 const *s = zpl_cast(u8 const *) data;
          while (n--) {
              if (s[n] == c) return zpl_cast(void const *)(s + n);
          }
          return NULL;
      }
 
-     void *zpl_memcopy(void *dest, void const *source, zpl_isize n) {
+     void *zpl_memcopy(void *dest, void const *source, sw n) {
          if (dest == NULL) { return NULL; }
 
          return memcpy(dest, source, n);
@@ -8211,35 +8211,35 @@ License:
          // TODO: Re-work the whole method
      #if 0
      #if defined(_MSC_VER)
-         __movsb(zpl_cast(zpl_u8 *) dest, zpl_cast(zpl_u8 *) source, n);
+         __movsb(zpl_cast(u8 *) dest, zpl_cast(u8 *) source, n);
      #elif defined(ZPL_CPU_X86) && !defined(ZPL_SYSTEM_EMSCRIPTEN)
-         zpl_u8 *__dest8 = zpl_cast(zpl_u8 *) dest;
-         zpl_u8 *__source8 = zpl_cast(zpl_u8 *) source;
+         u8 *__dest8 = zpl_cast(u8 *) dest;
+         u8 *__source8 = zpl_cast(u8 *) source;
          __asm__ __volatile__("rep movsb" : "+D"(__dest8), "+S"(__source8), "+c"(n) : : "memory");
      #elif defined(ZPL_CPU_ARM)
          return memcpy(dest, source, n);
      #else
-         zpl_u8 *d = zpl_cast(zpl_u8 *) dest;
-         zpl_u8 const *s = zpl_cast(zpl_u8 const *) source;
-         zpl_u32 w, x;
+         u8 *d = zpl_cast(u8 *) dest;
+         u8 const *s = zpl_cast(u8 const *) source;
+         u32 w, x;
 
-         for (; zpl_cast(zpl_uintptr) s % 4 && n; n--) *d++ = *s++;
+         for (; zpl_cast(uptr) s % 4 && n; n--) *d++ = *s++;
 
-         if (zpl_cast(zpl_uintptr) d % 4 == 0) {
+         if (zpl_cast(uptr) d % 4 == 0) {
              for (; n >= 16; s += 16, d += 16, n -= 16) {
-                 *zpl_cast(zpl_u32 *)(d + 0) = *zpl_cast(zpl_u32 *)(s + 0);
-                 *zpl_cast(zpl_u32 *)(d + 4) = *zpl_cast(zpl_u32 *)(s + 4);
-                 *zpl_cast(zpl_u32 *)(d + 8) = *zpl_cast(zpl_u32 *)(s + 8);
-                 *zpl_cast(zpl_u32 *)(d + 12) = *zpl_cast(zpl_u32 *)(s + 12);
+                 *zpl_cast(u32 *)(d + 0) = *zpl_cast(u32 *)(s + 0);
+                 *zpl_cast(u32 *)(d + 4) = *zpl_cast(u32 *)(s + 4);
+                 *zpl_cast(u32 *)(d + 8) = *zpl_cast(u32 *)(s + 8);
+                 *zpl_cast(u32 *)(d + 12) = *zpl_cast(u32 *)(s + 12);
              }
              if (n & 8) {
-                 *zpl_cast(zpl_u32 *)(d + 0) = *zpl_cast(zpl_u32 *)(s + 0);
-                 *zpl_cast(zpl_u32 *)(d + 4) = *zpl_cast(zpl_u32 *)(s + 4);
+                 *zpl_cast(u32 *)(d + 0) = *zpl_cast(u32 *)(s + 0);
+                 *zpl_cast(u32 *)(d + 4) = *zpl_cast(u32 *)(s + 4);
                  d += 8;
                  s += 8;
              }
              if (n & 4) {
-                 *zpl_cast(zpl_u32 *)(d + 0) = *zpl_cast(zpl_u32 *)(s + 0);
+                 *zpl_cast(u32 *)(d + 0) = *zpl_cast(u32 *)(s + 0);
                  d += 4;
                  s += 4;
              }
@@ -8259,22 +8259,22 @@ License:
      #define LS >>
      #define RS <<
      #endif
-             switch (zpl_cast(zpl_uintptr) d % 4) {
+             switch (zpl_cast(uptr) d % 4) {
                  case 1: {
-                     w = *zpl_cast(zpl_u32 *) s;
+                     w = *zpl_cast(u32 *) s;
                      *d++ = *s++;
                      *d++ = *s++;
                      *d++ = *s++;
                      n -= 3;
                      while (n > 16) {
-                         x = *zpl_cast(zpl_u32 *)(s + 1);
-                         *zpl_cast(zpl_u32 *)(d + 0) = (w LS 24) | (x RS 8);
-                         w = *zpl_cast(zpl_u32 *)(s + 5);
-                         *zpl_cast(zpl_u32 *)(d + 4) = (x LS 24) | (w RS 8);
-                         x = *zpl_cast(zpl_u32 *)(s + 9);
-                         *zpl_cast(zpl_u32 *)(d + 8) = (w LS 24) | (x RS 8);
-                         w = *zpl_cast(zpl_u32 *)(s + 13);
-                         *zpl_cast(zpl_u32 *)(d + 12) = (x LS 24) | (w RS 8);
+                         x = *zpl_cast(u32 *)(s + 1);
+                         *zpl_cast(u32 *)(d + 0) = (w LS 24) | (x RS 8);
+                         w = *zpl_cast(u32 *)(s + 5);
+                         *zpl_cast(u32 *)(d + 4) = (x LS 24) | (w RS 8);
+                         x = *zpl_cast(u32 *)(s + 9);
+                         *zpl_cast(u32 *)(d + 8) = (w LS 24) | (x RS 8);
+                         w = *zpl_cast(u32 *)(s + 13);
+                         *zpl_cast(u32 *)(d + 12) = (x LS 24) | (w RS 8);
 
                          s += 16;
                          d += 16;
@@ -8282,19 +8282,19 @@ License:
                      }
                  } break;
                  case 2: {
-                     w = *zpl_cast(zpl_u32 *) s;
+                     w = *zpl_cast(u32 *) s;
                      *d++ = *s++;
                      *d++ = *s++;
                      n -= 2;
                      while (n > 17) {
-                         x = *zpl_cast(zpl_u32 *)(s + 2);
-                         *zpl_cast(zpl_u32 *)(d + 0) = (w LS 16) | (x RS 16);
-                         w = *zpl_cast(zpl_u32 *)(s + 6);
-                         *zpl_cast(zpl_u32 *)(d + 4) = (x LS 16) | (w RS 16);
-                         x = *zpl_cast(zpl_u32 *)(s + 10);
-                         *zpl_cast(zpl_u32 *)(d + 8) = (w LS 16) | (x RS 16);
-                         w = *zpl_cast(zpl_u32 *)(s + 14);
-                         *zpl_cast(zpl_u32 *)(d + 12) = (x LS 16) | (w RS 16);
+                         x = *zpl_cast(u32 *)(s + 2);
+                         *zpl_cast(u32 *)(d + 0) = (w LS 16) | (x RS 16);
+                         w = *zpl_cast(u32 *)(s + 6);
+                         *zpl_cast(u32 *)(d + 4) = (x LS 16) | (w RS 16);
+                         x = *zpl_cast(u32 *)(s + 10);
+                         *zpl_cast(u32 *)(d + 8) = (w LS 16) | (x RS 16);
+                         w = *zpl_cast(u32 *)(s + 14);
+                         *zpl_cast(u32 *)(d + 12) = (x LS 16) | (w RS 16);
 
                          s += 16;
                          d += 16;
@@ -8302,18 +8302,18 @@ License:
                      }
                  } break;
                  case 3: {
-                     w = *zpl_cast(zpl_u32 *) s;
+                     w = *zpl_cast(u32 *) s;
                      *d++ = *s++;
                      n -= 1;
                      while (n > 18) {
-                         x = *zpl_cast(zpl_u32 *)(s + 3);
-                         *zpl_cast(zpl_u32 *)(d + 0) = (w LS 8) | (x RS 24);
-                         w = *zpl_cast(zpl_u32 *)(s + 7);
-                         *zpl_cast(zpl_u32 *)(d + 4) = (x LS 8) | (w RS 24);
-                         x = *zpl_cast(zpl_u32 *)(s + 11);
-                         *zpl_cast(zpl_u32 *)(d + 8) = (w LS 8) | (x RS 24);
-                         w = *zpl_cast(zpl_u32 *)(s + 15);
-                         *zpl_cast(zpl_u32 *)(d + 12) = (x LS 8) | (w RS 24);
+                         x = *zpl_cast(u32 *)(s + 3);
+                         *zpl_cast(u32 *)(d + 0) = (w LS 8) | (x RS 24);
+                         w = *zpl_cast(u32 *)(s + 7);
+                         *zpl_cast(u32 *)(d + 4) = (x LS 8) | (w RS 24);
+                         x = *zpl_cast(u32 *)(s + 11);
+                         *zpl_cast(u32 *)(d + 8) = (w LS 8) | (x RS 24);
+                         w = *zpl_cast(u32 *)(s + 15);
+                         *zpl_cast(u32 *)(d + 12) = (x LS 8) | (w RS 24);
 
                          s += 16;
                          d += 16;
@@ -8416,9 +8416,9 @@ License:
      #define ZPL_HEAP_STATS_MAGIC 0xDEADC0DE
 
      typedef struct zpl__heap_stats {
-         zpl_u32 magic;
-         zpl_isize used_memory;
-         zpl_isize alloc_count;
+         u32 magic;
+         sw used_memory;
+         sw alloc_count;
      } zpl__heap_stats;
 
      global zpl__heap_stats zpl__heap_stats_info;
@@ -8427,11 +8427,11 @@ License:
          zero_item(&zpl__heap_stats_info);
          zpl__heap_stats_info.magic = ZPL_HEAP_STATS_MAGIC;
      }
-     zpl_isize heap_stats_used_memory(void) {
+     sw heap_stats_used_memory(void) {
          ZPL_ASSERT_MSG(zpl__heap_stats_info.magic == ZPL_HEAP_STATS_MAGIC, "heap_stats is not initialised yet, call heap_stats_init first!");
          return zpl__heap_stats_info.used_memory;
      }
-     zpl_isize heap_stats_alloc_count(void) {
+     sw heap_stats_alloc_count(void) {
          ZPL_ASSERT_MSG(zpl__heap_stats_info.magic == ZPL_HEAP_STATS_MAGIC, "heap_stats is not initialised yet, call heap_stats_init first!");
          return zpl__heap_stats_info.alloc_count;
      }
@@ -8442,7 +8442,7 @@ License:
      }
 
      typedef struct zpl__heap_alloc_info {
-         zpl_isize size;
+         sw size;
          void *physical_start;
      } zpl__heap_alloc_info;
 
@@ -8453,9 +8453,9 @@ License:
          if (!alignment) alignment = ZPL_DEFAULT_MEMORY_ALIGNMENT;
 
      #    ifdef ZPL_HEAP_ANALYSIS
-             zpl_isize alloc_info_size = size_of(zpl__heap_alloc_info);
-             zpl_isize alloc_info_remainder = (alloc_info_size % alignment);
-             zpl_isize track_size = max(alloc_info_size, alignment) + alloc_info_remainder;
+             sw alloc_info_size = size_of(zpl__heap_alloc_info);
+             sw alloc_info_remainder = (alloc_info_size % alignment);
+             sw track_size = max(alloc_info_size, alignment) + alloc_info_remainder;
              switch (type) {
                  case ZPL_ALLOCATION_FREE: {
                      if (!old_memory) break;
@@ -8546,10 +8546,10 @@ License:
          switch (type) {
              case ZPL_ALLOCATION_ALLOC: {
                  void *end = pointer_add(arena->physical_start, arena->total_allocated);
-                 zpl_isize total_size = align_forward_i64(size, alignment);
+                 sw total_size = align_forward_i64(size, alignment);
 
                  // NOTE: Out of memory
-                 if (arena->total_allocated + total_size > zpl_cast(zpl_isize) arena->total_size) {
+                 if (arena->total_allocated + total_size > zpl_cast(sw) arena->total_size) {
                      // zpl__printf_err("%s", "Arena out of memory\n");
                      return NULL;
                  }
@@ -8579,10 +8579,10 @@ License:
      // Pool Allocator
      //
 
-     void pool_init_align(zpl_pool *pool, zpl_allocator backing, zpl_isize num_blocks, zpl_isize block_size, zpl_isize block_align) {
-         zpl_isize actual_block_size, pool_size, block_index;
+     void pool_init_align(zpl_pool *pool, zpl_allocator backing, sw num_blocks, sw block_size, sw block_align) {
+         sw actual_block_size, pool_size, block_index;
          void *data, *curr;
-         zpl_uintptr *end;
+         uptr *end;
 
          zero_item(pool);
 
@@ -8599,13 +8599,13 @@ License:
          // NOTE: Init intrusive freelist
          curr = data;
          for (block_index = 0; block_index < num_blocks - 1; block_index++) {
-             zpl_uintptr *next = zpl_cast(zpl_uintptr *) curr;
-             *next = zpl_cast(zpl_uintptr) curr + actual_block_size;
+             uptr *next = zpl_cast(uptr *) curr;
+             *next = zpl_cast(uptr) curr + actual_block_size;
              curr = pointer_add(curr, actual_block_size);
          }
 
-         end = zpl_cast(zpl_uintptr *) curr;
-         *end = zpl_cast(zpl_uintptr) NULL;
+         end = zpl_cast(uptr *) curr;
+         *end = zpl_cast(uptr) NULL;
 
          pool->physical_start = data;
          pool->free_list = data;
@@ -8619,12 +8619,12 @@ License:
 
          switch (type) {
              case ZPL_ALLOCATION_ALLOC: {
-                 zpl_uintptr next_free;
+                 uptr next_free;
                  ZPL_ASSERT(size == pool->block_size);
                  ZPL_ASSERT(alignment == pool->block_align);
                  ZPL_ASSERT(pool->free_list != NULL);
 
-                 next_free = *zpl_cast(zpl_uintptr *) pool->free_list;
+                 next_free = *zpl_cast(uptr *) pool->free_list;
                  ptr = pool->free_list;
                  pool->free_list = zpl_cast(void *) next_free;
                  pool->total_size += pool->block_size;
@@ -8632,19 +8632,19 @@ License:
              } break;
 
              case ZPL_ALLOCATION_FREE: {
-                 zpl_uintptr *next;
+                 uptr *next;
                  if (old_memory == NULL) return NULL;
 
-                 next = zpl_cast(zpl_uintptr *) old_memory;
-                 *next = zpl_cast(zpl_uintptr) pool->free_list;
+                 next = zpl_cast(uptr *) old_memory;
+                 *next = zpl_cast(uptr) pool->free_list;
                  pool->free_list = old_memory;
                  pool->total_size -= pool->block_size;
              } break;
 
              case ZPL_ALLOCATION_FREE_ALL: {
-                 zpl_isize actual_block_size, block_index;
+                 sw actual_block_size, block_index;
                  void *curr;
-                 zpl_uintptr *end;
+                 uptr *end;
 
                  actual_block_size = pool->block_size + pool->block_align;
                  pool->total_size = 0;
@@ -8652,13 +8652,13 @@ License:
                  // NOTE: Init intrusive freelist
                  curr = pool->physical_start;
                  for (block_index = 0; block_index < pool->num_blocks - 1; block_index++) {
-                     zpl_uintptr *next = zpl_cast(zpl_uintptr *) curr;
-                     *next = zpl_cast(zpl_uintptr) curr + actual_block_size;
+                     uptr *next = zpl_cast(uptr *) curr;
+                     *next = zpl_cast(uptr) curr + actual_block_size;
                      curr = pointer_add(curr, actual_block_size);
                  }
 
-                 end = zpl_cast(zpl_uintptr *) curr;
-                 *end = zpl_cast(zpl_uintptr) NULL;
+                 end = zpl_cast(uptr *) curr;
+                 *end = zpl_cast(uptr) NULL;
                  pool->free_list = pool->physical_start;
              } break;
 
@@ -8676,7 +8676,7 @@ License:
      // Scratch Memory Allocator
      //
 
-     void scratch_memory_init(scratch_memory *s, void *start, zpl_isize size) {
+     void scratch_memory_init(scratch_memory *s, void *start, sw size) {
          s->physical_start = start;
          s->total_size = size;
          s->alloc_point = start;
@@ -8723,7 +8723,7 @@ License:
 
                  if (!scratch_memory_is_in_use(s, pt)) {
                      allocation_header_fill(header, pt, pointer_diff(header, pt));
-                     s->alloc_point = zpl_cast(zpl_u8 *) pt;
+                     s->alloc_point = zpl_cast(u8 *) pt;
                      ptr = data;
                  }
 
@@ -8778,18 +8778,18 @@ License:
          switch (type) {
              case ZPL_ALLOCATION_ALLOC: {
                  size += ZPL_STACK_ALLOC_OFFSET;
-                 zpl_u64 alloc_offset = s->allocated;
+                 u64 alloc_offset = s->allocated;
 
                  void *curr =
-                     zpl_cast(zpl_u64 *) align_forward(zpl_cast(zpl_u64 *) pointer_add(s->physical_start, s->allocated), alignment);
+                     zpl_cast(u64 *) align_forward(zpl_cast(u64 *) pointer_add(s->physical_start, s->allocated), alignment);
 
-                 if (zpl_cast(zpl_u64 *) pointer_add(curr, size) > zpl_cast(zpl_u64 *) pointer_add(s->physical_start, s->total_size)) {
+                 if (zpl_cast(u64 *) pointer_add(curr, size) > zpl_cast(u64 *) pointer_add(s->physical_start, s->total_size)) {
                      if (s->backing.proc) {
                          void *old_start = s->physical_start;
                          s->physical_start =
                              resize_align(s->backing, s->physical_start, s->total_size, s->total_size + size, alignment);
-                         curr = zpl_cast(zpl_u64 *)
-                             align_forward(zpl_cast(zpl_u64 *) pointer_add(s->physical_start, s->allocated), alignment);
+                         curr = zpl_cast(u64 *)
+                             align_forward(zpl_cast(u64 *) pointer_add(s->physical_start, s->allocated), alignment);
                          s->total_size = pointer_diff(old_start, s->physical_start);
                      } else {
                          ZPL_PANIC("Can not resize stack's memory! Allocator not defined!");
@@ -8798,7 +8798,7 @@ License:
 
                  s->allocated = pointer_diff(s->physical_start, curr) + size;
 
-                 *(zpl_u64 *)curr = alloc_offset;
+                 *(u64 *)curr = alloc_offset;
                  curr = pointer_add(curr, ZPL_STACK_ALLOC_OFFSET);
 
                  ptr = curr;
@@ -8809,8 +8809,8 @@ License:
                      void *curr = old_memory;
                      curr = pointer_sub(curr, ZPL_STACK_ALLOC_OFFSET);
 
-                     zpl_u64 alloc_offset = *(zpl_u64 *)curr;
-                     s->allocated = (zpl_usize)alloc_offset;
+                     u64 alloc_offset = *(u64 *)curr;
+                     s->allocated = (uw)alloc_offset;
                  }
              } break;
 
@@ -8837,7 +8837,7 @@ License:
 
          ZPL_BEGIN_C_DECLS
 
-         virtual_memory vm(void *data, zpl_isize size) {
+         virtual_memory vm(void *data, sw size) {
              virtual_memory vm;
              vm.data = data;
              vm.size = size;
@@ -8845,7 +8845,7 @@ License:
          }
 
          #if defined(ZPL_SYSTEM_WINDOWS)
-             virtual_memory vm_alloc(void *addr, zpl_isize size) {
+             virtual_memory vm_alloc(void *addr, sw size) {
                  virtual_memory vm;
                  ZPL_ASSERT(size > 0);
                  vm.data = VirtualAlloc(addr, size, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
@@ -8858,7 +8858,7 @@ License:
                  while (vm.size > 0) {
                      if (VirtualQuery(vm.data, &info, size_of(info)) == 0) return false;
                      if (info.BaseAddress != vm.data || info.AllocationBase != vm.data || info.State != MEM_COMMIT ||
-                         info.RegionSize > zpl_cast(zpl_usize) vm.size) {
+                         info.RegionSize > zpl_cast(uw) vm.size) {
                          return false;
                      }
                      if (VirtualFree(vm.data, 0, MEM_RELEASE) == 0) return false;
@@ -8868,7 +8868,7 @@ License:
                  return true;
              }
 
-             virtual_memory vm_trim(virtual_memory vm, zpl_isize lead_size, zpl_isize size) {
+             virtual_memory vm_trim(virtual_memory vm, sw lead_size, sw size) {
                  virtual_memory new_vm = { 0 };
                  void *ptr;
                  ZPL_ASSERT(vm.size >= lead_size + size);
@@ -8888,7 +8888,7 @@ License:
                  return true;
              }
 
-             zpl_isize virtual_memory_page_size(zpl_isize *alignment_out) {
+             sw virtual_memory_page_size(sw *alignment_out) {
                  SYSTEM_INFO info;
                  GetSystemInfo(&info);
                  if (alignment_out) *alignment_out = info.dwAllocationGranularity;
@@ -8902,7 +8902,7 @@ License:
          #        define MAP_ANONYMOUS MAP_ANON
          #    endif
 
-             virtual_memory vm_alloc(void *addr, zpl_isize size) {
+             virtual_memory vm_alloc(void *addr, sw size) {
                  virtual_memory vm;
                  ZPL_ASSERT(size > 0);
                  vm.data = mmap(addr, size, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
@@ -8915,9 +8915,9 @@ License:
                  return true;
              }
 
-             virtual_memory vm_trim(virtual_memory vm, zpl_isize lead_size, zpl_isize size) {
+             virtual_memory vm_trim(virtual_memory vm, sw lead_size, sw size) {
                  void *ptr;
-                 zpl_isize trail_size;
+                 sw trail_size;
                  ZPL_ASSERT(vm.size >= lead_size + size);
 
                  ptr = pointer_add(vm.data, lead_size);
@@ -8933,9 +8933,9 @@ License:
                  return err != 0;
              }
 
-             zpl_isize virtual_memory_page_size(zpl_isize *alignment_out) {
+             sw virtual_memory_page_size(sw *alignment_out) {
                  // TODO: Is this always true?
-                 zpl_isize result = zpl_cast(zpl_isize) sysconf(_SC_PAGE_SIZE);
+                 sw result = zpl_cast(sw) sysconf(_SC_PAGE_SIZE);
                  if (alignment_out) *alignment_out = result;
                  return result;
              }
@@ -8953,9 +8953,9 @@ License:
 
          ZPL_BEGIN_C_DECLS
 
-         internal zpl_isize zpl__scan_zpl_i64(const char *text, zpl_i32 base, zpl_i64 *value) {
+         internal sw zpl__scan_zpl_i64(const char *text, s32 base, s64 *value) {
              const char *text_begin = text;
-             zpl_i64 result = 0;
+             s64 result = 0;
              b32 negative = false;
 
              if (*text == '-') {
@@ -8966,7 +8966,7 @@ License:
              if (base == 16 && str_compare(text, "0x", 2) == 0) text += 2;
 
              for (;;) {
-                 zpl_i64 v;
+                 s64 v;
                  if (char_is_digit(*text))
                      v = *text - '0';
                  else if (base == 16 && char_is_hex_digit(*text))
@@ -8987,14 +8987,14 @@ License:
              return (text - text_begin);
          }
 
-         internal zpl_isize zpl__scan_zpl_u64(const char *text, zpl_i32 base, zpl_u64 *value) {
+         internal sw zpl__scan_zpl_u64(const char *text, s32 base, u64 *value) {
              const char *text_begin = text;
-             zpl_u64 result = 0;
+             u64 result = 0;
 
              if (base == 16 && str_compare(text, "0x", 2) == 0) text += 2;
 
              for (;;) {
-                 zpl_u64 v;
+                 u64 v;
                  if (char_is_digit(*text))
                      v = *text - '0';
                  else if (base == 16 && char_is_hex_digit(*text))
@@ -9014,9 +9014,9 @@ License:
          }
 
          // TODO: Make better
-         zpl_u64 str_to_u64(const char *str, char **end_ptr, zpl_i32 base) {
-             zpl_isize len;
-             zpl_u64 value = 0;
+         u64 str_to_u64(const char *str, char **end_ptr, s32 base) {
+             sw len;
+             u64 value = 0;
 
              if (!base) {
                  if ((zpl_strlen(str) > 2) && (str_compare(str, "0x", 2) == 0))
@@ -9030,9 +9030,9 @@ License:
              return value;
          }
 
-         zpl_i64 str_to_i64(const char *str, char **end_ptr, zpl_i32 base) {
-             zpl_isize len;
-             zpl_i64 value;
+         s64 str_to_i64(const char *str, char **end_ptr, s32 base) {
+             sw len;
+             s64 value;
 
              if (!base) {
                  if ((zpl_strlen(str) > 2) && (str_compare(str, "0x", 2) == 0))
@@ -9052,17 +9052,17 @@ License:
          "abcdefghijklmnopqrstuvwxyz"
          "@$";
 
-         void i64_to_str(zpl_i64 value, char *string, zpl_i32 base) {
+         void i64_to_str(s64 value, char *string, s32 base) {
              char *buf = string;
              b32 negative = false;
-             zpl_u64 v;
+             u64 v;
 
              if (value < 0) {
                  negative = true;
                  value = -value;
              }
 
-             v = zpl_cast(zpl_u64) value;
+             v = zpl_cast(u64) value;
              if (v != 0) {
                  while (v > 0) {
                      *buf++ = zpl__num_to_char_table[v % base];
@@ -9076,7 +9076,7 @@ License:
              strrev(string);
          }
 
-         void u64_to_str(zpl_u64 value, char *string, zpl_i32 base) {
+         void u64_to_str(u64 value, char *string, s32 base) {
              char *buf = string;
 
              if (value) {
@@ -9094,7 +9094,7 @@ License:
 
          f64 str_to_f64(const char *str, char **end_ptr) {
              f64 result, value, sign, scale;
-             zpl_i32 frac;
+             s32 frac;
 
              while (char_is_space(*str)) { str++; }
 
@@ -9121,7 +9121,7 @@ License:
              frac = 0;
              scale = 1.0;
              if ((*str == 'e') || (*str == 'E')) {
-                 zpl_u32 exp;
+                 u32 exp;
 
                  str++;
                  if (*str == '-') {
@@ -9163,9 +9163,9 @@ License:
          //
          //
 
-         zpl_u16 *utf8_to_ucs2(zpl_u16 *buffer, zpl_isize len, zpl_u8 const *str) {
+         u16 *utf8_to_ucs2(u16 *buffer, sw len, u8 const *str) {
              rune c;
-             zpl_isize i = 0;
+             sw i = 0;
              len--;
              while (*str) {
                  if (i >= len) return NULL;
@@ -9175,7 +9175,7 @@ License:
                      if (*str < 0xc2) return NULL;
                      c = (*str++ & 0x1f) << 6;
                      if ((*str & 0xc0) != 0x80) return NULL;
-                     buffer[i++] = zpl_cast(zpl_u16)(c + (*str++ & 0x3f));
+                     buffer[i++] = zpl_cast(u16)(c + (*str++ & 0x3f));
                  } else if ((*str & 0xf0) == 0xe0) {
                      if (*str == 0xe0 && (str[1] < 0xa0 || str[1] > 0xbf)) return NULL;
                      if (*str == 0xed && str[1] > 0x9f) // str[1] < 0x80 is checked below
@@ -9184,7 +9184,7 @@ License:
                      if ((*str & 0xc0) != 0x80) return NULL;
                      c += (*str++ & 0x3f) << 6;
                      if ((*str & 0xc0) != 0x80) return NULL;
-                     buffer[i++] = zpl_cast(zpl_u16)(c + (*str++ & 0x3f));
+                     buffer[i++] = zpl_cast(u16)(c + (*str++ & 0x3f));
                  } else if ((*str & 0xf8) == 0xf0) {
                      if (*str > 0xf4) return NULL;
                      if (*str == 0xf0 && (str[1] < 0x90 || str[1] > 0xbf)) return NULL;
@@ -9213,8 +9213,8 @@ License:
              return buffer;
          }
 
-         zpl_u8 *ucs2_to_utf8(zpl_u8 *buffer, zpl_isize len, zpl_u16 const *str) {
-             zpl_isize i = 0;
+         u8 *ucs2_to_utf8(u8 *buffer, sw len, u16 const *str) {
+             sw i = 0;
              len--;
              while (*str) {
                  if (*str < 0x80) {
@@ -9248,17 +9248,17 @@ License:
              return buffer;
          }
 
-         zpl_u16 *utf8_to_ucs2_buf(zpl_u8 const *str) { // NOTE: Uses locally persisting buffer
-             local_persist zpl_u16 buf[4096];
+         u16 *utf8_to_ucs2_buf(u8 const *str) { // NOTE: Uses locally persisting buffer
+             local_persist u16 buf[4096];
              return utf8_to_ucs2(buf, count_of(buf), str);
          }
 
-         zpl_u8 *ucs2_to_utf8_buf(zpl_u16 const *str) { // NOTE: Uses locally persisting buffer
-             local_persist zpl_u8 buf[4096];
+         u8 *ucs2_to_utf8_buf(u16 const *str) { // NOTE: Uses locally persisting buffer
+             local_persist u8 buf[4096];
              return ucs2_to_utf8(buf, count_of(buf), str);
          }
 
-         global zpl_u8 const zpl__utf8_first[256] = {
+         global u8 const zpl__utf8_first[256] = {
              0xf0, 0xf0, 0xf0, 0xf0, 0xf0, 0xf0, 0xf0, 0xf0, 0xf0, 0xf0, 0xf0, 0xf0, 0xf0, 0xf0, 0xf0, 0xf0, // 0x00-0x0F
              0xf0, 0xf0, 0xf0, 0xf0, 0xf0, 0xf0, 0xf0, 0xf0, 0xf0, 0xf0, 0xf0, 0xf0, 0xf0, 0xf0, 0xf0, 0xf0, // 0x10-0x1F
              0xf0, 0xf0, 0xf0, 0xf0, 0xf0, 0xf0, 0xf0, 0xf0, 0xf0, 0xf0, 0xf0, 0xf0, 0xf0, 0xf0, 0xf0, 0xf0, // 0x20-0x2F
@@ -9279,22 +9279,22 @@ License:
 
 
          typedef struct utf8_accept_range {
-             zpl_u8 lo, hi;
+             u8 lo, hi;
          } utf8_accept_range;
 
          global utf8_accept_range const zpl__utf8_accept_ranges[] = {
              { 0x80, 0xbf }, { 0xa0, 0xbf }, { 0x80, 0x9f }, { 0x90, 0xbf }, { 0x80, 0x8f },
          };
 
-         zpl_isize utf8_decode(zpl_u8 const *str, zpl_isize str_len, rune *codepoint_out) {
+         sw utf8_decode(u8 const *str, sw str_len, rune *codepoint_out) {
 
-             zpl_isize width = 0;
+             sw width = 0;
              rune codepoint = ZPL_RUNE_INVALID;
 
              if (str_len > 0) {
-                 zpl_u8 s0 = str[0];
-                 zpl_u8 x = zpl__utf8_first[s0], sz;
-                 zpl_u8 b1, b2, b3;
+                 u8 s0 = str[0];
+                 u8 x = zpl__utf8_first[s0], sz;
+                 u8 b1, b2, b3;
                  utf8_accept_range accept;
                  if (x >= 0xf0) {
                      rune mask = (zpl_cast(rune) x << 31) >> 31;
@@ -9348,24 +9348,24 @@ License:
              return width;
          }
 
-         zpl_isize utf8_codepoint_size(zpl_u8 const *str, zpl_isize str_len) {
-             zpl_isize i = 0;
+         sw utf8_codepoint_size(u8 const *str, sw str_len) {
+             sw i = 0;
              for (; i < str_len && str[i]; i++) {
                  if ((str[i] & 0xc0) != 0x80) break;
              }
              return i + 1;
          }
 
-         zpl_isize utf8_encode_rune(zpl_u8 buf[4], rune r) {
-             zpl_u32 i = zpl_cast(zpl_u32) r;
-             zpl_u8 mask = 0x3f;
+         sw utf8_encode_rune(u8 buf[4], rune r) {
+             u32 i = zpl_cast(u32) r;
+             u8 mask = 0x3f;
              if (i <= (1 << 7) - 1) {
-                 buf[0] = zpl_cast(zpl_u8) r;
+                 buf[0] = zpl_cast(u8) r;
                  return 1;
              }
              if (i <= (1 << 11) - 1) {
-                 buf[0] = 0xc0 | zpl_cast(zpl_u8)(r >> 6);
-                 buf[1] = 0x80 | (zpl_cast(zpl_u8)(r) & mask);
+                 buf[0] = 0xc0 | zpl_cast(u8)(r >> 6);
+                 buf[1] = 0x80 | (zpl_cast(u8)(r) & mask);
                  return 2;
              }
 
@@ -9373,23 +9373,23 @@ License:
              if (i > ZPL_RUNE_MAX || is_between(i, 0xd800, 0xdfff)) {
                  r = ZPL_RUNE_INVALID;
 
-                 buf[0] = 0xe0 | zpl_cast(zpl_u8)(r >> 12);
-                 buf[1] = 0x80 | (zpl_cast(zpl_u8)(r >> 6) & mask);
-                 buf[2] = 0x80 | (zpl_cast(zpl_u8)(r) & mask);
+                 buf[0] = 0xe0 | zpl_cast(u8)(r >> 12);
+                 buf[1] = 0x80 | (zpl_cast(u8)(r >> 6) & mask);
+                 buf[2] = 0x80 | (zpl_cast(u8)(r) & mask);
                  return 3;
              }
 
              if (i <= (1 << 16) - 1) {
-                 buf[0] = 0xe0 | zpl_cast(zpl_u8)(r >> 12);
-                 buf[1] = 0x80 | (zpl_cast(zpl_u8)(r >> 6) & mask);
-                 buf[2] = 0x80 | (zpl_cast(zpl_u8)(r) & mask);
+                 buf[0] = 0xe0 | zpl_cast(u8)(r >> 12);
+                 buf[1] = 0x80 | (zpl_cast(u8)(r >> 6) & mask);
+                 buf[2] = 0x80 | (zpl_cast(u8)(r) & mask);
                  return 3;
              }
 
-             buf[0] = 0xf0 | zpl_cast(zpl_u8)(r >> 18);
-             buf[1] = 0x80 | (zpl_cast(zpl_u8)(r >> 12) & mask);
-             buf[2] = 0x80 | (zpl_cast(zpl_u8)(r >> 6) & mask);
-             buf[3] = 0x80 | (zpl_cast(zpl_u8)(r) & mask);
+             buf[0] = 0xf0 | zpl_cast(u8)(r >> 18);
+             buf[1] = 0x80 | (zpl_cast(u8)(r >> 12) & mask);
+             buf[2] = 0x80 | (zpl_cast(u8)(r >> 6) & mask);
+             buf[3] = 0x80 | (zpl_cast(u8)(r) & mask);
              return 4;
          }
 
@@ -9399,8 +9399,8 @@ License:
 
          ZPL_BEGIN_C_DECLS
 
-         string string_make_reserve(zpl_allocator a, zpl_isize capacity) {
-             zpl_isize header_size = size_of(string_header);
+         string string_make_reserve(zpl_allocator a, sw capacity) {
+             sw header_size = size_of(string_header);
              void *ptr = alloc(a, header_size + capacity + 1);
 
              string str;
@@ -9420,8 +9420,8 @@ License:
          }
 
 
-         string string_make_length(zpl_allocator a, void const *init_str, zpl_isize num_bytes) {
-             zpl_isize header_size = size_of(string_header);
+         string string_make_length(zpl_allocator a, void const *init_str, sw num_bytes) {
+             sw header_size = size_of(string_header);
              void *ptr = alloc(a, header_size + num_bytes + 1);
 
              string str;
@@ -9451,7 +9451,7 @@ License:
              return string_make(a, buf);
          }
 
-         string string_sprintf(zpl_allocator a, char *buf, zpl_isize num_bytes, const char *fmt, ...) {
+         string string_sprintf(zpl_allocator a, char *buf, sw num_bytes, const char *fmt, ...) {
              va_list va;
              va_start(va, fmt);
              zpl_snprintf_va(buf, num_bytes, fmt, va);
@@ -9460,9 +9460,9 @@ License:
              return string_make(a, buf);
          }
 
-         string string_append_length(string str, void const *other, zpl_isize other_len) {
+         string string_append_length(string str, void const *other, sw other_len) {
              if (other_len > 0) {
-                 zpl_isize curr_len = string_length(str);
+                 sw curr_len = string_length(str);
 
                  str = string_make_space_for(str, other_len);
                  if (str == NULL) return NULL;
@@ -9478,9 +9478,9 @@ License:
              return string_append_length(str, other, zpl_strlen(other));
          }
 
-         ZPL_ALWAYS_INLINE string string_join(zpl_allocator a, const char **parts, zpl_isize count, const char *glue) {
+         ZPL_ALWAYS_INLINE string string_join(zpl_allocator a, const char **parts, sw count, const char *glue) {
              string ret;
-             zpl_isize i;
+             sw i;
 
              ret = string_make(a, NULL);
 
@@ -9496,7 +9496,7 @@ License:
          }
 
          string string_set(string str, const char *cstr) {
-             zpl_isize len = zpl_strlen(cstr);
+             sw len = zpl_strlen(cstr);
              if (string_capacity(str) < len) {
                  str = string_make_space_for(str, len - string_length(str));
                  if (str == NULL) return NULL;
@@ -9509,14 +9509,14 @@ License:
              return str;
          }
 
-         string string_make_space_for(string str, zpl_isize add_len) {
-             zpl_isize available = string_available_space(str);
+         string string_make_space_for(string str, sw add_len) {
+             sw available = string_available_space(str);
 
              // NOTE: Return if there is enough space left
              if (available >= add_len) {
                  return str;
              } else {
-                 zpl_isize new_len, old_size, new_size;
+                 sw new_len, old_size, new_size;
                  void *ptr, *new_ptr;
                  zpl_allocator a = ZPL_STRING_HEADER(str)->allocator;
                  string_header *header;
@@ -9539,13 +9539,13 @@ License:
              }
          }
 
-         zpl_isize string_allocation_size(string const str) {
-             zpl_isize cap = string_capacity(str);
+         sw string_allocation_size(string const str) {
+             sw cap = string_capacity(str);
              return size_of(string_header) + cap;
          }
 
          b32 string_are_equal(string const lhs, string const rhs) {
-             zpl_isize lhs_len, rhs_len, i;
+             sw lhs_len, rhs_len, i;
              lhs_len = string_length(lhs);
              rhs_len = string_length(rhs);
              if (lhs_len != rhs_len) return false;
@@ -9559,7 +9559,7 @@ License:
 
          string string_trim(string str, const char *cut_set) {
              char *start, *end, *start_pos, *end_pos;
-             zpl_isize len;
+             sw len;
 
              start_pos = start = str;
              end_pos = end = str + string_length(str) - 1;
@@ -9567,7 +9567,7 @@ License:
              while (start_pos <= end && char_first_occurence(cut_set, *start_pos)) start_pos++;
              while (end_pos > start_pos && char_first_occurence(cut_set, *end_pos)) end_pos--;
 
-             len = zpl_cast(zpl_isize)((start_pos > end_pos) ? 0 : ((end_pos - start_pos) + 1));
+             len = zpl_cast(sw)((start_pos > end_pos) ? 0 : ((end_pos - start_pos) + 1));
 
              if (str != start_pos) zpl_memmove(str, start_pos, len);
              str[len] = '\0';
@@ -9579,8 +9579,8 @@ License:
 
          string string_append_rune(string str, rune r) {
              if (r >= 0) {
-                 zpl_u8 buf[8] = { 0 };
-                 zpl_isize len = utf8_encode_rune(buf, r);
+                 u8 buf[8] = { 0 };
+                 sw len = utf8_encode_rune(buf, r);
                  return string_append_length(str, buf, len);
              }
 
@@ -9588,7 +9588,7 @@ License:
          }
 
          string string_append_fmt(string str, const char *fmt, ...) {
-             zpl_isize res;
+             sw res;
              char buf[ZPL_PRINTF_MAXLEN] = { 0 };
              va_list va;
              va_start(va, fmt);
@@ -9624,9 +9624,9 @@ License:
 
          #if defined(ZPL_SYSTEM_WINDOWS) || defined (ZPL_SYSTEM_CYGWIN)
 
-             internal wchar_t *zpl__alloc_utf8_to_ucs2(zpl_allocator a, char const *text, zpl_isize *w_len_) {
+             internal wchar_t *zpl__alloc_utf8_to_ucs2(zpl_allocator a, char const *text, sw *w_len_) {
                  wchar_t *w_text = NULL;
-                 zpl_isize len = 0, w_len = 0, w_len1 = 0;
+                 sw len = 0, w_len = 0, w_len1 = 0;
                  if (text == NULL) {
                      if (w_len_) *w_len_ = w_len;
                      return NULL;
@@ -9761,9 +9761,9 @@ License:
 
              internal ZPL_FILE_SEEK_PROC(zpl__posix_file_seek) {
          #    if defined(ZPL_SYSTEM_OSX)
-                 zpl_i64 res = lseek(fd.i, offset, whence);
+                 s64 res = lseek(fd.i, offset, whence);
          #    else // TODO(ZaKlaus): @fixme lseek64
-                 zpl_i64 res = lseek(fd.i, offset, whence);
+                 s64 res = lseek(fd.i, offset, whence);
          #    endif
                  if (res < 0) return false;
                  if (new_offset) *new_offset = res;
@@ -9772,15 +9772,15 @@ License:
 
              internal ZPL_FILE_READ_AT_PROC(zpl__posix_file_read) {
                  unused(stop_at_newline);
-                 zpl_isize res = pread(fd.i, buffer, size, offset);
+                 sw res = pread(fd.i, buffer, size, offset);
                  if (res < 0) return false;
                  if (bytes_read) *bytes_read = res;
                  return true;
              }
 
              internal ZPL_FILE_WRITE_AT_PROC(zpl__posix_file_write) {
-                 zpl_isize res;
-                 zpl_i64 curr_offset = 0;
+                 sw res;
+                 s64 curr_offset = 0;
                  zpl__posix_file_seek(fd, 0, ZPL_SEEK_WHENCE_CURRENT, &curr_offset);
                  if (curr_offset == offset) {
                      // NOTE: Writing to stdout et al. doesn't like pwrite for numerous reasons
@@ -9799,7 +9799,7 @@ License:
                  zpl__posix_file_seek, zpl__posix_file_close };
 
              ZPL_NEVER_INLINE ZPL_FILE_OPEN_PROC(zpl__posix_file_open) {
-                 zpl_i32 os_mode;
+                 s32 os_mode;
                  switch (mode & ZPL_FILE_MODES) {
                      case ZPL_FILE_MODE_READ: os_mode = O_RDONLY; break;
                      case ZPL_FILE_MODE_WRITE: os_mode = O_WRONLY | O_CREAT | O_TRUNC; break;
@@ -9824,7 +9824,7 @@ License:
 
          file_error file_new(zpl_file *f, file_descriptor fd, file_operations ops, char const *filename) {
              file_error err = ZPL_FILE_ERROR_NONE;
-             zpl_isize len = zpl_strlen(filename);
+             sw len = zpl_strlen(filename);
 
              f->ops = ops;
              f->fd = fd;
@@ -9936,9 +9936,9 @@ License:
              file->ops = default_file_operations;
          }
 
-         file_error file_truncate(zpl_file *f, zpl_i64 size) {
+         file_error file_truncate(zpl_file *f, s64 size) {
              file_error err = ZPL_FILE_ERROR_NONE;
-             zpl_i64 prev_offset = file_tell(f);
+             s64 prev_offset = file_tell(f);
              file_seek(f, size);
              if (!SetEndOfFile(f)) err = ZPL_FILE_ERROR_TRUNCATION_FAILURE;
              file_seek(f, prev_offset);
@@ -9977,7 +9977,7 @@ License:
              return &zpl__std_files[std];
          }
 
-         file_error file_truncate(zpl_file *f, zpl_i64 size) {
+         file_error file_truncate(zpl_file *f, s64 size) {
              file_error err = ZPL_FILE_ERROR_NONE;
              int i = ftruncate(f->fd.i, size);
              if (i != 0) err = ZPL_FILE_ERROR_TRUNCATION_FAILURE;
@@ -9988,9 +9988,9 @@ License:
 
          #endif
 
-         zpl_i64 file_size(zpl_file *f) {
-             zpl_i64 size = 0;
-             zpl_i64 prev_offset = file_tell(f);
+         s64 file_size(zpl_file *f) {
+             s64 size = 0;
+             s64 prev_offset = file_tell(f);
              file_seek_to_end(f);
              size = file_tell(f);
              file_seek(f, prev_offset);
@@ -10030,13 +10030,13 @@ License:
              result.allocator = a;
 
              if (file_open(&file, filepath) == ZPL_FILE_ERROR_NONE) {
-                 zpl_isize fsize = zpl_cast(zpl_isize) file_size(&file);
+                 sw fsize = zpl_cast(sw) file_size(&file);
                  if (fsize > 0) {
                      result.data = alloc(a, zero_terminate ? fsize + 1 : fsize);
                      result.size = fsize;
                      file_read_at(&file, result.data, result.size, 0);
                      if (zero_terminate) {
-                         zpl_u8 *str = zpl_cast(zpl_u8 *) result.data;
+                         u8 *str = zpl_cast(u8 *) result.data;
                          str[fsize] = '\0';
                      }
                  }
@@ -10053,7 +10053,7 @@ License:
              fc->size = 0;
          }
 
-         b32 file_write_contents(char const* filepath, void const* buffer, zpl_isize size, file_error* err) {
+         b32 file_write_contents(char const* filepath, void const* buffer, sw size, file_error* err) {
              zpl_file f = { 0 };
              file_error open_err;
              b32 write_ok;
@@ -10075,7 +10075,7 @@ License:
          char *file_read_lines(zpl_allocator allocator, zpl_array(char *)*lines, char const *filename, b32 strip_whitespace) {
              zpl_file f = { 0 };
              file_open(&f, filename);
-             zpl_isize fsize = (zpl_isize)file_size(&f);
+             sw fsize = (sw)file_size(&f);
 
              char *contents = (char *)alloc(allocator, fsize + 1);
              file_read(&f, contents, fsize);
@@ -10104,13 +10104,13 @@ License:
          ZPL_BEGIN_C_DECLS
 
          typedef struct {
-             zpl_u8 magic;
-             zpl_u8 *buf; //< zpl_array OR plain buffer if we can't write
-             zpl_isize cursor;
+             u8 magic;
+             u8 *buf; //< zpl_array OR plain buffer if we can't write
+             sw cursor;
              zpl_allocator allocator;
 
              file_stream_flags flags;
-             zpl_isize cap;
+             sw cap;
          } zpl__memory_fd;
 
          #define ZPL__FILE_STREAM_FD_MAGIC 37
@@ -10148,7 +10148,7 @@ License:
              file->is_temp = true;
              return true;
          }
-         b8 file_stream_open(zpl_file* file, zpl_allocator allocator, zpl_u8 *buffer, zpl_isize size, file_stream_flags flags) {
+         b8 file_stream_open(zpl_file* file, zpl_allocator allocator, u8 *buffer, sw size, file_stream_flags flags) {
              ZPL_ASSERT_NOT_NULL(file);
              zpl__memory_fd *d = (zpl__memory_fd*)alloc(allocator, size_of(zpl__memory_fd));
              if (!d) return false;
@@ -10173,7 +10173,7 @@ License:
              return true;
          }
 
-         zpl_u8 *file_stream_buf(zpl_file* file, zpl_isize *size) {
+         u8 *file_stream_buf(zpl_file* file, sw *size) {
              ZPL_ASSERT_NOT_NULL(file);
              zpl__memory_fd *d = zpl__file_stream_from_fd(file->fd);
              if (size) *size = d->cap;
@@ -10182,7 +10182,7 @@ License:
 
          internal ZPL_FILE_SEEK_PROC(zpl__memory_file_seek) {
              zpl__memory_fd *d = zpl__file_stream_from_fd(fd);
-             zpl_isize buflen = d->cap;
+             sw buflen = d->cap;
 
              if (whence == ZPL_SEEK_WHENCE_BEGIN)
                  d->cursor = 0;
@@ -10206,13 +10206,13 @@ License:
              zpl__memory_fd *d = zpl__file_stream_from_fd(fd);
              if (!(d->flags & (ZPL_FILE_STREAM_CLONE_WRITABLE|ZPL_FILE_STREAM_WRITABLE)))
                  return false;
-             zpl_isize buflen = d->cap;
-             zpl_isize extralen = max(0, size-(buflen-offset));
-             zpl_isize rwlen = size-extralen;
-             zpl_isize new_cap = buflen+extralen;
+             sw buflen = d->cap;
+             sw extralen = max(0, size-(buflen-offset));
+             sw rwlen = size-extralen;
+             sw new_cap = buflen+extralen;
              if (d->flags & ZPL_FILE_STREAM_CLONE_WRITABLE) {
                  if(array_capacity(d->buf) < new_cap) {
-                     if (!array_grow(d->buf, (zpl_i64)(new_cap))) return false;
+                     if (!array_grow(d->buf, (s64)(new_cap))) return false;
                  }
              }
              zpl_memcopy(d->buf + offset, buffer, rwlen);
@@ -10359,7 +10359,7 @@ License:
                  struct stat stat_existing;
                  fstat(existing_fd, &stat_existing);
 
-                 zpl_isize size;
+                 sw size;
                  int new_fd = open(new_filename, O_WRONLY | O_CREAT, stat_existing.st_mode);
 
          #    if defined(ZPL_SYSTEM_FREEBSD)
@@ -10394,9 +10394,9 @@ License:
          #if defined(ZPL_SYSTEM_WINDOWS)
              wchar_t *w_path = NULL;
              wchar_t *w_fullpath = NULL;
-             zpl_isize w_len = 0;
-             zpl_isize new_len = 0;
-             zpl_isize new_len1 = 0;
+             sw w_len = 0;
+             sw new_len = 0;
+             sw new_len1 = 0;
              char *new_path = 0;
 
              w_path = zpl__alloc_utf8_to_ucs2(heap_allocator( ), path, NULL);
@@ -10432,7 +10432,7 @@ License:
              return new_path;
          #else
              char *p, *result, *fullpath = NULL;
-             zpl_isize len;
+             sw len;
              p = realpath(path, NULL);
              fullpath = p;
              if (p == NULL) {
@@ -10451,10 +10451,10 @@ License:
          #endif
          }
 
-         file_error path_mkdir(char const *path, zpl_i32 mode) {
-             zpl_i32 error = 0;
+         file_error path_mkdir(char const *path, s32 mode) {
+             s32 error = 0;
          #if defined(ZPL_SYSTEM_WINDOWS)
-             error = _wmkdir((const wchar_t *)utf8_to_ucs2_buf((const zpl_u8 *)path));
+             error = _wmkdir((const wchar_t *)utf8_to_ucs2_buf((const u8 *)path));
          #else
              error = mkdir(path, (mode_t)mode);
          #endif
@@ -10471,10 +10471,10 @@ License:
              return ZPL_FILE_ERROR_UNKNOWN;
          }
 
-         zpl_isize path_mkdir_recursive(char const *path, zpl_i32 mode) {
+         sw path_mkdir_recursive(char const *path, s32 mode) {
              char tmp[ZPL_MAX_PATH] = {0};
              char *p = 0;
-             zpl_isize len = zpl_strlen(path);
+             sw len = zpl_strlen(path);
 
              if (len > size_of(tmp)-1) {
                  return -1;
@@ -10493,9 +10493,9 @@ License:
          }
 
          file_error path_rmdir(char const *path) {
-             zpl_i32 error = 0;
+             s32 error = 0;
          #if defined(ZPL_SYSTEM_WINDOWS)
-             error = _wrmdir((const wchar_t *)utf8_to_ucs2_buf((const zpl_u8 *)path));
+             error = _wrmdir((const wchar_t *)utf8_to_ucs2_buf((const u8 *)path));
          #else
              error = rmdir(path);
          #endif
@@ -10537,15 +10537,15 @@ License:
                  }
              }
          #elif defined(ZPL_SYSTEM_WINDOWS)
-             zpl_usize length = zpl_strlen(dirname);
+             uw length = zpl_strlen(dirname);
              struct _wfinddata_t data;
-             zpl_intptr findhandle;
+             sptr findhandle;
 
              char directory[MAX_PATH] = { 0 };
              strncpy(directory, dirname, length);
 
              // keeping it native
-             for (zpl_usize i = 0; i < length; i++) {
+             for (uw i = 0; i < length; i++) {
                  if (directory[i] == '/') directory[i] = '\\';
              }
 
@@ -10557,19 +10557,19 @@ License:
              findpath = string_appendc(findpath, "\\");
              findpath = string_appendc(findpath, "*");
 
-             findhandle = _wfindfirst((const wchar_t *)utf8_to_ucs2_buf((const zpl_u8 *)findpath), &data);
+             findhandle = _wfindfirst((const wchar_t *)utf8_to_ucs2_buf((const u8 *)findpath), &data);
              string_free(findpath);
 
              if (findhandle != -1) {
                  do {
-                     char *filename = (char *)ucs2_to_utf8_buf((const zpl_u16 *)data.name);
+                     char *filename = (char *)ucs2_to_utf8_buf((const u16 *)data.name);
                      if (!str_compare(filename, "..", 2)) continue;
                      if (filename[0] == '.' && filename[1] == 0) continue;
 
                      string dirpath = string_make(allocator, directory);
                      dirpath = string_appendc(dirpath, "\\");
                      dirpath = string_appendc(dirpath, filename);
-                     DWORD attrs = GetFileAttributesW((const wchar_t *)utf8_to_ucs2_buf((const zpl_u8 *)dirpath));
+                     DWORD attrs = GetFileAttributesW((const wchar_t *)utf8_to_ucs2_buf((const u8 *)dirpath));
 
                      *output = string_appendc(*output, dirpath);
                      *output = string_appendc(*output, "\n");
@@ -10607,7 +10607,7 @@ License:
 
              array_init(dir->entries, heap());
 
-             for (zpl_i32 i=0; i<array_count(files); ++i) {
+             for (s32 i=0; i<array_count(files); ++i) {
                  dir_entry entry = {0};
                  entry.filename = files[i];
                  entry.type = fs_get_type(entry.filename);
@@ -10627,7 +10627,7 @@ License:
          void dirinfo_free(dir_info *dir) {
              ZPL_ASSERT_NOT_NULL(dir);
 
-             for (zpl_isize i = 0; i < array_count(dir->entries); ++i) {
+             for (sw i = 0; i < array_count(dir->entries); ++i) {
                  zpl__dirinfo_free_entry(dir->entries + i);
              }
 
@@ -10638,9 +10638,9 @@ License:
          }
 
 
-         zpl_u8 fs_get_type(char const *path) {
+         u8 fs_get_type(char const *path) {
          #ifdef ZPL_SYSTEM_WINDOWS
-             DWORD attrs = GetFileAttributesW((const wchar_t *)utf8_to_ucs2_buf((const zpl_u8 *)path));
+             DWORD attrs = GetFileAttributesW((const wchar_t *)utf8_to_ucs2_buf((const u8 *)path));
 
              if (attrs == INVALID_FILE_ATTRIBUTES) {
                  return ZPL_DIR_TYPE_UNKNOWN;
@@ -10736,29 +10736,29 @@ License:
            char _padding[255];
          } zpl__tar_header;
 
-         internal zpl_usize zpl__tar_checksum(zpl__tar_header *hr) {
-             zpl_usize i;
-             zpl_usize res = 256;
-             zpl_u8 *p = zpl_cast(zpl_u8*)(hr);
-             for (i = 0; i < zpl_cast(zpl_usize)offset_of(zpl__tar_header, checksum); i++)
+         internal uw zpl__tar_checksum(zpl__tar_header *hr) {
+             uw i;
+             uw res = 256;
+             u8 *p = zpl_cast(u8*)(hr);
+             for (i = 0; i < zpl_cast(uw)offset_of(zpl__tar_header, checksum); i++)
                  res += p[i];
-             for (i = zpl_cast(zpl_usize)offset_of(zpl__tar_header, type); i < zpl_cast(zpl_usize)size_of(zpl__tar_header); i++)
+             for (i = zpl_cast(uw)offset_of(zpl__tar_header, type); i < zpl_cast(uw)size_of(zpl__tar_header); i++)
                  res += p[i];
              return res;
          }
 
-         internal b32 zpl__tar_write_null(zpl_file *archive, zpl_isize cnt) {
+         internal b32 zpl__tar_write_null(zpl_file *archive, sw cnt) {
              char *out = bprintf("%*r", cnt, '\0');
              if (!file_write(archive, out, cnt))
                  return 0;
              return 1;
          }
 
-         zpl_isize tar_pack(zpl_file *archive, char const **paths, zpl_isize paths_len) {
+         sw tar_pack(zpl_file *archive, char const **paths, sw paths_len) {
              ZPL_ASSERT_NOT_NULL(archive);
              ZPL_ASSERT_NOT_NULL(paths);
 
-             for (zpl_isize i = 0; i < paths_len; i++) {
+             for (sw i = 0; i < paths_len; i++) {
                  ZPL_ASSERT_NOT_NULL(paths[i]);
                  zpl__tar_header hr = {0};
                  zpl_file file;
@@ -10769,7 +10769,7 @@ License:
                      return -(ZPL_TAR_ERROR_IO_ERROR);
                  }
 
-                 zpl_i64 fsize = file_size(&file);
+                 s64 fsize = file_size(&file);
                  zpl_snprintf(hr.name, 12, "%s", paths[i]);
                  zpl_snprintf(hr.size, 12, "%o", fsize);
                  zpl_snprintf(hr.mode, 8, "%o", 0664);
@@ -10781,12 +10781,12 @@ License:
 
                  // write data
                  {
-                     zpl_i64 remaining_data = fsize;
-                     zpl_i64 total_data = align_forward_i64(remaining_data, 512);
-                     zpl_i64 padding = (total_data-fsize);
+                     s64 remaining_data = fsize;
+                     s64 total_data = align_forward_i64(remaining_data, 512);
+                     s64 padding = (total_data-fsize);
                      char buf[4096] = {0};
-                     zpl_i64 pos = 0;
-                     zpl_isize bytes_read = 0;
+                     s64 pos = 0;
+                     sw bytes_read = 0;
                      do {
                          if (!file_read_at_check(&file, buf, 4096, pos, &bytes_read)) {
                              file_close(&file);
@@ -10819,22 +10819,22 @@ License:
              return 0;
          }
 
-         zpl_isize tar_pack_dir(zpl_file *archive, char const *path, zpl_allocator allocator) {
+         sw tar_pack_dir(zpl_file *archive, char const *path, zpl_allocator allocator) {
              string filelst = path_dirlist(allocator, path, true);
              char const **files = zpl_cast(char const**)str_split_lines(allocator, filelst, false);
-             zpl_isize err = tar_pack(archive, files, array_count(files));
+             sw err = tar_pack(archive, files, array_count(files));
              string_free(filelst);
              array_free(files);
              return err;
          }
 
-         zpl_isize tar_unpack(zpl_file *archive, tar_unpack_proc *unpack_proc, void *user_data) {
+         sw tar_unpack(zpl_file *archive, tar_unpack_proc *unpack_proc, void *user_data) {
              ZPL_ASSERT_NOT_NULL(archive);
              ZPL_ASSERT_NOT_NULL(unpack_proc);
 
-             zpl_i64 pos = file_tell(archive);
+             s64 pos = file_tell(archive);
              zpl__tar_header hr = {0};
-             zpl_isize err = ZPL_TAR_ERROR_NONE;
+             sw err = ZPL_TAR_ERROR_NONE;
 
              do {
                  if (!file_read(archive, zpl_cast(void*)&hr, size_of(hr))) {
@@ -10853,9 +10853,9 @@ License:
                  rec.length = str_to_i64(hr.size, 0, 8);
                  rec.error = ZPL_TAR_ERROR_NONE;
 
-                 zpl_usize checksum1 = zpl_cast(zpl_usize)(str_to_i64(hr.checksum, 0, 8));
-                 zpl_usize checksum2 = zpl__tar_checksum(&hr);
-                 rec.error = (checksum1 != checksum2) ? zpl_cast(zpl_isize)ZPL_TAR_ERROR_BAD_CHECKSUM : rec.error;
+                 uw checksum1 = zpl_cast(uw)(str_to_i64(hr.checksum, 0, 8));
+                 uw checksum2 = zpl__tar_checksum(&hr);
+                 rec.error = (checksum1 != checksum2) ? zpl_cast(sw)ZPL_TAR_ERROR_BAD_CHECKSUM : rec.error;
 
                  rec.error = unpack_proc(archive, &rec, user_data);
 
@@ -10898,8 +10898,8 @@ License:
 
              char tmp[ZPL_MAX_PATH] = {0};
              char *base_path = zpl_cast(char*)user_data;
-             zpl_isize base_len = zpl_strlen(base_path);
-             zpl_isize len = zpl_strlen(file->path);
+             sw base_len = zpl_strlen(base_path);
+             sw len = zpl_strlen(file->path);
              ZPL_ASSERT(base_len+len-2 < ZPL_MAX_PATH); /* todo: account for missing leading path sep */
 
              strcpy(tmp, base_path);
@@ -10915,7 +10915,7 @@ License:
              const char *last_slash = char_last_occurence(tmp, ZPL_PATH_SEPARATOR);
 
              if (last_slash) {
-                 zpl_isize i = zpl_cast(zpl_isize)(last_slash-tmp);
+                 sw i = zpl_cast(sw)(last_slash-tmp);
                  tmp[i] = 0;
                  path_mkdir_recursive(tmp, 0755);
                  tmp[i] = ZPL_PATH_SEPARATOR;
@@ -10925,9 +10925,9 @@ License:
              file_create(&f, tmp);
              {
                  char buf[4096] = {0};
-                 zpl_isize remaining_data = file->length;
-                 zpl_isize bytes_read = 0;
-                 zpl_i64 pos = file->offset;
+                 sw remaining_data = file->length;
+                 sw bytes_read = 0;
+                 s64 pos = file->offset;
                  do {
                      if (!file_read_at_check(archive, buf, min(4096, remaining_data), pos, &bytes_read)) {
                          file_close(&f);
@@ -10950,17 +10950,17 @@ License:
 
          ZPL_BEGIN_C_DECLS
 
-         zpl_isize zpl_printf_va(char const *fmt, va_list va) {
+         sw zpl_printf_va(char const *fmt, va_list va) {
              return zpl_fprintf_va(file_get_standard(ZPL_FILE_STANDARD_OUTPUT), fmt, va);
          }
 
-         zpl_isize zpl_printf_err_va(char const *fmt, va_list va) {
+         sw zpl_printf_err_va(char const *fmt, va_list va) {
              return zpl_fprintf_va(file_get_standard(ZPL_FILE_STANDARD_ERROR), fmt, va);
          }
 
-         zpl_isize zpl_fprintf_va(struct zpl_file *f, char const *fmt, va_list va) {
+         sw zpl_fprintf_va(struct zpl_file *f, char const *fmt, va_list va) {
              local_persist thread_local char buf[ZPL_PRINTF_MAXLEN];
-             zpl_isize len = zpl_snprintf_va(buf, size_of(buf), fmt, va);
+             sw len = zpl_snprintf_va(buf, size_of(buf), fmt, va);
              b32 res = file_write(f, buf, len - 1); // NOTE: prevent extra whitespace
              return res ? len : -1;
          }
@@ -10971,17 +10971,17 @@ License:
              return buffer;
          }
 
-         zpl_isize asprintf_va(zpl_allocator allocator, char **buffer, char const *fmt, va_list va) {
+         sw asprintf_va(zpl_allocator allocator, char **buffer, char const *fmt, va_list va) {
              local_persist thread_local char tmp[ZPL_PRINTF_MAXLEN];
              ZPL_ASSERT_NOT_NULL(buffer);
-             zpl_isize res;
+             sw res;
              res = zpl_snprintf_va(tmp, size_of(tmp), fmt, va);
              *buffer = alloc_str(allocator, tmp);
              return res;
          }
 
-         zpl_isize zpl_printf(char const *fmt, ...) {
-             zpl_isize res;
+         sw zpl_printf(char const *fmt, ...) {
+             sw res;
              va_list va;
              va_start(va, fmt);
              res = zpl_printf_va(fmt, va);
@@ -10989,8 +10989,8 @@ License:
              return res;
          }
 
-         zpl_isize zpl_printf_err(char const *fmt, ...) {
-             zpl_isize res;
+         sw zpl_printf_err(char const *fmt, ...) {
+             sw res;
              va_list va;
              va_start(va, fmt);
              res = zpl_printf_err_va(fmt, va);
@@ -10998,8 +10998,8 @@ License:
              return res;
          }
 
-         zpl_isize zpl_fprintf(struct zpl_file *f, char const *fmt, ...) {
-             zpl_isize res;
+         sw zpl_fprintf(struct zpl_file *f, char const *fmt, ...) {
+             sw res;
              va_list va;
              va_start(va, fmt);
              res = zpl_fprintf_va(f, fmt, va);
@@ -11016,8 +11016,8 @@ License:
              return str;
          }
 
-         zpl_isize asprintf(zpl_allocator allocator, char **buffer, char const *fmt, ...) {
-             zpl_isize res;
+         sw asprintf(zpl_allocator allocator, char **buffer, char const *fmt, ...) {
+             sw res;
              va_list va;
              va_start(va, fmt);
              res = asprintf_va(allocator, buffer, fmt, va);
@@ -11025,8 +11025,8 @@ License:
              return res;
          }
 
-         zpl_isize zpl_snprintf(char *str, zpl_isize n, char const *fmt, ...) {
-             zpl_isize res;
+         sw zpl_snprintf(char *str, sw n, char const *fmt, ...) {
+             sw res;
              va_list va;
              va_start(va, fmt);
              res = zpl_snprintf_va(str, n, fmt, va);
@@ -11063,15 +11063,15 @@ License:
          };
 
          typedef struct {
-             zpl_i32 base;
-             zpl_i32 flags;
-             zpl_i32 width;
-             zpl_i32 precision;
+             s32 base;
+             s32 flags;
+             s32 width;
+             s32 precision;
          } zpl__format_info;
 
-         internal zpl_isize zpl__print_string(char *text, zpl_isize max_len, zpl__format_info *info, char const *str) {
-             zpl_isize res = 0, len = 0;
-             zpl_isize remaining = max_len;
+         internal sw zpl__print_string(char *text, sw max_len, zpl__format_info *info, char const *str) {
+             sw res = 0, len = 0;
+             sw remaining = max_len;
              char *begin = text;
 
              if (str == NULL && max_len >= 6) {
@@ -11095,14 +11095,14 @@ License:
                  text += res;
 
                  if (info->width > res) {
-                     zpl_isize padding = info->width - len;
+                     sw padding = info->width - len;
 
                      char pad = (info->flags & ZPL_FMT_ZERO) ? '0' : ' ';
                      while (padding-- > 0 && remaining-- > 0) *text++ = pad, res++;
                  }
              } else {
                  if (info && (info->width > res)) {
-                     zpl_isize padding = info->width - len;
+                     sw padding = info->width - len;
                      char pad = (info->flags & ZPL_FMT_ZERO) ? '0' : ' ';
                      while (padding-- > 0 && remaining-- > 0) *text++ = pad, res++;
                  }
@@ -11121,40 +11121,40 @@ License:
              return res;
          }
 
-         internal zpl_isize zpl__print_char(char *text, zpl_isize max_len, zpl__format_info *info, char arg) {
+         internal sw zpl__print_char(char *text, sw max_len, zpl__format_info *info, char arg) {
              char str[2] = "";
              str[0] = arg;
              return zpl__print_string(text, max_len, info, str);
          }
 
-         internal zpl_isize zpl__print_repeated_char(char *text, zpl_isize max_len, zpl__format_info *info, char arg) {
-             zpl_isize res = 0;
-             zpl_i32 rem = (info) ? (info->width > 0) ? info->width : 1 : 1;
+         internal sw zpl__print_repeated_char(char *text, sw max_len, zpl__format_info *info, char arg) {
+             sw res = 0;
+             s32 rem = (info) ? (info->width > 0) ? info->width : 1 : 1;
              res = rem;
              while (rem-- > 0) *text++ = arg;
 
              return res;
          }
 
-         internal zpl_isize zpl__print_i64(char *text, zpl_isize max_len, zpl__format_info *info, zpl_i64 value) {
+         internal sw zpl__print_i64(char *text, sw max_len, zpl__format_info *info, s64 value) {
              char num[130];
              i64_to_str(value, num, info ? info->base : 10);
              return zpl__print_string(text, max_len, info, num);
          }
 
-         internal zpl_isize zpl__print_u64(char *text, zpl_isize max_len, zpl__format_info *info, zpl_u64 value) {
+         internal sw zpl__print_u64(char *text, sw max_len, zpl__format_info *info, u64 value) {
              char num[130];
              u64_to_str(value, num, info ? info->base : 10);
              return zpl__print_string(text, max_len, info, num);
          }
 
-         internal zpl_isize zpl__print_f64(char *text, zpl_isize max_len, zpl__format_info *info, b32 is_hexadecimal, f64 arg) {
+         internal sw zpl__print_f64(char *text, sw max_len, zpl__format_info *info, b32 is_hexadecimal, f64 arg) {
              // TODO: Handle exponent notation
-             zpl_isize width, len, remaining = max_len;
+             sw width, len, remaining = max_len;
              char *text_begin = text;
 
              if (arg) {
-                 zpl_u64 value;
+                 u64 value;
                  if (arg < 0) {
                      if (remaining > 1) *text = '-', remaining--;
                      text++;
@@ -11164,7 +11164,7 @@ License:
                      text++;
                  }
 
-                 value = zpl_cast(zpl_u64) arg;
+                 value = zpl_cast(u64) arg;
                  len = zpl__print_u64(text, remaining, NULL, value);
                  text += len;
 
@@ -11177,11 +11177,11 @@ License:
                  if (info->precision < 0) info->precision = 6;
 
                  if ((info->flags & ZPL_FMT_ALT) || info->precision > 0) {
-                     zpl_i64 mult = 10;
+                     s64 mult = 10;
                      if (remaining > 1) *text = '.', remaining--;
                      text++;
                      while (info->precision-- > 0) {
-                         value = zpl_cast(zpl_u64)(arg * mult);
+                         value = zpl_cast(u64)(arg * mult);
                          len = zpl__print_u64(text, remaining, NULL, value);
                          text += len;
                          if (len >= remaining)
@@ -11226,13 +11226,13 @@ License:
              return (text - text_begin);
          }
 
-         ZPL_NEVER_INLINE zpl_isize zpl_snprintf_va(char *text, zpl_isize max_len, char const *fmt, va_list va) {
+         ZPL_NEVER_INLINE sw zpl_snprintf_va(char *text, sw max_len, char const *fmt, va_list va) {
              char const *text_begin = text;
-             zpl_isize remaining = max_len, res;
+             sw remaining = max_len, res;
 
              while (*fmt) {
                  zpl__format_info info = { 0 };
-                 zpl_isize len = 0;
+                 sw len = 0;
                  info.precision = -1;
 
                  while (*fmt && *fmt != '%' && remaining) *text++ = *fmt++;
@@ -11262,7 +11262,7 @@ License:
                      info.flags |= ZPL_FMT_WIDTH;
                      fmt++;
                  } else {
-                     info.width = zpl_cast(zpl_i32) str_to_i64(fmt, zpl_cast(char **) & fmt, 10);
+                     info.width = zpl_cast(s32) str_to_i64(fmt, zpl_cast(char **) & fmt, 10);
                      if (info.width != 0) {
                          info.flags |= ZPL_FMT_WIDTH;
                      }
@@ -11275,7 +11275,7 @@ License:
                          info.precision = va_arg(va, int);
                          fmt++;
                      } else {
-                         info.precision = zpl_cast(zpl_i32) str_to_i64(fmt, zpl_cast(char **) & fmt, 10);
+                         info.precision = zpl_cast(s32) str_to_i64(fmt, zpl_cast(char **) & fmt, 10);
                      }
                      info.flags &= ~ZPL_FMT_ZERO;
                  }
@@ -11301,10 +11301,10 @@ License:
 
                      break;
 
-                     case 'z': // NOTE: zpl_usize
+                     case 'z': // NOTE: uw
                          info.flags |= ZPL_FMT_UNSIGNED;
                          // fallthrough
-                     case 't': // NOTE: zpl_isize
+                     case 't': // NOTE: sw
                          info.flags |= ZPL_FMT_SIZE;
                          break;
 
@@ -11359,29 +11359,29 @@ License:
 
                  if (info.base != 0) {
                      if (info.flags & ZPL_FMT_UNSIGNED) {
-                         zpl_u64 value = 0;
+                         u64 value = 0;
                          switch (info.flags & ZPL_FMT_INTS) {
-                             case ZPL_FMT_CHAR:   value = zpl_cast(zpl_u64) zpl_cast(zpl_u8) va_arg(va, int); break;
-                             case ZPL_FMT_SHORT:  value = zpl_cast(zpl_u64) zpl_cast(zpl_u16) va_arg(va, int); break;
-                             case ZPL_FMT_LONG:   value = zpl_cast(zpl_u64) va_arg(va, unsigned long); break;
-                             case ZPL_FMT_LLONG:  value = zpl_cast(zpl_u64) va_arg(va, unsigned long long); break;
-                             case ZPL_FMT_SIZE:   value = zpl_cast(zpl_u64) va_arg(va, zpl_usize); break;
-                             case ZPL_FMT_INTPTR: value = zpl_cast(zpl_u64) va_arg(va, zpl_uintptr); break;
-                             default: value             = zpl_cast(zpl_u64) va_arg(va, unsigned int); break;
+                             case ZPL_FMT_CHAR:   value = zpl_cast(u64) zpl_cast(u8) va_arg(va, int); break;
+                             case ZPL_FMT_SHORT:  value = zpl_cast(u64) zpl_cast(u16) va_arg(va, int); break;
+                             case ZPL_FMT_LONG:   value = zpl_cast(u64) va_arg(va, unsigned long); break;
+                             case ZPL_FMT_LLONG:  value = zpl_cast(u64) va_arg(va, unsigned long long); break;
+                             case ZPL_FMT_SIZE:   value = zpl_cast(u64) va_arg(va, uw); break;
+                             case ZPL_FMT_INTPTR: value = zpl_cast(u64) va_arg(va, uptr); break;
+                             default: value             = zpl_cast(u64) va_arg(va, unsigned int); break;
                          }
 
                          len = zpl__print_u64(text, remaining, &info, value);
 
                      } else {
-                         zpl_i64 value = 0;
+                         s64 value = 0;
                          switch (info.flags & ZPL_FMT_INTS) {
-                             case ZPL_FMT_CHAR:   value = zpl_cast(zpl_i64) zpl_cast(zpl_i8) va_arg(va, int); break;
-                             case ZPL_FMT_SHORT:  value = zpl_cast(zpl_i64) zpl_cast(zpl_i16) va_arg(va, int); break;
-                             case ZPL_FMT_LONG:   value = zpl_cast(zpl_i64) va_arg(va, long); break;
-                             case ZPL_FMT_LLONG:  value = zpl_cast(zpl_i64) va_arg(va, long long); break;
-                             case ZPL_FMT_SIZE:   value = zpl_cast(zpl_i64) va_arg(va, zpl_usize); break;
-                             case ZPL_FMT_INTPTR: value = zpl_cast(zpl_i64) va_arg(va, zpl_uintptr); break;
-                             default: value             = zpl_cast(zpl_i64) va_arg(va, int); break;
+                             case ZPL_FMT_CHAR:   value = zpl_cast(s64) zpl_cast(s8) va_arg(va, int); break;
+                             case ZPL_FMT_SHORT:  value = zpl_cast(s64) zpl_cast(s16) va_arg(va, int); break;
+                             case ZPL_FMT_LONG:   value = zpl_cast(s64) va_arg(va, long); break;
+                             case ZPL_FMT_LLONG:  value = zpl_cast(s64) va_arg(va, long long); break;
+                             case ZPL_FMT_SIZE:   value = zpl_cast(s64) va_arg(va, uw); break;
+                             case ZPL_FMT_INTPTR: value = zpl_cast(s64) va_arg(va, uptr); break;
+                             default: value             = zpl_cast(s64) va_arg(va, int); break;
                          }
 
                          len = zpl__print_i64(text, remaining, &info, value);
@@ -11434,23 +11434,23 @@ License:
          //
 
          #if defined(ZPL_COMPILER_MSVC) && !defined(__clang__)
-             zpl_u64 rdtsc(void) { return __rdtsc( ); }
+             u64 rdtsc(void) { return __rdtsc( ); }
          #elif defined(__i386__)
-             zpl_u64 rdtsc(void) {
-                 zpl_u64 x;
+             u64 rdtsc(void) {
+                 u64 x;
                  __asm__ volatile(".byte 0x0f, 0x31" : "=A"(x));
                  return x;
              }
          #elif defined(__x86_64__)
-             zpl_u64 rdtsc(void) {
-                 zpl_u32 hi, lo;
+             u64 rdtsc(void) {
+                 u32 hi, lo;
                  __asm__ __volatile__("rdtsc" : "=a"(lo), "=d"(hi));
-                 return (zpl_cast(zpl_u64) lo) | ((zpl_cast(zpl_u64) hi) << 32);
+                 return (zpl_cast(u64) lo) | ((zpl_cast(u64) hi) << 32);
              }
          #elif defined(__powerpc__)
-             zpl_u64 rdtsc(void) {
-                 zpl_u64 result = 0;
-                 zpl_u32 upper, lower, tmp;
+             u64 rdtsc(void) {
+                 u64 result = 0;
+                 u32 upper, lower, tmp;
                  __asm__ volatile("0:                   \n"
                                   "\tmftbu   %0         \n"
                                   "\tmftb    %1         \n"
@@ -11465,11 +11465,11 @@ License:
                  return result;
              }
          #elif defined(ZPL_SYSTEM_EMSCRIPTEN)
-             zpl_u64 rdtsc(void) {
-                 return (zpl_u64)(emscripten_get_now() * 1e+6);
+             u64 rdtsc(void) {
+                 return (u64)(emscripten_get_now() * 1e+6);
              }
          #elif defined(ZPL_CPU_ARM) && !defined(ZPL_COMPILER_TINYC)
-             zpl_u64 rdtsc(void) {
+             u64 rdtsc(void) {
          #        if defined(__aarch64__)
                      int64_t r = 0;
                      asm volatile("mrs %0, cntvct_el0" : "=r"(r));
@@ -11496,7 +11496,7 @@ License:
                  return r;
              }
          #else
-             zpl_u64 rdtsc(void) {
+             u64 rdtsc(void) {
                  ZPL_PANIC("rdtsc is not supported on this particular setup");
                  return -0;
              }
@@ -11504,9 +11504,9 @@ License:
 
          #if defined(ZPL_SYSTEM_WINDOWS) || defined(ZPL_SYSTEM_CYGWIN)
 
-             zpl_u64 time_rel_ms(void) {
+             u64 time_rel_ms(void) {
                  local_persist LARGE_INTEGER win32_perf_count_freq = { 0 };
-                 zpl_u64 result;
+                 u64 result;
                  LARGE_INTEGER counter;
                  local_persist LARGE_INTEGER win32_perf_counter = { 0 };
                  if (!win32_perf_count_freq.QuadPart) {
@@ -11521,7 +11521,7 @@ License:
                  return result;
              }
 
-             zpl_u64 time_utc_ms(void) {
+             u64 time_utc_ms(void) {
                  FILETIME ft;
                  ULARGE_INTEGER li;
 
@@ -11532,7 +11532,7 @@ License:
                  return li.QuadPart / 1000;
              }
 
-             zpl_u64 time_tz_ms(void) {
+             u64 time_tz_ms(void) {
                  FILETIME ft;
                  SYSTEMTIME st, lst;
                  ULARGE_INTEGER li;
@@ -11546,14 +11546,14 @@ License:
                  return li.QuadPart / 1000;
              }
 
-             void sleep_ms(zpl_u32 ms) { Sleep(ms); }
+             void sleep_ms(u32 ms) { Sleep(ms); }
 
          #else
 
          #    if defined(ZPL_SYSTEM_LINUX) || defined(ZPL_SYSTEM_FREEBSD) || defined(ZPL_SYSTEM_OPENBSD) || defined(ZPL_SYSTEM_EMSCRIPTEN)
-                 zpl_u64 zpl__unix_gettime(void) {
+                 u64 zpl__unix_gettime(void) {
                      struct timespec t;
-                     zpl_u64 result;
+                     u64 result;
 
                      clock_gettime(1 /*CLOCK_MONOTONIC*/, &t);
                      result = 1000 * t.tv_sec + 1.0e-6 * t.tv_nsec;
@@ -11561,12 +11561,12 @@ License:
                  }
          #    endif
 
-             zpl_u64 time_rel_ms(void) {
+             u64 time_rel_ms(void) {
          #    if defined(ZPL_SYSTEM_OSX)
-                 zpl_u64 result;
+                 u64 result;
 
-                 local_persist zpl_u64 timebase = 0;
-                 local_persist zpl_u64 timestart = 0;
+                 local_persist u64 timebase = 0;
+                 local_persist u64 timestart = 0;
 
                  if (!timestart) {
                      mach_timebase_info_data_t tb = { 0 };
@@ -11580,17 +11580,17 @@ License:
                  result = 1.0e-6 * (mach_absolute_time() - timestart) * timebase;
                  return result;
          #    else
-                 local_persist zpl_u64 unix_timestart = 0.0;
+                 local_persist u64 unix_timestart = 0.0;
 
                  if (!unix_timestart) { unix_timestart = zpl__unix_gettime( ); }
 
-                 zpl_u64 now = zpl__unix_gettime( );
+                 u64 now = zpl__unix_gettime( );
 
                  return (now - unix_timestart);
          #    endif
              }
 
-             zpl_u64 time_utc_ms(void) {
+             u64 time_utc_ms(void) {
                  struct timespec t;
          #    if defined(ZPL_SYSTEM_OSX)
                  clock_serv_t cclock;
@@ -11603,22 +11603,22 @@ License:
          #    else
                  clock_gettime(0 /*CLOCK_REALTIME*/, &t);
          #    endif
-                 return ((zpl_u64)t.tv_sec * 1000 + t.tv_nsec * 1e-6 + ZPL__UNIX_TO_WIN32_EPOCH);
+                 return ((u64)t.tv_sec * 1000 + t.tv_nsec * 1e-6 + ZPL__UNIX_TO_WIN32_EPOCH);
              }
 
-             void sleep_ms(zpl_u32 ms) {
+             void sleep_ms(u32 ms) {
                  struct timespec req = { zpl_cast(time_t)(ms * 1e-3), zpl_cast(long)((ms % 1000) * 1e6) };
                  struct timespec rem = { 0, 0 };
                  nanosleep(&req, &rem);
              }
 
-             zpl_u64 time_tz_ms(void) {
+             u64 time_tz_ms(void) {
                  struct tm t;
-                 zpl_u64 result = time_utc_ms() - ZPL__UNIX_TO_WIN32_EPOCH;
-                 zpl_u16 ms = result % 1000;
+                 u64 result = time_utc_ms() - ZPL__UNIX_TO_WIN32_EPOCH;
+                 u16 ms = result % 1000;
                  result *= 1e-3;
                  localtime_r((const time_t*)&result, &t);
-                 result = (zpl_u64)mktime(&t);
+                 result = (u64)mktime(&t);
                  return (result - timezone + t.tm_isdst * 3600) * 1000 + ms + ZPL__UNIX_TO_WIN32_EPOCH;
              }
          #endif
@@ -11646,21 +11646,21 @@ License:
          #if defined(ZPL_MODULE_THREADING)
          global atomic32 zpl__random_shared_counter = {0};
          #else
-         global zpl_i32 zpl__random_shared_counter = 0;
+         global s32 zpl__random_shared_counter = 0;
          #endif
 
-         internal zpl_u32 zpl__get_noise_from_time(void) {
-             zpl_u32 accum = 0;
+         internal u32 zpl__get_noise_from_time(void) {
+             u32 accum = 0;
              f64 start, remaining, end, curr = 0;
-             zpl_u64 interval = 100000ll;
+             u64 interval = 100000ll;
              
              start     = time_rel();
-             remaining = (interval - zpl_cast(zpl_u64)(interval*start)%interval) / zpl_cast(f64)interval;
+             remaining = (interval - zpl_cast(u64)(interval*start)%interval) / zpl_cast(f64)interval;
              end       = start + remaining;
              
              do {
                  curr = time_rel();
-                 accum += zpl_cast(zpl_u32)curr;
+                 accum += zpl_cast(u32)curr;
              } while (curr >= end);
              return accum;
          }
@@ -11668,12 +11668,12 @@ License:
          // NOTE: Partly from http://preshing.com/20121224/how-to-generate-a-sequence-of-unique-random-integers/
          // But the generation is even more random-er-est
 
-         internal ZPL_ALWAYS_INLINE zpl_u32 zpl__permute_qpr(zpl_u32 x) {
-             local_persist zpl_u32 const prime = 4294967291; // 2^32 - 5
+         internal ZPL_ALWAYS_INLINE u32 zpl__permute_qpr(u32 x) {
+             local_persist u32 const prime = 4294967291; // 2^32 - 5
              if (x >= prime) {
                  return x;
              } else {
-                 zpl_u32 residue = zpl_cast(zpl_u32)(zpl_cast(zpl_u64) x * x) % prime;
+                 u32 residue = zpl_cast(u32)(zpl_cast(u64) x * x) % prime;
                  if (x <= prime / 2)
                      return residue;
                  else
@@ -11681,15 +11681,15 @@ License:
              }
          }
 
-         internal ZPL_ALWAYS_INLINE zpl_u32 zpl__permute_with_offset(zpl_u32 x, zpl_u32 offset) {
+         internal ZPL_ALWAYS_INLINE u32 zpl__permute_with_offset(u32 x, u32 offset) {
              return (zpl__permute_qpr(x) + offset) ^ 0x5bf03635;
          }
 
 
          void random_init(random *r) {
-             zpl_u64 time, tick;
-             zpl_isize i, j;
-             zpl_u32 x = 0;
+             u64 time, tick;
+             sw i, j;
+             u32 x = 0;
              r->value = 0;
              
              r->offsets[0] = zpl__get_noise_from_time();
@@ -11703,11 +11703,11 @@ License:
              r->offsets[3] = 1;
          #endif
              time = time_tz_ms();
-             r->offsets[4] = zpl_cast(zpl_u32)(time >> 32);
-             r->offsets[5] = zpl_cast(zpl_u32)time;
+             r->offsets[4] = zpl_cast(u32)(time >> 32);
+             r->offsets[5] = zpl_cast(u32)time;
              r->offsets[6] = zpl__get_noise_from_time();
              tick = rdtsc();
-             r->offsets[7] = zpl_cast(zpl_u32)(tick ^ (tick >> 32));
+             r->offsets[7] = zpl_cast(u32)(tick ^ (tick >> 32));
              
              for (j = 0; j < 4; j++) {
                  for (i = 0; i < count_of(r->offsets); i++) {
@@ -11716,10 +11716,10 @@ License:
              }
          }
 
-         zpl_u32 random_gen_u32(random *r) {
-             zpl_u32 x = r->value;
-             zpl_u32 carry = 1;
-             zpl_isize i;
+         u32 random_gen_u32(random *r) {
+             u32 x = r->value;
+             u32 carry = 1;
+             sw i;
              for (i = 0; i < count_of(r->offsets); i++) {
                  x = zpl__permute_with_offset(x, r->offsets[i]);
                  if (carry > 0) {
@@ -11731,9 +11731,9 @@ License:
              return x;
          }
 
-         zpl_u32 random_gen_u32_unique(random *r) {
-             zpl_u32 x = r->value;
-             zpl_isize i;
+         u32 random_gen_u32_unique(random *r) {
+             u32 x = r->value;
+             sw i;
              r->value++;
              for (i = 0; i < count_of(r->offsets); i++) {
                  x = zpl__permute_with_offset(x, r->offsets[i]);
@@ -11742,51 +11742,51 @@ License:
              return x;
          }
 
-         zpl_u64 random_gen_u64(random *r) {
-             return ((zpl_cast(zpl_u64)random_gen_u32(r)) << 32) | random_gen_u32(r);
+         u64 random_gen_u64(random *r) {
+             return ((zpl_cast(u64)random_gen_u32(r)) << 32) | random_gen_u32(r);
          }
 
 
-         zpl_isize random_gen_isize(random *r) {
+         sw random_gen_isize(random *r) {
          #if defined(ZPL_ARCH_32_BIT)
-             zpl_u32 u = random_gen_u32(r);
+             u32 u = random_gen_u32(r);
          #else
-             zpl_u64 u = random_gen_u64(r);
+             u64 u = random_gen_u64(r);
          #endif
-             zpl_isize i;
+             sw i;
              zpl_memcopy(&i, &u, size_of(u));
              return i;
          }
 
 
-         zpl_i64 random_range_i64(random *r, zpl_i64 lower_inc, zpl_i64 higher_inc) {
-             zpl_u64 u = random_gen_u64(r);
-             zpl_i64 diff = higher_inc-lower_inc+1;
+         s64 random_range_i64(random *r, s64 lower_inc, s64 higher_inc) {
+             u64 u = random_gen_u64(r);
+             s64 diff = higher_inc-lower_inc+1;
              u %= diff;
-             zpl_i64 i;
+             s64 i;
              zpl_memcopy(&i, &u, size_of(u));
              i += lower_inc;
              return i;
          }
 
-         zpl_isize random_range_isize(random *r, zpl_isize lower_inc, zpl_isize higher_inc) {
+         sw random_range_isize(random *r, sw lower_inc, sw higher_inc) {
          #if defined(ZPL_ARCH_32_BIT)
-             zpl_u32 u = random_gen_u32(r);
+             u32 u = random_gen_u32(r);
          #else
-             zpl_u64 u = random_gen_u64(r);
+             u64 u = random_gen_u64(r);
          #endif
-             zpl_isize diff = higher_inc-lower_inc+1;
+             sw diff = higher_inc-lower_inc+1;
              u %= diff;
-             zpl_isize i;
+             sw i;
              zpl_memcopy(&i, &u, size_of(u));
              i += lower_inc;
              return i;
          }
 
          ZPL_ALWAYS_INLINE f64 zpl__random_copy_sign64(f64 x, f64 y) {
-             zpl_i64 ix=0, iy=0;
-             zpl_memcopy(&ix, &x, size_of(zpl_i64));
-             zpl_memcopy(&iy, &y, size_of(zpl_i64));
+             s64 ix=0, iy=0;
+             zpl_memcopy(&ix, &x, size_of(s64));
+             zpl_memcopy(&iy, &y, size_of(s64));
              
              ix &= 0x7fffffffffffffff;
              ix |= iy & 0x8000000000000000;
@@ -11827,7 +11827,7 @@ License:
                  return NULL;
              }
 
-             zpl_isize ptr_size = zpl_strlen(ptr);
+             sw ptr_size = zpl_strlen(ptr);
              buffer = (char *)malloc(ptr_size * sizeof(char)+1);
              zpl_memcopy((char *)buffer, ptr, ptr_size+1);
              return buffer;
@@ -11839,12 +11839,12 @@ License:
                  local_persist char buffer[32767] = {0};
 
                  if (!GetEnvironmentVariableW(
-                         zpl_cast(LPCWSTR)utf8_to_ucs2_buf(zpl_cast(const zpl_u8 *)name),
+                         zpl_cast(LPCWSTR)utf8_to_ucs2_buf(zpl_cast(const u8 *)name),
                          zpl_cast(LPWSTR)wbuffer, 32767)) {
                      return NULL;
                  }
 
-                 ucs2_to_utf8(zpl_cast(zpl_u8*)buffer, 32767, zpl_cast(const zpl_u16*)wbuffer);
+                 ucs2_to_utf8(zpl_cast(u8*)buffer, 32767, zpl_cast(const u16*)wbuffer);
 
                  return (const char *)buffer;
          #    else
@@ -11883,7 +11883,7 @@ License:
              extern char **environ;
          #endif
 
-         zpl_u32 system_command(const char *command, zpl_usize buffer_len, char *buffer) {
+         u32 system_command(const char *command, uw buffer_len, char *buffer) {
          #    if defined(ZPL_SYSTEM_EMSCRIPTEN)
                  ZPL_PANIC("system_command not supported");
          #    else
@@ -11897,7 +11897,7 @@ License:
                  if(!handle) return 0;
 
                  int c;
-                 zpl_usize i=0;
+                 uw i=0;
                  while ((c = getc(handle)) != EOF && i++ < buffer_len) {
                      *buffer++ = c;
                  }
@@ -11951,33 +11951,33 @@ License:
          ZPL_BEGIN_C_DECLS
 
          #define ZPL__COMPARE_PROC(Type)                                                                                        \
-         global zpl_isize Type##__cmp_offset;                                                                         \
+         global sw Type##__cmp_offset;                                                                         \
          ZPL_COMPARE_PROC(Type##__cmp) {                                                                              \
              Type const p = *zpl_cast(Type const *) pointer_add_const(a, Type##__cmp_offset);                         \
              Type const q = *zpl_cast(Type const *) pointer_add_const(b, Type##__cmp_offset);                         \
              return p < q ? -1 : p > q;                                                                                     \
          }                                                                                                                  \
-         ZPL_COMPARE_PROC_PTR(Type##_cmp(zpl_isize offset)) {                                                             \
+         ZPL_COMPARE_PROC_PTR(Type##_cmp(sw offset)) {                                                             \
              Type##__cmp_offset = offset;                                                                             \
              return &Type##__cmp;                                                                                     \
          }
 
-         ZPL__COMPARE_PROC(zpl_u8);
-         ZPL__COMPARE_PROC(zpl_i16);
-         ZPL__COMPARE_PROC(zpl_i32);
-         ZPL__COMPARE_PROC(zpl_i64);
-         ZPL__COMPARE_PROC(zpl_isize);
+         ZPL__COMPARE_PROC(u8);
+         ZPL__COMPARE_PROC(s16);
+         ZPL__COMPARE_PROC(s32);
+         ZPL__COMPARE_PROC(s64);
+         ZPL__COMPARE_PROC(sw);
          ZPL__COMPARE_PROC(f32);
          ZPL__COMPARE_PROC(f64);
 
          // NOTE: str_cmp is special as it requires a funny type and funny comparison
-         global zpl_isize zpl__str_cmp_offset;
+         global sw zpl__str_cmp_offset;
          ZPL_COMPARE_PROC(zpl__str_cmp) {
              char const *p = *zpl_cast(char const **) pointer_add_const(a, zpl__str_cmp_offset);
              char const *q = *zpl_cast(char const **) pointer_add_const(b, zpl__str_cmp_offset);
              return str_compare(p, q);
          }
-         ZPL_COMPARE_PROC_PTR(str_cmp(zpl_isize offset)) {
+         ZPL_COMPARE_PROC_PTR(str_cmp(sw offset)) {
              zpl__str_cmp_offset = offset;
              return &zpl__str_cmp;
          }
@@ -12002,15 +12002,15 @@ License:
              (_limit) = stack_ptr[1];                                                                                       \
          } while (0)
 
-         void sort(void *base_, zpl_isize count, zpl_isize size, compare_proc cmp) {
-             zpl_u8 *i, *j;
-             zpl_u8 *base = zpl_cast(zpl_u8 *) base_;
-             zpl_u8 *limit = base + count * size;
-             zpl_isize threshold = zpl__SORT_INSERT_SORT_TRESHOLD * size;
+         void sort(void *base_, sw count, sw size, compare_proc cmp) {
+             u8 *i, *j;
+             u8 *base = zpl_cast(u8 *) base_;
+             u8 *limit = base + count * size;
+             sw threshold = zpl__SORT_INSERT_SORT_TRESHOLD * size;
 
              // NOTE: Prepare the stack
-             zpl_u8 *stack[ZPL__SORT_STACK_SIZE] = { 0 };
-             zpl_u8 **stack_ptr = stack;
+             u8 *stack[ZPL__SORT_STACK_SIZE] = { 0 };
+             u8 **stack_ptr = stack;
 
              for (;;) {
                  if ((limit - base) > threshold) {
@@ -12065,10 +12065,10 @@ License:
          ZPL_RADIX_SORT_PROC(Type) {                                                                                        \
              Type *source = items;                                                                                          \
              Type *dest = temp;                                                                                             \
-             zpl_isize byte_index, i, byte_max = 8 * size_of(Type);                                                         \
+             sw byte_index, i, byte_max = 8 * size_of(Type);                                                         \
              for (byte_index = 0; byte_index < byte_max; byte_index += 8) {                                                 \
-                 zpl_isize offsets[256] = { 0 };                                                                                \
-                 zpl_isize total = 0;                                                                                           \
+                 sw offsets[256] = { 0 };                                                                                \
+                 sw total = 0;                                                                                           \
                  /* NOTE: First pass - count how many of each key */                                                        \
                  for (i = 0; i < count; i++) {                                                                              \
                      Type radix_value = source[i];                                                                          \
@@ -12077,7 +12077,7 @@ License:
                  }                                                                                                          \
                  /* NOTE: Change counts to offsets */                                                                       \
                  for (i = 0; i < count_of(offsets); i++) {                                                              \
-                     zpl_isize skcount = offsets[i];                                                                            \
+                     sw skcount = offsets[i];                                                                            \
                      offsets[i] = total;                                                                                    \
                      total += skcount;                                                                                      \
                  }                                                                                                          \
@@ -12091,28 +12091,28 @@ License:
              }                                                                                                              \
          }
 
-         ZPL_RADIX_SORT_PROC_GEN(zpl_u8);
-         ZPL_RADIX_SORT_PROC_GEN(zpl_u16);
-         ZPL_RADIX_SORT_PROC_GEN(zpl_u32);
-         ZPL_RADIX_SORT_PROC_GEN(zpl_u64);
+         ZPL_RADIX_SORT_PROC_GEN(u8);
+         ZPL_RADIX_SORT_PROC_GEN(u16);
+         ZPL_RADIX_SORT_PROC_GEN(u32);
+         ZPL_RADIX_SORT_PROC_GEN(u64);
 
-         void shuffle(void *base, zpl_isize count, zpl_isize size) {
-             zpl_u8 *a;
-             zpl_isize i, j;
+         void shuffle(void *base, sw count, sw size) {
+             u8 *a;
+             sw i, j;
              random random;
              random_init(&random);
 
-             a = zpl_cast(zpl_u8 *) base + (count - 1) * size;
+             a = zpl_cast(u8 *) base + (count - 1) * size;
              for (i = count; i > 1; i--) {
                  j = random_gen_isize(&random) % i;
-                 zpl_memswap(a, zpl_cast(zpl_u8 *) base + j * size, size);
+                 zpl_memswap(a, zpl_cast(u8 *) base + j * size, size);
                  a -= size;
              }
          }
 
-         void reverse(void *base, zpl_isize count, zpl_isize size) {
-             zpl_isize i, j = count - 1;
-             for (i = 0; i < j; i++, j++) zpl_memswap(zpl_cast(zpl_u8 *) base + i * size, zpl_cast(zpl_u8 *) base + j * size, size);
+         void reverse(void *base, sw count, sw size) {
+             sw i, j = count - 1;
+             for (i = 0; i < j; i++, j++) zpl_memswap(zpl_cast(u8 *) base + i * size, zpl_cast(u8 *) base + j * size, size);
          }
 
          ZPL_END_C_DECLS
@@ -12130,11 +12130,11 @@ License:
 
      ZPL_BEGIN_C_DECLS
 
-     zpl_u32 adler32(void const *data, zpl_isize len) {
-         zpl_u32 const MOD_ALDER = 65521;
-         zpl_u32 a = 1, b = 0;
-         zpl_isize i, block_len;
-         zpl_u8 const *bytes = zpl_cast(zpl_u8 const *) data;
+     u32 adler32(void const *data, sw len) {
+         u32 const MOD_ALDER = 65521;
+         u32 a = 1, b = 0;
+         sw i, block_len;
+         u8 const *bytes = zpl_cast(u8 const *) data;
 
          block_len = len % 5552;
 
@@ -12161,7 +12161,7 @@ License:
          return (b << 16) | a;
      }
 
-     global zpl_u32 const zpl__crc32_table[256] = {
+     global u32 const zpl__crc32_table[256] = {
          0x00000000, 0x77073096, 0xee0e612c, 0x990951ba, 0x076dc419, 0x706af48f, 0xe963a535, 0x9e6495a3, 0x0edb8832,
          0x79dcb8a4, 0xe0d5e91e, 0x97d2d988, 0x09b64c2b, 0x7eb17cbd, 0xe7b82d07, 0x90bf1d91, 0x1db71064, 0x6ab020f2,
          0xf3b97148, 0x84be41de, 0x1adad47d, 0x6ddde4eb, 0xf4d4b551, 0x83d385c7, 0x136c9856, 0x646ba8c0, 0xfd62f97a,
@@ -12193,7 +12193,7 @@ License:
          0xb40bbe37, 0xc30c8ea1, 0x5a05df1b, 0x2d02ef8d,
      };
 
-     global zpl_u64 const zpl__crc64_table[256] = {
+     global u64 const zpl__crc64_table[256] = {
          0x0000000000000000ull, 0x7ad870c830358979ull, 0xf5b0e190606b12f2ull, 0x8f689158505e9b8bull, 0xc038e5739841b68full, 0xbae095bba8743ff6ull,
          0x358804e3f82aa47dull, 0x4f50742bc81f2d04ull, 0xab28ecb46814fe75ull, 0xd1f09c7c5821770cull, 0x5e980d24087fec87ull, 0x24407dec384a65feull,
          0x6b1009c7f05548faull, 0x11c8790fc060c183ull, 0x9ea0e857903e5a08ull, 0xe478989fa00bd371ull, 0x7d08ff3b88be6f81ull, 0x07d08ff3b88be6f8ull,
@@ -12239,56 +12239,56 @@ License:
          0x935745fc4798b8deull, 0xe98f353477ad31a7ull, 0xa6df411fbfb21ca3ull, 0xdc0731d78f8795daull, 0x536fa08fdfd90e51ull, 0x29b7d047efec8728ull,
      };
 
-     zpl_u32 crc32(void const *data, zpl_isize len) {
-         zpl_isize remaining;
-         zpl_u32 result = ~(zpl_cast(zpl_u32) 0);
-         zpl_u8 const *c = zpl_cast(zpl_u8 const *) data;
+     u32 crc32(void const *data, sw len) {
+         sw remaining;
+         u32 result = ~(zpl_cast(u32) 0);
+         u8 const *c = zpl_cast(u8 const *) data;
          for (remaining = len; remaining--; c++) result = (result >> 8) ^ (zpl__crc32_table[(result ^ *c) & 0xff]);
          return ~result;
      }
 
-     zpl_u64 crc64(void const *data, zpl_isize len) {
-         zpl_isize remaining;
-         zpl_u64 result = (zpl_cast(zpl_u64)0);
-         zpl_u8 const *c = zpl_cast(zpl_u8 const *) data;
+     u64 crc64(void const *data, sw len) {
+         sw remaining;
+         u64 result = (zpl_cast(u64)0);
+         u8 const *c = zpl_cast(u8 const *) data;
          for (remaining = len; remaining--; c++) result = (result >> 8) ^ (zpl__crc64_table[(result ^ *c) & 0xff]);
          return result;
      }
 
-     zpl_u32 fnv32(void const *data, zpl_isize len) {
-         zpl_isize i;
-         zpl_u32 h = 0x811c9dc5;
-         zpl_u8 const *c = zpl_cast(zpl_u8 const *) data;
+     u32 fnv32(void const *data, sw len) {
+         sw i;
+         u32 h = 0x811c9dc5;
+         u8 const *c = zpl_cast(u8 const *) data;
 
          for (i = 0; i < len; i++) h = (h * 0x01000193) ^ c[i];
 
          return h;
      }
 
-     zpl_u64 fnv64(void const *data, zpl_isize len) {
-         zpl_isize i;
-         zpl_u64 h = 0xcbf29ce484222325ull;
-         zpl_u8 const *c = zpl_cast(zpl_u8 const *) data;
+     u64 fnv64(void const *data, sw len) {
+         sw i;
+         u64 h = 0xcbf29ce484222325ull;
+         u8 const *c = zpl_cast(u8 const *) data;
 
          for (i = 0; i < len; i++) h = (h * 0x100000001b3ll) ^ c[i];
 
          return h;
      }
 
-     zpl_u32 fnv32a(void const *data, zpl_isize len) {
-         zpl_isize i;
-         zpl_u32 h = 0x811c9dc5;
-         zpl_u8 const *c = zpl_cast(zpl_u8 const *) data;
+     u32 fnv32a(void const *data, sw len) {
+         sw i;
+         u32 h = 0x811c9dc5;
+         u8 const *c = zpl_cast(u8 const *) data;
 
          for (i = 0; i < len; i++) h = (h ^ c[i]) * 0x01000193;
 
          return h;
      }
 
-     zpl_u64 fnv64a(void const *data, zpl_isize len) {
-         zpl_isize i;
-         zpl_u64 h = 0xcbf29ce484222325ull;
-         zpl_u8 const *c = zpl_cast(zpl_u8 const *) data;
+     u64 fnv64a(void const *data, sw len) {
+         sw i;
+         u64 h = 0xcbf29ce484222325ull;
+         u8 const *c = zpl_cast(u8 const *) data;
 
          for (i = 0; i < len; i++) h = (h ^ c[i]) * 0x100000001b3ll;
 
@@ -12297,14 +12297,14 @@ License:
 
      // base64 implementation based on https://nachtimwald.com/2017/11/18/base64-encode-and-decode-in-c/
      //
-     global zpl_u8 zpl__base64_chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+     global u8 zpl__base64_chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 
      /* generated table based on: */
      #if 0
      void zpl__base64_decode_table() {
-         zpl_i32 inv[80];
-         zpl_isize i;
+         s32 inv[80];
+         sw i;
 
          zpl_memset(inv, -1, size_of(inv));
 
@@ -12314,7 +12314,7 @@ License:
      }
      #endif
      /* === */
-     global zpl_i32 zpl__base64_dec_table[] = {
+     global s32 zpl__base64_dec_table[] = {
          62, -1, -1, -1, 63, 52, 53, 54, 55, 56, 57, 58,
          59, 60, 61, -1, -1, -1, -1, -1, -1, -1, 0, 1, 2, 3, 4, 5,
          6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
@@ -12322,8 +12322,8 @@ License:
          29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42,
          43, 44, 45, 46, 47, 48, 49, 50, 51 };
 
-     zpl_isize zpl__base64_encoded_size(zpl_isize len) {
-         zpl_isize ret = len;
+     sw zpl__base64_encoded_size(sw len) {
+         sw ret = len;
 
          if (len % 3 != 0) {
              ret += 3 - (len % 3);
@@ -12335,9 +12335,9 @@ License:
          return ret;
      }
 
-     zpl_isize zpl__base64_decoded_size(void const *data) {
-         zpl_isize len, ret, i;
-         const zpl_u8 *s = zpl_cast(const zpl_u8 *)data;
+     sw zpl__base64_decoded_size(void const *data) {
+         sw len, ret, i;
+         const u8 *s = zpl_cast(const u8 *)data;
 
          if (s == NULL) {
              return 0;
@@ -12357,7 +12357,7 @@ License:
          return ret;
      }
 
-     b32 zpl__base64_valid_char(zpl_u8 c) {
+     b32 zpl__base64_valid_char(u8 c) {
          if (c >= '0' && c <= '9')
              return true;
          if (c >= 'A' && c <= 'Z')
@@ -12370,17 +12370,17 @@ License:
          return false;
      }
 
-     zpl_u8 *base64_encode(zpl_allocator a, void const *data, zpl_isize len) {
-         const zpl_u8 *s = zpl_cast(const zpl_u8*)data;
-         zpl_u8 *ret = NULL;
-         zpl_isize enc_len, i, j, v;
+     u8 *base64_encode(zpl_allocator a, void const *data, sw len) {
+         const u8 *s = zpl_cast(const u8*)data;
+         u8 *ret = NULL;
+         sw enc_len, i, j, v;
 
          if (data == NULL || len == 0) {
              return NULL;
          }
 
          enc_len = zpl__base64_encoded_size(len);
-         ret = zpl_cast(zpl_u8 *)alloc(a, enc_len+1);
+         ret = zpl_cast(u8 *)alloc(a, enc_len+1);
          ret[enc_len] = 0;
 
          for (i=0, j=0; i < len; i+=3, j+=4) {
@@ -12406,17 +12406,17 @@ License:
          return ret;
      }
 
-     zpl_u8 *base64_decode(zpl_allocator a, void const *data, zpl_isize len) {
-         const zpl_u8 *s = zpl_cast(const zpl_u8*)data;
-         zpl_u8 *ret = NULL;
-         zpl_isize alen, i, j, v;
+     u8 *base64_decode(zpl_allocator a, void const *data, sw len) {
+         const u8 *s = zpl_cast(const u8*)data;
+         u8 *ret = NULL;
+         sw alen, i, j, v;
 
          if (data == NULL) {
              return NULL;
          }
 
          alen = zpl__base64_decoded_size(s);
-         ret = zpl_cast(zpl_u8 *)alloc(a, alen+1);
+         ret = zpl_cast(u8 *)alloc(a, alen+1);
 
          ZPL_ASSERT_NOT_NULL(ret);
 
@@ -12445,21 +12445,21 @@ License:
          return ret;
      }
 
-     zpl_u32 murmur32_seed(void const *data, zpl_isize len, zpl_u32 seed) {
-         zpl_u32 const c1 = 0xcc9e2d51;
-         zpl_u32 const c2 = 0x1b873593;
-         zpl_u32 const r1 = 15;
-         zpl_u32 const r2 = 13;
-         zpl_u32 const m = 5;
-         zpl_u32 const n = 0xe6546b64;
+     u32 murmur32_seed(void const *data, sw len, u32 seed) {
+         u32 const c1 = 0xcc9e2d51;
+         u32 const c2 = 0x1b873593;
+         u32 const r1 = 15;
+         u32 const r2 = 13;
+         u32 const m = 5;
+         u32 const n = 0xe6546b64;
 
-         zpl_isize i, nblocks = len / 4;
-         zpl_u32 hash = seed, k1 = 0;
-         zpl_u32 const *blocks = zpl_cast(zpl_u32 const *) data;
-         zpl_u8 const *tail = zpl_cast(zpl_u8 const *)(data) + nblocks * 4;
+         sw i, nblocks = len / 4;
+         u32 hash = seed, k1 = 0;
+         u32 const *blocks = zpl_cast(u32 const *) data;
+         u8 const *tail = zpl_cast(u8 const *)(data) + nblocks * 4;
 
          for (i = 0; i < nblocks; i++) {
-             zpl_u32 k = blocks[i];
+             u32 k = blocks[i];
              k *= c1;
              k = (k << r1) | (k >> (32 - r1));
              k *= c2;
@@ -12490,18 +12490,18 @@ License:
          return hash;
      }
 
-     zpl_u64 murmur64_seed(void const *data_, zpl_isize len, zpl_u64 seed) {
-         zpl_u64 const m = 0xc6a4a7935bd1e995ULL;
-         zpl_i32 const r = 47;
+     u64 murmur64_seed(void const *data_, sw len, u64 seed) {
+         u64 const m = 0xc6a4a7935bd1e995ULL;
+         s32 const r = 47;
 
-         zpl_u64 h = seed ^ (len * m);
+         u64 h = seed ^ (len * m);
 
-         zpl_u64 const *data = zpl_cast(zpl_u64 const *) data_;
-         zpl_u8 const *data2 = zpl_cast(zpl_u8 const *) data_;
-         zpl_u64 const *end = data + (len / 8);
+         u64 const *data = zpl_cast(u64 const *) data_;
+         u8 const *data2 = zpl_cast(u8 const *) data_;
+         u64 const *end = data + (len / 8);
 
          while (data != end) {
-             zpl_u64 k = *data++;
+             u64 k = *data++;
 
              k *= m;
              k ^= k >> r;
@@ -12512,13 +12512,13 @@ License:
          }
 
          switch (len & 7) {
-             case 7: h ^= zpl_cast(zpl_u64)(data2[6]) << 48;
-             case 6: h ^= zpl_cast(zpl_u64)(data2[5]) << 40;
-             case 5: h ^= zpl_cast(zpl_u64)(data2[4]) << 32;
-             case 4: h ^= zpl_cast(zpl_u64)(data2[3]) << 24;
-             case 3: h ^= zpl_cast(zpl_u64)(data2[2]) << 16;
-             case 2: h ^= zpl_cast(zpl_u64)(data2[1]) << 8;
-             case 1: h ^= zpl_cast(zpl_u64)(data2[0]); 
+             case 7: h ^= zpl_cast(u64)(data2[6]) << 48;
+             case 6: h ^= zpl_cast(u64)(data2[5]) << 40;
+             case 5: h ^= zpl_cast(u64)(data2[4]) << 32;
+             case 4: h ^= zpl_cast(u64)(data2[3]) << 24;
+             case 3: h ^= zpl_cast(u64)(data2[2]) << 16;
+             case 2: h ^= zpl_cast(u64)(data2[1]) << 8;
+             case 1: h ^= zpl_cast(u64)(data2[0]); 
                      h *= m;
          };
 
@@ -12579,7 +12579,7 @@ License:
      } zplreCode;
 
      typedef struct {
-         zpl_isize op, offset;
+         sw op, offset;
      } re_ctx;
 
      enum {
@@ -12591,28 +12591,28 @@ License:
      static char const ZPL_RE__WHITESPACE[] = " \r\t\n\v\f";
      #define ZPL_RE__LITERAL(str) (str), size_of(str)-1
 
-     static re_ctx re__exec_single(re *re, zpl_isize op, char const *str, zpl_isize str_len, zpl_isize offset, re_capture *captures, zpl_isize max_capture_count);
-     static re_ctx re__exec(re *re, zpl_isize op, char const *str, zpl_isize str_len, zpl_isize offset, re_capture *captures, zpl_isize max_capture_count);
+     static re_ctx re__exec_single(re *re, sw op, char const *str, sw str_len, sw offset, re_capture *captures, sw max_capture_count);
+     static re_ctx re__exec(re *re, sw op, char const *str, sw str_len, sw offset, re_capture *captures, sw max_capture_count);
 
-     static re_ctx re__ctx_no_match(zpl_isize op) {
+     static re_ctx re__ctx_no_match(sw op) {
          re_ctx c;
          c.op = op;
          c.offset = ZPL_RE__NO_MATCH;
          return c;
      }
 
-     static re_ctx re__ctx_internal_failure(zpl_isize op) {
+     static re_ctx re__ctx_internal_failure(sw op) {
          re_ctx c;
          c.op = op;
          c.offset = ZPL_RE__INTERNAL_FAILURE;
          return c;
      }
 
-     static zpl_u8 re__hex(char const *s) {
+     static u8 re__hex(char const *s) {
          return ((char_to_hex_digit(*s) << 4) & 0xf0) | (char_to_hex_digit(*(s+1)) & 0x0f);
      }
 
-     static zpl_isize re__strfind(char const *s, zpl_isize len, char c, zpl_isize offset) {
+     static sw re__strfind(char const *s, sw len, char c, sw offset) {
          if (offset < len) {
              char const *found = (char const *)zpl_memchr(s+offset, c, len-offset);
              if (found)
@@ -12646,7 +12646,7 @@ License:
          return 0;
      }
 
-     static re_ctx re__consume(re *re, zpl_isize op, char const *str, zpl_isize str_len, zpl_isize offset, re_capture *captures, zpl_isize max_capture_count, b32 is_greedy)
+     static re_ctx re__consume(re *re, sw op, char const *str, sw str_len, sw offset, re_capture *captures, sw max_capture_count, b32 is_greedy)
      {
          re_ctx c, best_c, next_c;
 
@@ -12678,22 +12678,22 @@ License:
          return best_c;
      }
 
-     static re_ctx re__exec_single(re *re, zpl_isize op, char const *str, zpl_isize str_len, zpl_isize offset, re_capture *captures, zpl_isize max_capture_count) {
+     static re_ctx re__exec_single(re *re, sw op, char const *str, sw str_len, sw offset, re_capture *captures, sw max_capture_count) {
          re_ctx ctx;
-         zpl_isize buffer_len;
-         zpl_isize match_len;
-         zpl_isize next_op;
-         zpl_isize skip;
+         sw buffer_len;
+         sw match_len;
+         sw next_op;
+         sw skip;
 
          switch (re->buf[op++]) {
              case ZPL_RE_OP_BEGIN_CAPTURE: {
-                 zpl_u8 capture = re->buf[op++];
+                 u8 capture = re->buf[op++];
                  if (captures && (capture < max_capture_count))
                      captures[capture].str = str + offset;
              } break;
 
              case ZPL_RE_OP_END_CAPTURE: {
-                 zpl_u8 capture = re->buf[op++];
+                 u8 capture = re->buf[op++];
                  if (captures && (capture < max_capture_count))
                      captures[capture].len = (str + offset) - captures[capture].str;
              } break;
@@ -12735,7 +12735,7 @@ License:
              } break;
 
              case ZPL_RE_OP_ANY_OF: {
-                 zpl_isize i;
+                 sw i;
                  char cin = str[offset];
                  buffer_len = re->buf[op++];
 
@@ -12761,7 +12761,7 @@ License:
              } break;
 
              case ZPL_RE_OP_ANY_BUT: {
-                 zpl_isize i;
+                 sw i;
                  char cin = str[offset];
                  buffer_len = re->buf[op++];
 
@@ -12876,7 +12876,7 @@ License:
          return ctx;
      }
 
-     static re_ctx re__exec(re *re, zpl_isize op, char const *str, zpl_isize str_len, zpl_isize offset, re_capture *captures, zpl_isize max_capture_count) {
+     static re_ctx re__exec(re *re, sw op, char const *str, sw str_len, sw offset, re_capture *captures, sw max_capture_count) {
          re_ctx c;
          c.op = op;
          c.offset = offset;
@@ -12891,7 +12891,7 @@ License:
          return c;
      }
 
-     static regex_error re__emit_ops(re *re, zpl_isize op_count, ...) {
+     static regex_error re__emit_ops(re *re, sw op_count, ...) {
          va_list va;
 
          if (re->buf_len + op_count > re->buf_cap) {
@@ -12899,16 +12899,16 @@ License:
                  return ZPL_RE_ERROR_TOO_LONG;
              }
              else {
-                 zpl_isize new_cap = (re->buf_cap*2) + op_count;
+                 sw new_cap = (re->buf_cap*2) + op_count;
                  re->buf = (char *)resize(re->backing, re->buf, re->buf_cap, new_cap);
                  re->buf_cap = new_cap;
              }
          }
 
          va_start(va, op_count);
-         for (zpl_isize i = 0; i < op_count; i++)
+         for (sw i = 0; i < op_count; i++)
          {
-             zpl_i32 v = va_arg(va, zpl_i32);
+             s32 v = va_arg(va, s32);
              if (v > 256)
                  return ZPL_RE_ERROR_TOO_LONG;
              re->buf[re->buf_len++] = (char)v;
@@ -12918,19 +12918,19 @@ License:
          return ZPL_RE_ERROR_NONE;
      }
 
-     static regex_error re__emit_ops_buffer(re *re, zpl_isize op_count, char const *buffer) {
+     static regex_error re__emit_ops_buffer(re *re, sw op_count, char const *buffer) {
          if (re->buf_len + op_count > re->buf_cap) {
              if (!re->can_realloc) {
                  return ZPL_RE_ERROR_TOO_LONG;
              }
              else {
-                 zpl_isize new_cap = (re->buf_cap*2) + op_count;
+                 sw new_cap = (re->buf_cap*2) + op_count;
                  re->buf = (char *)resize(re->backing, re->buf, re->buf_cap, new_cap);
                  re->buf_cap = new_cap;
              }
          }
 
-         for (zpl_isize i = 0; i < op_count; i++)
+         for (sw i = 0; i < op_count; i++)
          {
              re->buf[re->buf_len++] = buffer[i];
          }
@@ -12970,10 +12970,10 @@ License:
          return code;
      }
 
-     static regex_error re__parse_group(re *re, char const *pattern, zpl_isize len, zpl_isize offset, zpl_isize *new_offset) {
+     static regex_error re__parse_group(re *re, char const *pattern, sw len, sw offset, sw *new_offset) {
          regex_error err = ZPL_RE_ERROR_NONE;
          char buffer[256] = {0};
-         zpl_isize buffer_len = 0, buffer_cap = size_of(buffer);
+         sw buffer_len = 0, buffer_cap = size_of(buffer);
          b32 closed = 0;
          zplreOp op = ZPL_RE_OP_ANY_OF;
 
@@ -12987,7 +12987,7 @@ License:
                offset < len)
          {
              if (pattern[offset] == ']') {
-                 err = re__emit_ops(re, 2, (zpl_i32)op, (zpl_i32)buffer_len);
+                 err = re__emit_ops(re, 2, (s32)op, (s32)buffer_len);
                  if (err) break;
 
                  err = re__emit_ops_buffer(re, buffer_len, (const char*)buffer);
@@ -13008,7 +13008,7 @@ License:
                      offset++;
                  }
                  else if (offset < len) {
-                     zpl_i32 code = re__encode_escape(pattern[offset]);
+                     s32 code = re__encode_escape(pattern[offset]);
 
                      if (!code || code > 0xff) {
                          buffer[buffer_len++] = 0;
@@ -13036,9 +13036,9 @@ License:
          return ZPL_RE_ERROR_NONE;
      }
 
-     static regex_error re__compile_quantifier(re *re, zpl_isize last_buf_len, unsigned char quantifier) {
+     static regex_error re__compile_quantifier(re *re, sw last_buf_len, unsigned char quantifier) {
          regex_error err;
-         zpl_isize move_size;
+         sw move_size;
 
          if ((re->buf[last_buf_len] == ZPL_RE_OP_EXACT_MATCH) &&
              (re->buf[last_buf_len+1] > 1))
@@ -13047,7 +13047,7 @@ License:
 
              re->buf[last_buf_len+1]--;
              re->buf_len--;
-             err = re__emit_ops(re, 4, (zpl_i32)quantifier, (zpl_i32)ZPL_RE_OP_EXACT_MATCH, 1, (zpl_i32)last_char);
+             err = re__emit_ops(re, 4, (s32)quantifier, (s32)ZPL_RE_OP_EXACT_MATCH, 1, (s32)last_char);
              if (err) return err;
              return ZPL_RE_ERROR_NONE;
          }
@@ -13063,11 +13063,11 @@ License:
          return ZPL_RE_ERROR_NONE;
      }
 
-     static regex_error re__parse(re *re, char const *pattern, zpl_isize len, zpl_isize offset, zpl_isize level, zpl_isize *new_offset) {
+     static regex_error re__parse(re *re, char const *pattern, sw len, sw offset, sw level, sw *new_offset) {
          regex_error err = ZPL_RE_ERROR_NONE;
-         zpl_isize last_buf_len = re->buf_len;
-         zpl_isize branch_begin = re->buf_len;
-         zpl_isize branch_op = -1;
+         sw last_buf_len = re->buf_len;
+         sw branch_begin = re->buf_len;
+         sw branch_op = -1;
 
          while (offset < len) {
              switch (pattern[offset++]) {
@@ -13082,9 +13082,9 @@ License:
                  } break;
 
                  case '(': {
-                     zpl_isize capture = re->capture_count++;
+                     sw capture = re->capture_count++;
                      last_buf_len = re->buf_len;
-                     err = re__emit_ops(re, 2, ZPL_RE_OP_BEGIN_CAPTURE, (zpl_i32)capture);
+                     err = re__emit_ops(re, 2, ZPL_RE_OP_BEGIN_CAPTURE, (s32)capture);
                      if (err) return err;
 
                      err = re__parse(re, pattern, len, offset, level+1, &offset);
@@ -13092,7 +13092,7 @@ License:
                      if ((offset > len) || (pattern[offset-1] != ')'))
                          return ZPL_RE_ERROR_MISMATCHED_CAPTURES;
 
-                     err = re__emit_ops(re, 2, ZPL_RE_OP_END_CAPTURE, (zpl_i32)capture);
+                     err = re__emit_ops(re, 2, ZPL_RE_OP_END_CAPTURE, (s32)capture);
                      if (err) return err;
                  } break;
 
@@ -13119,7 +13119,7 @@ License:
                      if (branch_begin >= re->buf_len) {
                          return ZPL_RE_ERROR_BRANCH_FAILURE;
                      } else {
-                         zpl_isize size = re->buf_len - branch_begin;
+                         sw size = re->buf_len - branch_begin;
                          err = re__emit_ops(re, 4, 0, 0, ZPL_RE_OP_BRANCH_END, 0);
                          if (err) return err;
 
@@ -13192,7 +13192,7 @@ License:
                  /* NOTE(bill): Exact match */
                  default: {
                      char const *match_start;
-                     zpl_isize size = 0;
+                     sw size = 0;
                      offset--;
                      match_start = pattern+offset;
                      while ((offset < len) &&
@@ -13213,7 +13213,7 @@ License:
          return ZPL_RE_ERROR_NONE;
      }
 
-     regex_error re_compile_from_buffer(re *re, char const *pattern, zpl_isize pattern_len, void *buffer, zpl_isize buffer_len) {
+     regex_error re_compile_from_buffer(re *re, char const *pattern, sw pattern_len, void *buffer, sw buffer_len) {
          regex_error err;
          re->capture_count = 0;
          re->buf = (char *)buffer;
@@ -13225,10 +13225,10 @@ License:
          return err;
      }
 
-     regex_error re_compile(re *re, zpl_allocator backing, char const *pattern, zpl_isize pattern_len) {
+     regex_error re_compile(re *re, zpl_allocator backing, char const *pattern, sw pattern_len) {
          regex_error err;
-         zpl_isize cap = pattern_len+128;
-         zpl_isize offset = 0;
+         sw cap = pattern_len+128;
+         sw offset = 0;
 
          re->backing = backing;
          re->capture_count = 0;
@@ -13245,16 +13245,16 @@ License:
          return err;
      }
 
-     zpl_isize re_capture_count(re *re) { return re->capture_count; }
+     sw re_capture_count(re *re) { return re->capture_count; }
 
-     b32 re_match(re *re, char const *str, zpl_isize len, re_capture *captures, zpl_isize max_capture_count, zpl_isize *offset) {
+     b32 re_match(re *re, char const *str, sw len, re_capture *captures, sw max_capture_count, sw *offset) {
          if (re && re->buf_len > 0) {
              if (re->buf[0] == ZPL_RE_OP_BEGINNING_OF_LINE) {
                  re_ctx c = re__exec(re, 0, str, len, 0, captures, max_capture_count);
                  if (c.offset >= 0 && c.offset <= len) { if (offset) *offset = c.offset; return 1; };
                  if (c.offset == ZPL_RE__INTERNAL_FAILURE) return 0;
              } else {
-                 zpl_isize i;
+                 sw i;
                  for (i = 0; i < len; i++) {
                      re_ctx c = re__exec(re, 0, str, len, i, captures, max_capture_count);
                      if (c.offset >= 0 && c.offset <= len) { if (offset) *offset = c.offset; return 1; };
@@ -13267,7 +13267,7 @@ License:
      }
 
 
-     b32 re_match_all(re *re, char const *str, zpl_isize str_len, zpl_isize max_capture_count,
+     b32 re_match_all(re *re, char const *str, sw str_len, sw max_capture_count,
                           re_capture **out_captures)
      {
          char *end = (char *)str + str_len;
@@ -13275,7 +13275,7 @@ License:
 
          buffer_make(re_capture, cps, heap(), max_capture_count);
 
-         zpl_isize offset = 0;
+         sw offset = 0;
 
          while (p < end)
          {
@@ -13287,7 +13287,7 @@ License:
 
              p += offset;
 
-             for (zpl_isize i = 0; i < max_capture_count; i++) {
+             for (sw i = 0; i < max_capture_count; i++) {
                  array_append(*out_captures, cps[i]);
              }
          }
@@ -13371,7 +13371,7 @@ License:
      }
 
      void opts_free(zpl_opts *opts) {
-         for (zpl_i32 i = 0; i < array_count(opts->entries); ++i) {
+         for (s32 i = 0; i < array_count(opts->entries); ++i) {
              opts_entry *e = opts->entries + i;
              if (e->type == ZPL_OPTS_STRING) {
                  string_free(e->text);
@@ -13383,7 +13383,7 @@ License:
          array_free(opts->errors);
      }
 
-     void opts_add(zpl_opts *opts, char const *name, char const *lname, const char *desc, zpl_u8 type) {
+     void opts_add(zpl_opts *opts, char const *name, char const *lname, const char *desc, u8 type) {
          opts_entry e = { 0 };
 
          e.name = name;
@@ -13396,7 +13396,7 @@ License:
          array_append(opts->entries, e);
      }
 
-     opts_entry *zpl__opts_find(zpl_opts *opts, char const *name, zpl_usize len, b32 longname) {
+     opts_entry *zpl__opts_find(zpl_opts *opts, char const *name, uw len, b32 longname) {
          opts_entry *e = 0;
 
          for (int i = 0; i < array_count(opts->entries); ++i) {
@@ -13433,7 +13433,7 @@ License:
          return (e && e->met) ? e->real : fallback;
      }
 
-     zpl_i64 opts_integer(zpl_opts *opts, char const *name, zpl_i64 fallback) {
+     s64 opts_integer(zpl_opts *opts, char const *name, s64 fallback) {
          opts_entry *e = zpl__opts_find(opts, name, zpl_strlen(name), true);
 
          return (e && e->met) ? e->integer : fallback;
@@ -13456,7 +13456,7 @@ License:
              } break;
          }
 
-         for (zpl_isize i=0; i < array_count(opts->positioned); i++) {
+         for (sw i=0; i < array_count(opts->positioned); i++) {
              if (!str_compare(opts->positioned[i]->lname, t->lname)) {
                  array_remove_at(opts->positioned, i);
                  break;
@@ -13475,7 +13475,7 @@ License:
      void opts_print_help(zpl_opts *opts) {
          zpl_printf("USAGE: %s", opts->appname);
 
-         for (zpl_isize i = array_count(opts->entries); i >= 0; --i) {
+         for (sw i = array_count(opts->entries); i >= 0; --i) {
              opts_entry *e = opts->entries + i;
 
              if (e->pos == (b32) true) { zpl_printf(" [%s]", e->lname); }
@@ -13483,7 +13483,7 @@ License:
 
          zpl_printf("\nOPTIONS:\n");
 
-         for (zpl_isize i = 0; i < array_count(opts->entries); ++i) {
+         for (sw i = 0; i < array_count(opts->entries); ++i) {
              opts_entry *e = opts->entries + i;
 
              if(e->name) {
@@ -13513,7 +13513,7 @@ License:
          }
      }
 
-     void zpl__opts_push_error(zpl_opts *opts, char *b, zpl_u8 errtype) {
+     void zpl__opts_push_error(zpl_opts *opts, char *b, u8 errtype) {
          opts_err err = { 0 };
          err.val = b;
          err.type = errtype;
@@ -13638,12 +13638,12 @@ License:
          ZPL_PR_HANDLE_MODES,
      };
 
-     void *zpl__pr_open_handle(zpl_u8 type, const char *mode, void **handle) {
+     void *zpl__pr_open_handle(u8 type, const char *mode, void **handle) {
      #ifdef ZPL_SYSTEM_WINDOWS
          void *pipes[ZPL_PR_HANDLE_MODES];
-         zpl_i32 fd;
+         s32 fd;
 
-         const zpl_u32 flag_inherit      = 0x00000001;
+         const u32 flag_inherit      = 0x00000001;
          SECURITY_ATTRIBUTES sa         = {size_of(sa), 0, 1};
 
          if (!CreatePipe(&pipes[0], &pipes[1], zpl_cast(LPSECURITY_ATTRIBUTES)&sa, 0)) {
@@ -13654,7 +13654,7 @@ License:
              return NULL;
          }
 
-         fd = _open_osfhandle(zpl_cast(zpl_intptr)pipes[type], 0);
+         fd = _open_osfhandle(zpl_cast(sptr)pipes[type], 0);
 
          if (fd != -1) {
              *handle = pipes[1-type];
@@ -13668,7 +13668,7 @@ License:
      #endif
      }
 
-     zpl_i32 pr_create(pr *process, const char **args, zpl_isize argc, pr_si si, pr_opts options) {
+     s32 pr_create(pr *process, const char **args, sw argc, pr_si si, pr_opts options) {
          ZPL_ASSERT_NOT_NULL(process);
          zero_item(process);
 
@@ -13677,9 +13677,9 @@ License:
          b32 c_env=false;
          STARTUPINFOW psi = {0};
          PROCESS_INFORMATION pi = {0};
-         zpl_i32 err_code = 0;
+         s32 err_code = 0;
          zpl_allocator a = heap();
-         const zpl_u32 use_std_handles   = 0x00000100;
+         const u32 use_std_handles   = 0x00000100;
 
          psi.cb = size_of(psi);
          psi.dwFlags = use_std_handles | si.flags;
@@ -13759,8 +13759,8 @@ License:
      }
 
 
-     zpl_i32 pr_join(pr *process) {
-         zpl_i32 ret_code;
+     s32 pr_join(pr *process) {
+         s32 ret_code;
 
          ZPL_ASSERT_NOT_NULL(process);
 
@@ -13808,7 +13808,7 @@ License:
      #endif
      }
 
-     void pr_terminate(pr *process, zpl_i32 err_code) {
+     void pr_terminate(pr *process, s32 err_code) {
          ZPL_ASSERT_NOT_NULL(process);
 
      #ifdef ZPL_SYSTEM_WINDOWS
@@ -13852,7 +13852,7 @@ License:
      }
 
      f32 copy_sign(f32 x, f32 y) {
-         zpl_i32 ix, iy;
+         s32 ix, iy;
          f32 r;
          zpl_memcopy(&ix, &x, size_of(x));
          zpl_memcopy(&iy, &y, size_of(y));
@@ -13874,7 +13874,7 @@ License:
      }
 
      f64 copy_sign64(f64 x, f64 y) {
-         zpl_i64 ix, iy;
+         s64 ix, iy;
          f64 r;
          zpl_memcopy(&ix, &x, size_of(x));
          zpl_memcopy(&iy, &y, size_of(y));
@@ -13885,8 +13885,8 @@ License:
          return r;
      }
 
-     f64 floor64(f64 x)                { return zpl_cast(f64)((x >= 0.0) ? zpl_cast(zpl_i64) x : zpl_cast(zpl_i64)(x - 0.9999999999999999)); }
-     f64 ceil64(f64 x)                 { return zpl_cast(f64)((x < 0) ? zpl_cast(zpl_i64) x : (zpl_cast(zpl_i64) x) + 1); }
+     f64 floor64(f64 x)                { return zpl_cast(f64)((x >= 0.0) ? zpl_cast(s64) x : zpl_cast(s64)(x - 0.9999999999999999)); }
+     f64 ceil64(f64 x)                 { return zpl_cast(f64)((x < 0) ? zpl_cast(s64) x : (zpl_cast(s64) x) + 1); }
      f64 round64(f64 x)                { return zpl_cast(f64)((x >= 0.0) ? floor64(x + 0.5) : ceil64(x - 0.5)); }
      f64 remainder64(f64 x, f64 y) { return x - (round64(x / y) * y); }
      f64 abs64(f64 x)                  { return x < 0 ? -x : x; }
@@ -15736,31 +15736,31 @@ License:
      // IMPORTANT TODO: Use compiler intrinsics for the atomics
 
      #if defined(ZPL_COMPILER_MSVC) && !defined(ZPL_COMPILER_CLANG)
-         zpl_i32 atomic32_load (atomic32 const *a)      { return a->value;  }
-         void     atomic32_store(atomic32 *a, atomicarg(zpl_i32) value) { a->value = value; }
+         s32 atomic32_load (atomic32 const *a)      { return a->value;  }
+         void     atomic32_store(atomic32 *a, atomicarg(s32) value) { a->value = value; }
 
-         zpl_i32 atomic32_compare_exchange(atomic32 *a, atomicarg(zpl_i32) expected, atomicarg(zpl_i32) desired) {
+         s32 atomic32_compare_exchange(atomic32 *a, atomicarg(s32) expected, atomicarg(s32) desired) {
              return _InterlockedCompareExchange(zpl_cast(long *)a, desired, expected);
          }
-         zpl_i32 atomic32_exchange(atomic32 *a, atomicarg(zpl_i32) desired) {
+         s32 atomic32_exchange(atomic32 *a, atomicarg(s32) desired) {
              return _InterlockedExchange(zpl_cast(long *)a, desired);
          }
-         zpl_i32 atomic32_fetch_add(atomic32 *a, atomicarg(zpl_i32) operand) {
+         s32 atomic32_fetch_add(atomic32 *a, atomicarg(s32) operand) {
              return _InterlockedExchangeAdd(zpl_cast(long *)a, operand);
          }
-         zpl_i32 atomic32_fetch_and(atomic32 *a, atomicarg(zpl_i32) operand) {
+         s32 atomic32_fetch_and(atomic32 *a, atomicarg(s32) operand) {
              return _InterlockedAnd(zpl_cast(long *)a, operand);
          }
-         zpl_i32 atomic32_fetch_or(atomic32 *a, atomicarg(zpl_i32) operand) {
+         s32 atomic32_fetch_or(atomic32 *a, atomicarg(s32) operand) {
              return _InterlockedOr(zpl_cast(long *)a, operand);
          }
 
-         zpl_i64 atomic64_load(atomic64 const *a) {
+         s64 atomic64_load(atomic64 const *a) {
      #        if defined(ZPL_ARCH_64_BIT)
                  return a->value;
      #        elif ZPL_CPU_X86
                  // NOTE: The most compatible way to get an atomic 64-bit load on x86 is with cmpxchg8b
-                 atomicarg(zpl_i64) result;
+                 atomicarg(s64) result;
                  __asm {
                      mov esi, a;
                      mov ebx, eax;
@@ -15775,7 +15775,7 @@ License:
      #        endif
          }
 
-         void atomic64_store(atomic64 *a, atomicarg(zpl_i64) value) {
+         void atomic64_store(atomic64 *a, atomicarg(s64) value) {
      #        if defined(ZPL_ARCH_64_BIT)
                  a->value = value;
      #        elif ZPL_CPU_X86
@@ -15793,17 +15793,17 @@ License:
      #        endif
          }
 
-         zpl_i64 atomic64_compare_exchange(atomic64 *a, atomicarg(zpl_i64) expected, atomicarg(zpl_i64) desired) {
-             return _InterlockedCompareExchange64(zpl_cast(atomicarg(zpl_i64) *)a, desired, expected);
+         s64 atomic64_compare_exchange(atomic64 *a, atomicarg(s64) expected, atomicarg(s64) desired) {
+             return _InterlockedCompareExchange64(zpl_cast(atomicarg(s64) *)a, desired, expected);
          }
 
-         zpl_i64 atomic64_exchange(atomic64 *a, atomicarg(zpl_i64) desired) {
+         s64 atomic64_exchange(atomic64 *a, atomicarg(s64) desired) {
      #        if defined(ZPL_ARCH_64_BIT)
-                 return _InterlockedExchange64(zpl_cast(atomicarg(zpl_i64) *)a, desired);
+                 return _InterlockedExchange64(zpl_cast(atomicarg(s64) *)a, desired);
      #        elif ZPL_CPU_X86
-                 atomicarg(zpl_i64) expected = a->value;
+                 atomicarg(s64) expected = a->value;
                  for (;;) {
-                     atomicarg(zpl_i64) original = _InterlockedCompareExchange64(zpl_cast(atomicarg(zpl_i64) *)a, desired, expected);
+                     atomicarg(s64) original = _InterlockedCompareExchange64(zpl_cast(atomicarg(s64) *)a, desired, expected);
                      if (original == expected)
                          return original;
                      expected = original;
@@ -15813,13 +15813,13 @@ License:
      #        endif
          }
 
-         zpl_i64 atomic64_fetch_add(atomic64 *a, atomicarg(zpl_i64) operand) {
+         s64 atomic64_fetch_add(atomic64 *a, atomicarg(s64) operand) {
      #        if defined(ZPL_ARCH_64_BIT)
-                 return _InterlockedExchangeAdd64(zpl_cast(atomicarg(zpl_i64) *)a, operand);
+                 return _InterlockedExchangeAdd64(zpl_cast(atomicarg(s64) *)a, operand);
      #        elif ZPL_CPU_X86
-                 atomicarg(zpl_i64) expected = a->value;
+                 atomicarg(s64) expected = a->value;
                  for (;;) {
-                     atomicarg(zpl_i64) original = _InterlockedCompareExchange64(zpl_cast(atomicarg(zpl_i64) *)a, expected + operand, expected);
+                     atomicarg(s64) original = _InterlockedCompareExchange64(zpl_cast(atomicarg(s64) *)a, expected + operand, expected);
                      if (original == expected)
                          return original;
                      expected = original;
@@ -15829,13 +15829,13 @@ License:
      #        endif
          }
 
-         zpl_i64 atomic64_fetch_and(atomic64 *a, atomicarg(zpl_i64) operand) {
+         s64 atomic64_fetch_and(atomic64 *a, atomicarg(s64) operand) {
      #        if defined(ZPL_ARCH_64_BIT)
-                 return _InterlockedAnd64(zpl_cast(atomicarg(zpl_i64) *)a, operand);
+                 return _InterlockedAnd64(zpl_cast(atomicarg(s64) *)a, operand);
      #        elif ZPL_CPU_X86
-                 atomicarg(zpl_i64) expected = a->value;
+                 atomicarg(s64) expected = a->value;
                  for (;;) {
-                     atomicarg(zpl_i64) original = _InterlockedCompareExchange64(zpl_cast(atomicarg(zpl_i64) *)a, expected & operand, expected);
+                     atomicarg(s64) original = _InterlockedCompareExchange64(zpl_cast(atomicarg(s64) *)a, expected & operand, expected);
                      if (original == expected)
                          return original;
                      expected = original;
@@ -15845,13 +15845,13 @@ License:
      #        endif
          }
 
-         zpl_i64 atomic64_fetch_or(atomic64 *a, atomicarg(zpl_i64) operand) {
+         s64 atomic64_fetch_or(atomic64 *a, atomicarg(s64) operand) {
      #        if defined(ZPL_ARCH_64_BIT)
-                 return _InterlockedOr64(zpl_cast(atomicarg(zpl_i64) *)a, operand);
+                 return _InterlockedOr64(zpl_cast(atomicarg(s64) *)a, operand);
      #        elif ZPL_CPU_X86
-                 atomicarg(zpl_i64) expected = a->value;
+                 atomicarg(s64) expected = a->value;
                  for (;;) {
-                     atomicarg(zpl_i64) original = _InterlockedCompareExchange64(zpl_cast(atomicarg(zpl_i64) *)a, expected | operand, expected);
+                     atomicarg(s64) original = _InterlockedCompareExchange64(zpl_cast(atomicarg(s64) *)a, expected | operand, expected);
                      if (original == expected)
                          return original;
                      expected = original;
@@ -15863,11 +15863,11 @@ License:
 
      #elif defined(ZPL_CPU_X86)
 
-         zpl_i32 atomic32_load (atomic32 const *a)      { return a->value;  }
-         void atomic32_store(atomic32 *a, atomicarg(zpl_i32) value) { a->value = value; }
+         s32 atomic32_load (atomic32 const *a)      { return a->value;  }
+         void atomic32_store(atomic32 *a, atomicarg(s32) value) { a->value = value; }
 
-         zpl_i32 atomic32_compare_exchange(atomic32 *a, atomicarg(zpl_i32) expected, atomicarg(zpl_i32) desired) {
-             atomicarg(zpl_i32) original;
+         s32 atomic32_compare_exchange(atomic32 *a, atomicarg(s32) expected, atomicarg(s32) desired) {
+             atomicarg(s32) original;
              __asm__(
                  "lock; cmpxchgl %2, %1"
                  : "=a"(original), "+m"(a->value)
@@ -15876,9 +15876,9 @@ License:
              return original;
          }
 
-         zpl_i32 atomic32_exchange(atomic32 *a, atomicarg(zpl_i32) desired) {
+         s32 atomic32_exchange(atomic32 *a, atomicarg(s32) desired) {
              // NOTE: No lock prefix is necessary for xchgl
-             atomicarg(zpl_i32) original;
+             atomicarg(s32) original;
              __asm__(
                  "xchgl %0, %1"
                  : "=r"(original), "+m"(a->value)
@@ -15887,8 +15887,8 @@ License:
              return original;
          }
 
-         zpl_i32 atomic32_fetch_add(atomic32 *a, atomicarg(zpl_i32) operand) {
-             atomicarg(zpl_i32) original;
+         s32 atomic32_fetch_add(atomic32 *a, atomicarg(s32) operand) {
+             atomicarg(s32) original;
              __asm__(
                  "lock; xaddl %0, %1"
                  : "=r"(original), "+m"(a->value)
@@ -15897,9 +15897,9 @@ License:
              return original;
          }
 
-         zpl_i32 atomic32_fetch_and(atomic32 *a, atomicarg(zpl_i32) operand) {
-             atomicarg(zpl_i32) original;
-             atomicarg(zpl_i32) tmp;
+         s32 atomic32_fetch_and(atomic32 *a, atomicarg(s32) operand) {
+             atomicarg(s32) original;
+             atomicarg(s32) tmp;
              __asm__(
                  "1:     movl    %1, %0\n"
                  "       movl    %0, %2\n"
@@ -15912,9 +15912,9 @@ License:
              return original;
          }
 
-         zpl_i32 atomic32_fetch_or(atomic32 *a, atomicarg(zpl_i32) operand) {
-             atomicarg(zpl_i32) original;
-             atomicarg(zpl_i32) temp;
+         s32 atomic32_fetch_or(atomic32 *a, atomicarg(s32) operand) {
+             atomicarg(s32) original;
+             atomicarg(s32) temp;
              __asm__(
                  "1:     movl    %1, %0\n"
                  "       movl    %0, %2\n"
@@ -15928,11 +15928,11 @@ License:
          }
 
 
-         zpl_i64 atomic64_load(atomic64 const *a) {
+         s64 atomic64_load(atomic64 const *a) {
      #        if defined(ZPL_ARCH_64_BIT)
                  return a->value;
      #        else
-                 atomicarg(zpl_i64) original;
+                 atomicarg(s64) original;
                  __asm__(
                      "movl %%ebx, %%eax\n"
                      "movl %%ecx, %%edx\n"
@@ -15944,23 +15944,23 @@ License:
      #        endif
          }
 
-         void atomic64_store(atomic64 *a, atomicarg(zpl_i64) value) {
+         void atomic64_store(atomic64 *a, atomicarg(s64) value) {
      #        if defined(ZPL_ARCH_64_BIT)
                  a->value = value;
      #        else
-                 atomicarg(zpl_i64) expected = a->value;
+                 atomicarg(s64) expected = a->value;
                  __asm__(
                      "1:    cmpxchg8b %0\n"
                      "      jne 1b"
                      : "=m"(a->value)
-                     : "b"((atomicarg(zpl_i32))value), "c"((atomicarg(zpl_i32))(value >> 32)), "A"(expected)
+                     : "b"((atomicarg(s32))value), "c"((atomicarg(s32))(value >> 32)), "A"(expected)
                      );
      #        endif
          }
 
-         zpl_i64 atomic64_compare_exchange(atomic64 *a, atomicarg(zpl_i64) expected, atomicarg(zpl_i64) desired) {
+         s64 atomic64_compare_exchange(atomic64 *a, atomicarg(s64) expected, atomicarg(s64) desired) {
      #        if defined(ZPL_ARCH_64_BIT)
-                 atomicarg(zpl_i64) original;
+                 atomicarg(s64) original;
                  __asm__(
                      "lock; cmpxchgq %2, %1"
                      : "=a"(original), "+m"(a->value)
@@ -15968,19 +15968,19 @@ License:
                      );
                  return original;
      #        else
-                 atomicarg(zpl_i64) original;
+                 atomicarg(s64) original;
                  __asm__(
                      "lock; cmpxchg8b %1"
                      : "=A"(original), "+m"(a->value)
-                     : "b"((atomicarg(zpl_i32))desired), "c"((atomicarg(zpl_i32))(desired >> 32)), "0"(expected)
+                     : "b"((atomicarg(s32))desired), "c"((atomicarg(s32))(desired >> 32)), "0"(expected)
                      );
                  return original;
      #        endif
          }
 
-         zpl_i64 atomic64_exchange(atomic64 *a, atomicarg(zpl_i64) desired) {
+         s64 atomic64_exchange(atomic64 *a, atomicarg(s64) desired) {
      #        if defined(ZPL_ARCH_64_BIT)
-                 atomicarg(zpl_i64) original;
+                 atomicarg(s64) original;
                  __asm__(
                      "xchgq %0, %1"
                      : "=r"(original), "+m"(a->value)
@@ -15988,9 +15988,9 @@ License:
                      );
                  return original;
      #        else
-                 atomicarg(zpl_i64) original = a->value;
+                 atomicarg(s64) original = a->value;
                  for (;;) {
-                     atomicarg(zpl_i64) previous = atomic64_compare_exchange(a, original, desired);
+                     atomicarg(s64) previous = atomic64_compare_exchange(a, original, desired);
                      if (original == previous)
                          return original;
                      original = previous;
@@ -15998,9 +15998,9 @@ License:
      #        endif
          }
 
-         zpl_i64 atomic64_fetch_add(atomic64 *a, atomicarg(zpl_i64) operand) {
+         s64 atomic64_fetch_add(atomic64 *a, atomicarg(s64) operand) {
      #        if defined(ZPL_ARCH_64_BIT)
-                 atomicarg(zpl_i64) original;
+                 atomicarg(s64) original;
                  __asm__(
                      "lock; xaddq %0, %1"
                      : "=r"(original), "+m"(a->value)
@@ -16009,17 +16009,17 @@ License:
                  return original;
      #        else
                  for (;;) {
-                     atomicarg(zpl_i64) original = a->value;
+                     atomicarg(s64) original = a->value;
                      if (atomic64_compare_exchange(a, original, original + operand) == original)
                          return original;
                  }
      #        endif
          }
 
-         zpl_i64 atomic64_fetch_and(atomic64 *a, atomicarg(zpl_i64) operand) {
+         s64 atomic64_fetch_and(atomic64 *a, atomicarg(s64) operand) {
      #        if defined(ZPL_ARCH_64_BIT)
-                 atomicarg(zpl_i64) original;
-                 atomicarg(zpl_i64) tmp;
+                 atomicarg(s64) original;
+                 atomicarg(s64) tmp;
                  __asm__(
                      "1:     movq    %1, %0\n"
                      "       movq    %0, %2\n"
@@ -16032,17 +16032,17 @@ License:
                  return original;
      #        else
                  for (;;) {
-                     atomicarg(zpl_i64) original = a->value;
+                     atomicarg(s64) original = a->value;
                      if (atomic64_compare_exchange(a, original, original & operand) == original)
                          return original;
                  }
      #        endif
          }
 
-         zpl_i64 atomic64_fetch_or(atomic64 *a, atomicarg(zpl_i64) operand) {
+         s64 atomic64_fetch_or(atomic64 *a, atomicarg(s64) operand) {
      #        if defined(ZPL_ARCH_64_BIT)
-                 atomicarg(zpl_i64) original;
-                 atomicarg(zpl_i64) temp;
+                 atomicarg(s64) original;
+                 atomicarg(s64) temp;
                  __asm__(
                      "1:     movq    %1, %0\n"
                      "       movq    %0, %2\n"
@@ -16055,7 +16055,7 @@ License:
                  return original;
      #        else
                  for (;;) {
-                     atomicarg(zpl_i64) original = a->value;
+                     atomicarg(s64) original = a->value;
                      if (atomic64_compare_exchange(a, original, original | operand) == original)
                          return original;
                  }
@@ -16063,59 +16063,59 @@ License:
          }
 
      #elif !defined(ZPL_COMPILER_MSVC)
-         zpl_i32 atomic32_load (atomic32 const *a) {
-             return __atomic_load_n((zpl_i32*)&a->value, __ATOMIC_SEQ_CST);
+         s32 atomic32_load (atomic32 const *a) {
+             return __atomic_load_n((s32*)&a->value, __ATOMIC_SEQ_CST);
          }
-         void atomic32_store(atomic32 *a, atomicarg(zpl_i32) value) {
-             __atomic_store((zpl_i32*)&a->value, (zpl_i32*)&value, __ATOMIC_SEQ_CST);
-         }
-
-         zpl_i32 atomic32_compare_exchange(atomic32 *a, atomicarg(zpl_i32) expected, atomicarg(zpl_i32) desired) {
-             return __atomic_compare_exchange_n((zpl_i32*)&a->value, (zpl_i32*)&expected, desired, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
+         void atomic32_store(atomic32 *a, atomicarg(s32) value) {
+             __atomic_store((s32*)&a->value, (s32*)&value, __ATOMIC_SEQ_CST);
          }
 
-         zpl_i32 atomic32_exchange(atomic32 *a, atomicarg(zpl_i32) desired) {
-             return __atomic_exchange_n((zpl_i32*)&a->value, desired, __ATOMIC_SEQ_CST);
+         s32 atomic32_compare_exchange(atomic32 *a, atomicarg(s32) expected, atomicarg(s32) desired) {
+             return __atomic_compare_exchange_n((s32*)&a->value, (s32*)&expected, desired, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
          }
 
-         zpl_i32 atomic32_fetch_add(atomic32 *a, atomicarg(zpl_i32) operand) {
-             return __atomic_fetch_add((zpl_i32*)&a->value, operand, __ATOMIC_SEQ_CST);
+         s32 atomic32_exchange(atomic32 *a, atomicarg(s32) desired) {
+             return __atomic_exchange_n((s32*)&a->value, desired, __ATOMIC_SEQ_CST);
          }
 
-         zpl_i32 atomic32_fetch_and(atomic32 *a, atomicarg(zpl_i32) operand) {
-             return __atomic_fetch_and((zpl_i32*)&a->value, operand, __ATOMIC_SEQ_CST);
+         s32 atomic32_fetch_add(atomic32 *a, atomicarg(s32) operand) {
+             return __atomic_fetch_add((s32*)&a->value, operand, __ATOMIC_SEQ_CST);
          }
 
-         zpl_i32 atomic32_fetch_or(atomic32 *a, atomicarg(zpl_i32) operand) {
-             return __atomic_fetch_or((zpl_i32*)&a->value, operand, __ATOMIC_SEQ_CST);
+         s32 atomic32_fetch_and(atomic32 *a, atomicarg(s32) operand) {
+             return __atomic_fetch_and((s32*)&a->value, operand, __ATOMIC_SEQ_CST);
          }
 
-         zpl_i64 atomic64_load(atomic64 const *a) {
-             return __atomic_load_n((zpl_i64*)&a->value, __ATOMIC_SEQ_CST);
+         s32 atomic32_fetch_or(atomic32 *a, atomicarg(s32) operand) {
+             return __atomic_fetch_or((s32*)&a->value, operand, __ATOMIC_SEQ_CST);
          }
 
-         void atomic64_store(atomic64 *a, atomicarg(zpl_i64) value) {
-             __atomic_store((zpl_i64*)&a->value, (zpl_i64*)&value, __ATOMIC_SEQ_CST);
+         s64 atomic64_load(atomic64 const *a) {
+             return __atomic_load_n((s64*)&a->value, __ATOMIC_SEQ_CST);
          }
 
-         zpl_i64 atomic64_compare_exchange(atomic64 *a, atomicarg(zpl_i64) expected, atomicarg(zpl_i64) desired) {
-             return __atomic_compare_exchange_n((zpl_i64*)&a->value, (zpl_i64*)&expected, desired, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
+         void atomic64_store(atomic64 *a, atomicarg(s64) value) {
+             __atomic_store((s64*)&a->value, (s64*)&value, __ATOMIC_SEQ_CST);
          }
 
-         zpl_i64 atomic64_exchange(atomic64 *a, atomicarg(zpl_i64) desired) {
-             return __atomic_exchange_n((zpl_i64*)&a->value, desired, __ATOMIC_SEQ_CST);
+         s64 atomic64_compare_exchange(atomic64 *a, atomicarg(s64) expected, atomicarg(s64) desired) {
+             return __atomic_compare_exchange_n((s64*)&a->value, (s64*)&expected, desired, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
          }
 
-         zpl_i64 atomic64_fetch_add(atomic64 *a, atomicarg(zpl_i64) operand) {
-             return __atomic_fetch_add((zpl_i64*)&a->value, operand, __ATOMIC_SEQ_CST);
+         s64 atomic64_exchange(atomic64 *a, atomicarg(s64) desired) {
+             return __atomic_exchange_n((s64*)&a->value, desired, __ATOMIC_SEQ_CST);
          }
 
-         zpl_i64 atomic64_fetch_and(atomic64 *a, atomicarg(zpl_i64) operand) {
-             return __atomic_fetch_and((zpl_i64*)&a->value, operand, __ATOMIC_SEQ_CST);
+         s64 atomic64_fetch_add(atomic64 *a, atomicarg(s64) operand) {
+             return __atomic_fetch_add((s64*)&a->value, operand, __ATOMIC_SEQ_CST);
          }
 
-         zpl_i64 atomic64_fetch_or(atomic64 *a, atomicarg(zpl_i64) operand) {
-             return __atomic_fetch_or((zpl_i64*)&a->value, operand, __ATOMIC_SEQ_CST);
+         s64 atomic64_fetch_and(atomic64 *a, atomicarg(s64) operand) {
+             return __atomic_fetch_and((s64*)&a->value, operand, __ATOMIC_SEQ_CST);
+         }
+
+         s64 atomic64_fetch_or(atomic64 *a, atomicarg(s64) operand) {
+             return __atomic_fetch_or((s64*)&a->value, operand, __ATOMIC_SEQ_CST);
          }
 
      #else
@@ -16124,9 +16124,9 @@ License:
 
 
 
-     b32 atomic32_spin_lock(atomic32 *a, zpl_isize time_out) {
-         atomicarg(zpl_i32) old_value = atomic32_compare_exchange(a, 1, 0);
-         zpl_i32 counter = 0;
+     b32 atomic32_spin_lock(atomic32 *a, sw time_out) {
+         atomicarg(s32) old_value = atomic32_compare_exchange(a, 1, 0);
+         s32 counter = 0;
          while (old_value != 0 && (time_out < 0 || counter++ < time_out)) {
              yield_thread();
              old_value = atomic32_compare_exchange(a, 1, 0);
@@ -16140,9 +16140,9 @@ License:
          mfence();
      }
 
-     b32 atomic64_spin_lock(atomic64 *a, zpl_isize time_out) {
-         atomicarg(zpl_i64) old_value = atomic64_compare_exchange(a, 1, 0);
-         atomicarg(zpl_i64) counter = 0;
+     b32 atomic64_spin_lock(atomic64 *a, sw time_out) {
+         atomicarg(s64) old_value = atomic64_compare_exchange(a, 1, 0);
+         atomicarg(s64) counter = 0;
          while (old_value != 0 && (time_out < 0 || counter++ < time_out)) {
              yield_thread();
              old_value = atomic64_compare_exchange(a, 1, 0);
@@ -16157,7 +16157,7 @@ License:
      }
 
      b32 atomic32_try_acquire_lock(atomic32 *a) {
-         atomicarg(zpl_i32) old_value;
+         atomicarg(s32) old_value;
          yield_thread();
          old_value = atomic32_compare_exchange(a, 1, 0);
          mfence();
@@ -16165,7 +16165,7 @@ License:
      }
 
      b32 atomic64_try_acquire_lock(atomic64 *a) {
-         atomicarg(zpl_i64) old_value;
+         atomicarg(s64) old_value;
          yield_thread();
          old_value = atomic64_compare_exchange(a, 1, 0);
          mfence();
@@ -16177,27 +16177,27 @@ License:
      #if defined(ZPL_ARCH_32_BIT)
 
          void* atomic_ptr_load(atomic_ptr const *a) {
-             return (void *)zpl_cast(zpl_intptr)atomic32_load(zpl_cast(atomic32 const *)a);
+             return (void *)zpl_cast(sptr)atomic32_load(zpl_cast(atomic32 const *)a);
          }
          void atomic_ptr_store(atomic_ptr *a, atomicarg(void *)value) {
-             atomic32_store(zpl_cast(atomic32 *)a, zpl_cast(atomicarg(zpl_i32))zpl_cast(zpl_intptr)value);
+             atomic32_store(zpl_cast(atomic32 *)a, zpl_cast(atomicarg(s32))zpl_cast(sptr)value);
          }
          void* atomic_ptr_compare_exchange(atomic_ptr *a, atomicarg(void *)expected, atomicarg(void *)desired) {
-             return (void *)zpl_cast(zpl_intptr)atomic32_compare_exchange(zpl_cast(atomic32 *)a, zpl_cast(atomicarg(zpl_i32))zpl_cast(zpl_intptr)expected, zpl_cast(atomicarg(zpl_i32))zpl_cast(zpl_intptr)desired);
+             return (void *)zpl_cast(sptr)atomic32_compare_exchange(zpl_cast(atomic32 *)a, zpl_cast(atomicarg(s32))zpl_cast(sptr)expected, zpl_cast(atomicarg(s32))zpl_cast(sptr)desired);
          }
          void* atomic_ptr_exchange(atomic_ptr *a, atomicarg(void *)desired) {
-             return (void *)zpl_cast(zpl_intptr)atomic32_exchange(zpl_cast(atomic32 *)a, zpl_cast(atomicarg(zpl_i32))zpl_cast(zpl_intptr)desired);
+             return (void *)zpl_cast(sptr)atomic32_exchange(zpl_cast(atomic32 *)a, zpl_cast(atomicarg(s32))zpl_cast(sptr)desired);
          }
          void* atomic_ptr_fetch_add(atomic_ptr *a, atomicarg(void *)operand) {
-             return (void *)zpl_cast(zpl_intptr)atomic32_fetch_add(zpl_cast(atomic32 *)a, zpl_cast(atomicarg(zpl_i32))zpl_cast(zpl_intptr)operand);
+             return (void *)zpl_cast(sptr)atomic32_fetch_add(zpl_cast(atomic32 *)a, zpl_cast(atomicarg(s32))zpl_cast(sptr)operand);
          }
          void* atomic_ptr_fetch_and(atomic_ptr *a, atomicarg(void *)operand) {
-             return (void *)zpl_cast(zpl_intptr)atomic32_fetch_and(zpl_cast(atomic32 *)a, zpl_cast(atomicarg(zpl_i32))zpl_cast(zpl_intptr)operand);
+             return (void *)zpl_cast(sptr)atomic32_fetch_and(zpl_cast(atomic32 *)a, zpl_cast(atomicarg(s32))zpl_cast(sptr)operand);
          }
          void* atomic_ptr_fetch_or(atomic_ptr *a, atomicarg(void *)operand) {
-             return (void *)zpl_cast(zpl_intptr)atomic32_fetch_or(zpl_cast(atomic32 *)a, zpl_cast(atomicarg(zpl_i32))zpl_cast(zpl_intptr)operand);
+             return (void *)zpl_cast(sptr)atomic32_fetch_or(zpl_cast(atomic32 *)a, zpl_cast(atomicarg(s32))zpl_cast(sptr)operand);
          }
-         b32 atomic_ptr_spin_lock(atomic_ptr *a, zpl_isize time_out) {
+         b32 atomic_ptr_spin_lock(atomic_ptr *a, sw time_out) {
              return atomic32_spin_lock(zpl_cast(atomic32 *)a, time_out);
          }
          void atomic_ptr_spin_unlock(atomic_ptr *a) {
@@ -16210,27 +16210,27 @@ License:
      #elif defined(ZPL_ARCH_64_BIT)
 
          void* atomic_ptr_load(atomic_ptr const *a) {
-             return (void *)zpl_cast(zpl_intptr)atomic64_load(zpl_cast(atomic64 const *)a);
+             return (void *)zpl_cast(sptr)atomic64_load(zpl_cast(atomic64 const *)a);
          }
          void atomic_ptr_store(atomic_ptr *a, atomicarg(void *)value) {
-             atomic64_store(zpl_cast(atomic64 *)a, zpl_cast(zpl_i64)zpl_cast(zpl_intptr)value);
+             atomic64_store(zpl_cast(atomic64 *)a, zpl_cast(s64)zpl_cast(sptr)value);
          }
          void* atomic_ptr_compare_exchange(atomic_ptr *a, atomicarg(void *)expected, atomicarg(void *)desired) {
-             return (void *)zpl_cast(zpl_intptr)atomic64_compare_exchange(zpl_cast(atomic64 *)a, zpl_cast(zpl_i64)zpl_cast(zpl_intptr)expected, zpl_cast(zpl_i64)zpl_cast(zpl_intptr)desired);
+             return (void *)zpl_cast(sptr)atomic64_compare_exchange(zpl_cast(atomic64 *)a, zpl_cast(s64)zpl_cast(sptr)expected, zpl_cast(s64)zpl_cast(sptr)desired);
          }
          void* atomic_ptr_exchange(atomic_ptr *a, atomicarg(void *)desired) {
-             return (void *)zpl_cast(zpl_intptr)atomic64_exchange(zpl_cast(atomic64 *)a, zpl_cast(zpl_i64)zpl_cast(zpl_intptr)desired);
+             return (void *)zpl_cast(sptr)atomic64_exchange(zpl_cast(atomic64 *)a, zpl_cast(s64)zpl_cast(sptr)desired);
          }
          void* atomic_ptr_fetch_add(atomic_ptr *a, atomicarg(void *)operand) {
-             return (void *)zpl_cast(zpl_intptr)atomic64_fetch_add(zpl_cast(atomic64 *)a, zpl_cast(zpl_i64)zpl_cast(zpl_intptr)operand);
+             return (void *)zpl_cast(sptr)atomic64_fetch_add(zpl_cast(atomic64 *)a, zpl_cast(s64)zpl_cast(sptr)operand);
          }
          void* atomic_ptr_fetch_and(atomic_ptr *a, atomicarg(void *)operand) {
-             return (void *)zpl_cast(zpl_intptr)atomic64_fetch_and(zpl_cast(atomic64 *)a, zpl_cast(zpl_i64)zpl_cast(zpl_intptr)operand);
+             return (void *)zpl_cast(sptr)atomic64_fetch_and(zpl_cast(atomic64 *)a, zpl_cast(s64)zpl_cast(sptr)operand);
          }
          void* atomic_ptr_fetch_or(atomic_ptr *a, atomicarg(void *)operand) {
-             return (void *)zpl_cast(zpl_intptr)atomic64_fetch_or(zpl_cast(atomic64 *)a, zpl_cast(zpl_i64)zpl_cast(zpl_intptr)operand);
+             return (void *)zpl_cast(sptr)atomic64_fetch_or(zpl_cast(atomic64 *)a, zpl_cast(s64)zpl_cast(sptr)operand);
          }
-         b32 atomic_ptr_spin_lock(atomic_ptr *a, zpl_isize time_out) {
+         b32 atomic_ptr_spin_lock(atomic_ptr *a, sw time_out) {
              return atomic64_spin_lock(zpl_cast(atomic64 *)a, time_out);
          }
          void atomic_ptr_spin_unlock(atomic_ptr *a) {
@@ -16254,25 +16254,25 @@ License:
 
          void semaphore_init   (semaphore *s)            { s->win32_handle = CreateSemaphoreA(NULL, 0, ZPL_I32_MAX, NULL); }
          void semaphore_destroy(semaphore *s)            { CloseHandle(s->win32_handle); }
-         void semaphore_post   (semaphore *s, zpl_i32 count) { ReleaseSemaphore(s->win32_handle, count, NULL); }
+         void semaphore_post   (semaphore *s, s32 count) { ReleaseSemaphore(s->win32_handle, count, NULL); }
          void semaphore_wait   (semaphore *s)            { WaitForSingleObject(s->win32_handle, INFINITE); }
-         zpl_i32 semaphore_trywait(semaphore *s)         { int r = WaitForSingleObject(s->win32_handle, 0); return r; }
+         s32 semaphore_trywait(semaphore *s)         { int r = WaitForSingleObject(s->win32_handle, 0); return r; }
 
      #elif defined(ZPL_SYSTEM_OSX)
 
          void semaphore_init   (semaphore *s)            { semaphore_create(mach_task_self(), &s->osx_handle, SYNC_POLICY_FIFO, 0); }
          void semaphore_destroy(semaphore *s)            { semaphore_destroy(mach_task_self(), s->osx_handle); }
-         void semaphore_post   (semaphore *s, zpl_i32 count) { while (count --> 0) semaphore_signal(s->osx_handle); }
+         void semaphore_post   (semaphore *s, s32 count) { while (count --> 0) semaphore_signal(s->osx_handle); }
          void semaphore_wait   (semaphore *s)            { semaphore_wait(s->osx_handle); }
-         zpl_i32 semaphore_trywait(semaphore *s)         { mach_timespec_t t; t.tv_sec = t.tv_nsec = 0; kern_return_t r = semaphore_timedwait(s->osx_handle, t); return r; }
+         s32 semaphore_trywait(semaphore *s)         { mach_timespec_t t; t.tv_sec = t.tv_nsec = 0; kern_return_t r = semaphore_timedwait(s->osx_handle, t); return r; }
 
      #elif defined(ZPL_SYSTEM_UNIX)
 
          void semaphore_init   (semaphore *s)            { sem_init(&s->unix_handle, 0, 0); }
          void semaphore_destroy(semaphore *s)            { sem_destroy(&s->unix_handle); }
-         void semaphore_post   (semaphore *s, zpl_i32 count) { while (count --> 0) sem_post(&s->unix_handle); }
+         void semaphore_post   (semaphore *s, s32 count) { while (count --> 0) sem_post(&s->unix_handle); }
          void semaphore_wait   (semaphore *s)            { int i; do { i = sem_wait(&s->unix_handle); } while (i == -1 && errno == EINTR); }
-         zpl_i32 semaphore_trywait(semaphore *s)         { int r = sem_trywait(&s->unix_handle); return r; }
+         s32 semaphore_trywait(semaphore *s)         { int r = sem_trywait(&s->unix_handle); return r; }
 
      #else
      #    error Semaphores for this OS are not implemented
@@ -16389,7 +16389,7 @@ License:
          thread_start_with_stack(t, proc, user_data, 0);
      }
 
-     void thread_start_with_stack(thread *t, thread_proc proc, void *user_data, zpl_isize stack_size) {
+     void thread_start_with_stack(thread *t, thread_proc proc, void *user_data, sw stack_size) {
          ZPL_ASSERT(!t->is_running);
          ZPL_ASSERT(proc != NULL);
          t->proc = proc;
@@ -16425,13 +16425,13 @@ License:
      #    endif
      }
 
-     zpl_u32 thread_current_id(void) {
-         zpl_u32 thread_id;
+     u32 thread_current_id(void) {
+         u32 thread_id;
      #    if defined(ZPL_SYSTEM_WINDOWS)
      #        if defined(ZPL_ARCH_32_BIT) && defined(ZPL_CPU_X86)
-         thread_id = (zpl_cast(zpl_u32 *)__readfsdword(24))[9];
+         thread_id = (zpl_cast(u32 *)__readfsdword(24))[9];
      #        elif defined(ZPL_ARCH_64_BIT) && defined(ZPL_CPU_X86)
-         thread_id = (zpl_cast(zpl_u32 *)__readgsqword(48))[18];
+         thread_id = (zpl_cast(u32 *)__readgsqword(48))[18];
      #        else
          thread_id = GetCurrentThreadId();
      #        endif
@@ -16512,7 +16512,7 @@ License:
          semaphore_destroy(&s->release);
      }
 
-     void sync_set_target(sync *s, zpl_i32 count) {
+     void sync_set_target(sync *s, s32 count) {
          mutex_lock(&s->start);
 
          mutex_lock(&s->mutex);
@@ -16532,8 +16532,8 @@ License:
          }
      }
 
-     zpl_i32 sync_reach(sync *s) {
-         zpl_i32 n;
+     s32 sync_reach(sync *s) {
+         s32 n;
          mutex_lock(&s->mutex);
          ZPL_ASSERT(s->current < s->target);
          n = ++s->current; // NOTE: Record this value to avoid possible race if `return s->current` was done
@@ -16595,7 +16595,7 @@ License:
                           processor_info < end_processor_info;
                           processor_info++) {
                          if (processor_info->Relationship == RelationProcessorCore) {
-                             zpl_isize thread = count_set_bits(processor_info->ProcessorMask);
+                             sw thread = count_set_bits(processor_info->ProcessorMask);
                              if (thread == 0) {
                                  a->is_accurate = false;
                              } else if (a->thread_count + thread > ZPL_WIN32_MAX_THREADS) {
@@ -16627,15 +16627,15 @@ License:
              unused(a);
          }
 
-         b32 affinity_set(affinity *a, zpl_isize core, zpl_isize thread) {
-             zpl_usize available_mask, check_mask = 1;
+         b32 affinity_set(affinity *a, sw core, sw thread) {
+             uw available_mask, check_mask = 1;
              ZPL_ASSERT(thread < affinity_thread_count_for_core(a, core));
 
              available_mask = a->core_masks[core];
              for (;;) {
                  if ((available_mask & check_mask) != 0) {
                      if (thread-- == 0) {
-                         zpl_usize result = SetThreadAffinityMask(GetCurrentThread(), check_mask);
+                         uw result = SetThreadAffinityMask(GetCurrentThread(), check_mask);
                          return result != 0;
                      }
                  }
@@ -16643,14 +16643,14 @@ License:
              }
          }
 
-         zpl_isize affinity_thread_count_for_core(affinity *a, zpl_isize core) {
+         sw affinity_thread_count_for_core(affinity *a, sw core) {
              ZPL_ASSERT(core >= 0 && core < a->core_count);
              return count_set_bits(a->core_masks[core]);
          }
 
      #elif defined(ZPL_SYSTEM_MACOS)
          void affinity_init(affinity *a) {
-             zpl_usize count, count_size = size_of(count);
+             uw count, count_size = size_of(count);
 
              a->is_accurate      = false;
              a->thread_count     = 1;
@@ -16680,8 +16680,8 @@ License:
              unused(a);
          }
 
-         b32 affinity_set(affinity *a, zpl_isize core, zpl_isize thread_index) {
-             zpl_isize index;
+         b32 affinity_set(affinity *a, sw core, sw thread_index) {
+             sw index;
              thread_t thread;
              thread_affinity_policy_data_t info;
              kern_return_t result;
@@ -16696,7 +16696,7 @@ License:
              return result == KERN_SUCCESS;
          }
 
-         zpl_isize affinity_thread_count_for_core(affinity *a, zpl_isize core) {
+         sw affinity_thread_count_for_core(affinity *a, sw core) {
              ZPL_ASSERT(core >= 0 && core < a->core_count);
              return a->threads_per_core;
          }
@@ -16715,14 +16715,14 @@ License:
              unused(a);
          }
 
-         b32 affinity_set(affinity * a, zpl_isize core, zpl_isize thread_index) {
+         b32 affinity_set(affinity * a, sw core, sw thread_index) {
              unused(a);
              unused(core);
              unused(thread_index);
              return true;
          }
 
-         zpl_isize affinity_thread_count_for_core(affinity *a, zpl_isize core) {
+         sw affinity_thread_count_for_core(affinity *a, sw core) {
              ZPL_ASSERT(0 <= core && core < a->core_count);
              return a->threads_per_core;
          }
@@ -16747,15 +16747,15 @@ License:
 
          ZPL_RING_DEFINE(zpl__jobs_ring_, thread_job);
 
-         global const zpl_u32 zpl__jobs_chances[ZPL_JOBS_MAX_PRIORITIES] = {
+         global const u32 zpl__jobs_chances[ZPL_JOBS_MAX_PRIORITIES] = {
              2, 3, 5, 7, 11
          };
 
-         zpl_isize zpl__jobs_entry(struct thread *thread) {
+         sw zpl__jobs_entry(struct thread *thread) {
              thread_worker *tw = (thread_worker *)thread->user_data;
 
              for (;;) {
-                 zpl_u32 status = atomic32_load(&tw->status);
+                 u32 status = atomic32_load(&tw->status);
 
                  switch (status) {
                      case ZPL_JOBS_STATUS_READY: {
@@ -16784,11 +16784,11 @@ License:
              return 0;
          }
 
-         void jobs_init(jobs_system *pool, zpl_allocator a, zpl_u32 max_threads) {
+         void jobs_init(jobs_system *pool, zpl_allocator a, u32 max_threads) {
              jobs_init_with_limit(pool, a, max_threads, ZPL_JOBS_MAX_QUEUE);
          }
 
-         void jobs_init_with_limit(jobs_system *pool, zpl_allocator a, zpl_u32 max_threads, zpl_u32 max_jobs) {
+         void jobs_init_with_limit(jobs_system *pool, zpl_allocator a, u32 max_threads, u32 max_jobs) {
              jobs_system pool_ = { 0 };
              *pool = pool_;
 
@@ -16799,13 +16799,13 @@ License:
 
              buffer_init(pool->workers, a, max_threads);
 
-             for (zpl_usize i = 0; i < ZPL_JOBS_MAX_PRIORITIES; ++i) {
+             for (uw i = 0; i < ZPL_JOBS_MAX_PRIORITIES; ++i) {
                  thread_queue *q = &pool->queues[i];
                  zpl__jobs_ring_init(&q->jobs, a, max_jobs);
                  q->chance = zpl__jobs_chances[i];
              }
 
-             for (zpl_usize i = 0; i < max_threads; ++i) {
+             for (uw i = 0; i < max_threads; ++i) {
                  thread_worker worker_ = { 0 };
                  thread_worker *tw = pool->workers + i;
                  *tw = worker_;
@@ -16817,7 +16817,7 @@ License:
          }
 
          void jobs_free(jobs_system *pool) {
-             for (zpl_usize i = 0; i < pool->max_threads; ++i) {
+             for (uw i = 0; i < pool->max_threads; ++i) {
                  thread_worker *tw = pool->workers + i;
 
                  atomic32_store(&tw->status, ZPL_JOBS_STATUS_TERM);
@@ -16826,7 +16826,7 @@ License:
 
              buffer_free(pool->workers);
 
-             for (zpl_usize i = 0; i < ZPL_JOBS_MAX_PRIORITIES; ++i) {
+             for (uw i = 0; i < ZPL_JOBS_MAX_PRIORITIES; ++i) {
                  thread_queue *q = &pool->queues[i];
                  zpl__jobs_ring_free(&q->jobs);
              }
@@ -16861,7 +16861,7 @@ License:
          }
 
          b32 jobs_done(jobs_system *pool) {
-             for (zpl_usize i = 0; i < pool->max_threads; ++i) {
+             for (uw i = 0; i < pool->max_threads; ++i) {
                  thread_worker *tw = pool->workers + i;
                  if (atomic32_load(&tw->status) != ZPL_JOBS_STATUS_WAITING) {
                      return false;
@@ -16872,7 +16872,7 @@ License:
          }
 
          b32 jobs_empty_all(jobs_system *pool) {
-             for (zpl_usize i = 0; i < ZPL_JOBS_MAX_PRIORITIES; ++i) {
+             for (uw i = 0; i < ZPL_JOBS_MAX_PRIORITIES; ++i) {
                  if (!jobs_empty(pool, (jobs_priority)i)) {
                      return false;
                  }
@@ -16881,7 +16881,7 @@ License:
          }
 
          b32 jobs_full_all(jobs_system *pool) {
-             for (zpl_usize i = 0; i < ZPL_JOBS_MAX_PRIORITIES; ++i) {
+             for (uw i = 0; i < ZPL_JOBS_MAX_PRIORITIES; ++i) {
                  if (!jobs_full(pool, (jobs_priority)i)) {
                      return false;
                  }
@@ -16894,13 +16894,13 @@ License:
                  return false;
              }
              // NOTE: Process the jobs
-             for (zpl_usize i = 0; i < pool->max_threads; ++i) {
+             for (uw i = 0; i < pool->max_threads; ++i) {
                  thread_worker *tw = pool->workers + i;
-                 zpl_u32 status = atomic32_load(&tw->status);
+                 u32 status = atomic32_load(&tw->status);
                  b32 last_empty = false;
 
                  if (status == ZPL_JOBS_STATUS_WAITING) {
-                     for (zpl_usize j = 0; j < ZPL_JOBS_MAX_PRIORITIES; ++j) {
+                     for (uw j = 0; j < ZPL_JOBS_MAX_PRIORITIES; ++j) {
                          thread_queue *q = &pool->queues[j];
                          if (jobs_empty(pool, (jobs_priority)j)) {
                              last_empty = (j+1 == ZPL_JOBS_MAX_PRIORITIES);
@@ -16938,8 +16938,8 @@ License:
          if (zpl_fprintf(s_, fmt_, ##__VA_ARGS__) < 0) return ZPL_ADT_ERROR_OUT_OF_MEMORY;                              \
      } while (0)
 
-     zpl_u8 adt_make_branch(adt_node *node, zpl_allocator backing, char const *name, b32 is_array) {
-         zpl_u8 type = ZPL_ADT_TYPE_OBJECT;
+     u8 adt_make_branch(adt_node *node, zpl_allocator backing, char const *name, b32 is_array) {
+         u8 type = ZPL_ADT_TYPE_OBJECT;
          if (is_array) {
              type = ZPL_ADT_TYPE_ARRAY;
          }
@@ -16953,17 +16953,17 @@ License:
          return 0;
      }
 
-     zpl_u8 adt_destroy_branch(adt_node *node) {
+     u8 adt_destroy_branch(adt_node *node) {
          ZPL_ASSERT_NOT_NULL(node);
          if ((node->type == ZPL_ADT_TYPE_OBJECT || node->type == ZPL_ADT_TYPE_ARRAY) && node->nodes) {
-             for (zpl_isize i = 0; i < array_count(node->nodes); ++i) { adt_destroy_branch(node->nodes + i); }
+             for (sw i = 0; i < array_count(node->nodes); ++i) { adt_destroy_branch(node->nodes + i); }
 
              array_free(node->nodes);
          }
          return 0;
      }
 
-     zpl_u8 adt_make_leaf(adt_node *node, char const *name, zpl_u8 type) {
+     u8 adt_make_leaf(adt_node *node, char const *name, u8 type) {
          ZPL_ASSERT(type != ZPL_ADT_TYPE_OBJECT && type != ZPL_ADT_TYPE_ARRAY);
          adt_node *parent = node->parent;
          zero_item(node);
@@ -16978,14 +16978,14 @@ License:
              return NULL;
          }
 
-         for (zpl_isize i = 0; i < array_count(node->nodes); i++) {
+         for (sw i = 0; i < array_count(node->nodes); i++) {
              if (!str_compare(node->nodes[i].name, name)) {
                  return (node->nodes + i);
              }
          }
 
          if (deep_search) {
-             for (zpl_isize i = 0; i < array_count(node->nodes); i++) {
+             for (sw i = 0; i < array_count(node->nodes); i++) {
                  adt_node *res = adt_find(node->nodes + i, name, deep_search);
 
                  if (res != NULL)
@@ -17010,11 +17010,11 @@ License:
                  zpl_file tmp;
 
                  /* allocate a file descriptor for a memory-mapped number to string conversion, input source buffer is not cloned, however. */
-                 file_stream_open(&tmp, heap(), (zpl_u8*)back, size_of(back), ZPL_FILE_STREAM_WRITABLE);
+                 file_stream_open(&tmp, heap(), (u8*)back, size_of(back), ZPL_FILE_STREAM_WRITABLE);
                  adt_print_number(&tmp, node);
 
-                 zpl_isize fsize=0;
-                 zpl_u8* buf = file_stream_buf(&tmp, &fsize);
+                 sw fsize=0;
+                 u8* buf = file_stream_buf(&tmp, &fsize);
 
                  if (!str_compare((char const *)buf, value)) {
                      file_close(&tmp);
@@ -17030,7 +17030,7 @@ License:
      }
 
      internal adt_node *zpl__adt_get_field(adt_node *node, char *name, char *value) {
-         for (zpl_isize i = 0; i < array_count(node->nodes); i++) {
+         for (sw i = 0; i < array_count(node->nodes); i++) {
              if (!str_compare(node->nodes[i].name, name)) {
                  adt_node *child = &node->nodes[i];
                  if (zpl__adt_get_value(child, value)) {
@@ -17093,7 +17093,7 @@ License:
 
                  /* run a value comparison against any child that is an object node */
                  else if (node->type == ZPL_ADT_TYPE_ARRAY) {
-                     for (zpl_isize i = 0; i < array_count(node->nodes); i++) {
+                     for (sw i = 0; i < array_count(node->nodes); i++) {
                          adt_node *child = &node->nodes[i];
                          if (child->type != ZPL_ADT_TYPE_OBJECT) {
                              continue;
@@ -17108,7 +17108,7 @@ License:
              }
              /* [value] */
              else {
-                 for (zpl_isize i = 0; i < array_count(node->nodes); i++) {
+                 for (sw i = 0; i < array_count(node->nodes); i++) {
                      adt_node *child = &node->nodes[i];
                      if (zpl__adt_get_value(child, l_b2)) {
                          found_node = child;
@@ -17133,7 +17133,7 @@ License:
          }
          /* handle array index lookup */
          else {
-             zpl_isize idx = (zpl_isize)str_to_i64(buf, NULL, 10);
+             sw idx = (sw)str_to_i64(buf, NULL, 10);
              if (idx >= 0 && idx < array_count(node->nodes)) {
                  found_node = &node->nodes[idx];
 
@@ -17147,7 +17147,7 @@ License:
          return found_node;
      }
 
-     adt_node *adt_alloc_at(adt_node *parent, zpl_isize index) {
+     adt_node *adt_alloc_at(adt_node *parent, sw index) {
          if (!parent || (parent->type != ZPL_ADT_TYPE_OBJECT && parent->type != ZPL_ADT_TYPE_ARRAY)) {
              return NULL;
          }
@@ -17194,13 +17194,13 @@ License:
          obj->real = value;
          return true;
      }
-     b8 adt_set_int(adt_node *obj, char const *name, zpl_i64 value) {
+     b8 adt_set_int(adt_node *obj, char const *name, s64 value) {
          adt_make_leaf(obj, name, ZPL_ADT_TYPE_INTEGER);
          obj->integer = value;
          return true;
      }
 
-     adt_node *adt_move_node_at(adt_node *node, adt_node *new_parent, zpl_isize index) {
+     adt_node *adt_move_node_at(adt_node *node, adt_node *new_parent, sw index) {
          ZPL_ASSERT_NOT_NULL(node);
          ZPL_ASSERT_NOT_NULL(new_parent);
          adt_node *old_parent = node->parent;
@@ -17225,8 +17225,8 @@ License:
          ZPL_ASSERT_NOT_NULL(other_node);
          adt_node *parent = node->parent;
          adt_node *other_parent = other_node->parent;
-         zpl_isize index = (pointer_diff(parent->nodes, node) / size_of(adt_node));
-         zpl_isize index2 = (pointer_diff(other_parent->nodes, other_node) / size_of(adt_node));
+         sw index = (pointer_diff(parent->nodes, node) / size_of(adt_node));
+         sw index2 = (pointer_diff(other_parent->nodes, other_node) / size_of(adt_node));
          adt_node temp = parent->nodes[index];
          temp.parent = other_parent;
          other_parent->nodes[index2].parent = parent;
@@ -17238,7 +17238,7 @@ License:
          ZPL_ASSERT_NOT_NULL(node);
          ZPL_ASSERT_NOT_NULL(node->parent);
          adt_node *parent = node->parent;
-         zpl_isize index = (pointer_diff(parent->nodes, node) / size_of(adt_node));
+         sw index = (pointer_diff(parent->nodes, node) / size_of(adt_node));
          array_remove_at(parent->nodes, index);
      }
 
@@ -17273,7 +17273,7 @@ License:
          adt_set_flt(o, name, value);
          return o;
      }
-     adt_node *adt_append_int(adt_node *parent, char const *name, zpl_i64 value) {
+     adt_node *adt_append_int(adt_node *parent, char const *name, s64 value) {
          adt_node *o = adt_alloc(parent);
          if (!o) return NULL;
          adt_set_int(o, name, value);
@@ -17287,14 +17287,14 @@ License:
          ZPL_ASSERT_NOT_NULL(base_str);
          char *p = base_str, *e = p;
 
-         zpl_i32 base=0;
-         zpl_i32 base2=0;
-         zpl_u8 base2_offset=0;
-         zpl_i8 exp=0,orig_exp=0;
-         zpl_u8 neg_zero=0;
-         zpl_u8 lead_digit=0;
-         zpl_u8 node_type=0;
-         zpl_u8 node_props=0;
+         s32 base=0;
+         s32 base2=0;
+         u8 base2_offset=0;
+         s8 exp=0,orig_exp=0;
+         u8 neg_zero=0;
+         u8 lead_digit=0;
+         u8 node_type=0;
+         u8 node_props=0;
 
          /* skip false positives and special cases */
          if (!!strchr("eE", *p) || (!!strchr(".+-", *p) && !char_is_hex_digit(*(p+1)) && *(p+1) != '.')) {
@@ -17304,7 +17304,7 @@ License:
          node_type = ZPL_ADT_TYPE_INTEGER;
          neg_zero = false;
 
-         zpl_isize ib = 0;
+         sw ib = 0;
          char buf[48] = { 0 };
 
          if (*e == '+')
@@ -17328,7 +17328,7 @@ License:
              if (*e == '.') {
                  node_type = ZPL_ADT_TYPE_REAL;
                  lead_digit = true;
-                 zpl_u32 step = 0;
+                 u32 step = 0;
 
                  do {
                      buf[ib++] = *e;
@@ -17346,7 +17346,7 @@ License:
 
          f32 eb = 10;
          char expbuf[6] = { 0 };
-         zpl_isize expi = 0;
+         sw expi = 0;
 
          if (*e && !!strchr("eE", *e)) {
              ++e;
@@ -17356,7 +17356,7 @@ License:
                  while (char_is_digit(*e)) { expbuf[expi++] = *e++; }
              }
 
-             orig_exp = exp = (zpl_u8)str_to_i64(expbuf, NULL, 10);
+             orig_exp = exp = (u8)str_to_i64(expbuf, NULL, 10);
          }
 
          if (node_type == ZPL_ADT_TYPE_INTEGER) {
@@ -17367,7 +17367,7 @@ License:
                  neg_zero = true;
              }
      #endif
-             while (orig_exp-- > 0) { node->integer *= (zpl_i64)eb; }
+             while (orig_exp-- > 0) { node->integer *= (s64)eb; }
          } else {
              node->real = str_to_f64(buf, 0);
 
@@ -17379,8 +17379,8 @@ License:
              char *base_string_off = base_string2;
              while (*base_string_off++ == '0') base2_offset++;
 
-             base = (zpl_i32)str_to_i64(q, 0, 0);
-             base2 = (zpl_i32)str_to_i64(base_string2, 0, 0);
+             base = (s32)str_to_i64(q, 0, 0);
+             base2 = (s32)str_to_i64(base_string2, 0, 0);
              if (exp) {
                  exp = exp * (!(eb == 10.0f) ? -1 : 1);
                  node_props = ZPL_ADT_PROPS_IS_EXP;
@@ -17528,12 +17528,12 @@ License:
 
      ZPL_BEGIN_C_DECLS
 
-     char *zpl__json_parse_object(adt_node *obj, char *base, zpl_allocator a, zpl_u8 *err_code);
-     char *zpl__json_parse_array(adt_node *obj, char *base, zpl_allocator a, zpl_u8 *err_code);
-     char *zpl__json_parse_value(adt_node *obj, char *base, zpl_allocator a, zpl_u8 *err_code);
-     char *zpl__json_parse_name(adt_node *obj, char *base, zpl_u8 *err_code);
+     char *zpl__json_parse_object(adt_node *obj, char *base, zpl_allocator a, u8 *err_code);
+     char *zpl__json_parse_array(adt_node *obj, char *base, zpl_allocator a, u8 *err_code);
+     char *zpl__json_parse_value(adt_node *obj, char *base, zpl_allocator a, u8 *err_code);
+     char *zpl__json_parse_name(adt_node *obj, char *base, u8 *err_code);
      char *zpl__json_trim(char *base, b32 catch_newline);
-     b8 zpl__json_write_value(zpl_file *f, adt_node *o, adt_node *t, zpl_isize indent, b32 is_inline, b32 is_last);
+     b8 zpl__json_write_value(zpl_file *f, adt_node *o, adt_node *t, sw indent, b32 is_inline, b32 is_last);
 
      #define zpl__json_fprintf(s_, fmt_, ...)                                                                               \
      do {                                                                                                               \
@@ -17542,8 +17542,8 @@ License:
 
      #define zpl___ind(x) if (x > 0) zpl__json_fprintf(f, "%*r", x, ' ');
 
-     zpl_u8 json_parse(adt_node *root, char *text, zpl_allocator a) {
-         zpl_u8 err_code = ZPL_JSON_ERROR_NONE;
+     u8 json_parse(adt_node *root, char *text, zpl_allocator a) {
+         u8 err_code = ZPL_JSON_ERROR_NONE;
          ZPL_ASSERT(root);
          ZPL_ASSERT(text);
          zero_item(root);
@@ -17563,14 +17563,14 @@ License:
          adt_destroy_branch(obj);
      }
 
-     string json_write_string(zpl_allocator a, adt_node *obj, zpl_isize indent) {
+     string json_write_string(zpl_allocator a, adt_node *obj, sw indent) {
          zpl_file tmp;
          if (!file_stream_new(&tmp, a))
              return NULL;
          if (!json_write(&tmp, obj, indent))
              return NULL;
-         zpl_isize fsize;
-         zpl_u8* buf = file_stream_buf(&tmp, &fsize);
+         sw fsize;
+         u8* buf = file_stream_buf(&tmp, &fsize);
          string output = string_make_length(a, (char *)buf, fsize);
          file_close(&tmp);
          return output;
@@ -17585,7 +17585,7 @@ License:
          return NULL;\
      }\
      if (item.type == ZPL_ADT_TYPE_OBJECT || item.type == ZPL_ADT_TYPE_ARRAY) {\
-     for (zpl_isize i = 0; i < array_count(item.nodes); i++)\
+     for (sw i = 0; i < array_count(item.nodes); i++)\
      item.nodes[i].parent = array_end(x);\
      }\
      } while (0);
@@ -17611,7 +17611,7 @@ License:
      }
      #undef jx
 
-     char *zpl__json_parse_array(adt_node *obj, char *base, zpl_allocator a, zpl_u8 *err_code) {
+     char *zpl__json_parse_array(adt_node *obj, char *base, zpl_allocator a, u8 *err_code) {
          ZPL_ASSERT(obj && base);
          char *p = base;
 
@@ -17654,7 +17654,7 @@ License:
          return NULL;
      }
 
-     char *zpl__json_parse_value(adt_node *obj, char *base, zpl_allocator a, zpl_u8 *err_code) {
+     char *zpl__json_parse_value(adt_node *obj, char *base, zpl_allocator a, u8 *err_code) {
          ZPL_ASSERT(obj && base);
          char *p = base, *b = p, *e = p;
 
@@ -17721,7 +17721,7 @@ License:
          return p;
      }
 
-     char *zpl__json_parse_object(adt_node *obj, char *base, zpl_allocator a, zpl_u8 *err_code) {
+     char *zpl__json_parse_object(adt_node *obj, char *base, zpl_allocator a, u8 *err_code) {
          ZPL_ASSERT(obj && base);
          char *p = base;
 
@@ -17772,7 +17772,7 @@ License:
                      n->delim_style = ZPL_ADT_DELIM_STYLE_NEWLINE;
                  else if (*p == '|') {
                      n->delim_style = ZPL_ADT_DELIM_STYLE_LINE;
-                     n->delim_line_width = zpl_cast(zpl_u8)(p-end_p);
+                     n->delim_line_width = zpl_cast(u8)(p-end_p);
                  }
      #endif
                  ++p;
@@ -17782,9 +17782,9 @@ License:
          return p;
      }
 
-     char *zpl__json_parse_name(adt_node *node, char *base, zpl_u8 *err_code) {
+     char *zpl__json_parse_name(adt_node *node, char *base, u8 *err_code) {
          char *p = base, *b = p, *e = p;
-         zpl_u8 name_style=0;
+         u8 name_style=0;
 
          if (*p == '"' || *p == '\'' || char_is_alpha(*p) || *p == '_' || *p == '$') {
              if (*p == '"' || *p == '\'') {
@@ -17814,7 +17814,7 @@ License:
              char *assign_p = e; unused(assign_p);
              p = zpl__json_trim(e, false);
      #ifndef ZPL_PARSER_DISABLE_ANALYSIS
-             node->assign_line_width = zpl_cast(zpl_u8)(p-assign_p);
+             node->assign_line_width = zpl_cast(u8)(p-assign_p);
      #endif
 
              if (*p && !zpl__json_is_assign_char(*p)) {
@@ -17876,7 +17876,7 @@ License:
          return NULL;
      }
 
-     b8 json_write(zpl_file *f, adt_node *o, zpl_isize indent) {
+     b8 json_write(zpl_file *f, adt_node *o, sw indent) {
          if (!o)
              return true;
 
@@ -17895,7 +17895,7 @@ License:
          }
 
          if (o->nodes) {
-             zpl_isize cnt = array_count(o->nodes);
+             sw cnt = array_count(o->nodes);
 
              for (int i = 0; i < cnt; ++i) {
                  if (!zpl__json_write_value(f, o->nodes + i, o, indent, false, !(i < cnt - 1))) return false;
@@ -17916,7 +17916,7 @@ License:
          return true;
      }
 
-     b8 zpl__json_write_value(zpl_file *f, adt_node *o, adt_node *t, zpl_isize indent, b32 is_inline, b32 is_last) {
+     b8 zpl__json_write_value(zpl_file *f, adt_node *o, adt_node *t, sw indent, b32 is_inline, b32 is_last) {
          adt_node *node = o;
          indent += 4;
 
@@ -17971,9 +17971,9 @@ License:
 
              case ZPL_ADT_TYPE_ARRAY: {
                  zpl__json_fprintf(f, "[");
-                 zpl_isize elemn = array_count(node->nodes);
+                 sw elemn = array_count(node->nodes);
                  for (int j = 0; j < elemn; ++j) {
-                     zpl_isize ind = ((node->nodes + j)->type == ZPL_ADT_TYPE_OBJECT || (node->nodes + j)->type == ZPL_ADT_TYPE_ARRAY) ? 0 : -4;
+                     sw ind = ((node->nodes + j)->type == ZPL_ADT_TYPE_OBJECT || (node->nodes + j)->type == ZPL_ADT_TYPE_ARRAY) ? 0 : -4;
                      if (!zpl__json_write_value(f, node->nodes + j, o, ind, true, true)) return false;
 
                      if (j < elemn - 1) { zpl__json_fprintf(f, ", "); }
@@ -18037,14 +18037,14 @@ License:
 
      ZPL_BEGIN_C_DECLS
 
-     zpl_u8 csv_parse_delimiter(csv_object *root, char *text, zpl_allocator allocator, b32 has_header, char delim) {
+     u8 csv_parse_delimiter(csv_object *root, char *text, zpl_allocator allocator, b32 has_header, char delim) {
          csv_error err = ZPL_CSV_ERROR_NONE;
          ZPL_ASSERT_NOT_NULL(root);
          ZPL_ASSERT_NOT_NULL(text);
          zero_item(root);
          adt_make_branch(root, allocator, NULL, has_header ? false : true);
          char *p = text, *b = p, *e = p;
-         zpl_isize colc = 0, total_colc = 0;
+         sw colc = 0, total_colc = 0;
          
          do {
              char d = 0;
@@ -18158,7 +18158,7 @@ License:
          
          /* consider first row as a header. */
          if (has_header) {
-             for (zpl_isize i = 0; i < array_count(root->nodes); i++) {
+             for (sw i = 0; i < array_count(root->nodes); i++) {
                  csv_object *col = root->nodes + i;
                  csv_object *hdr = col->nodes;
                  col->name = hdr->string;
@@ -18210,16 +18210,16 @@ License:
          ZPL_ASSERT_NOT_NULL(file);
          ZPL_ASSERT_NOT_NULL(obj);
          ZPL_ASSERT(obj->nodes);
-         zpl_isize cols = array_count(obj->nodes);
+         sw cols = array_count(obj->nodes);
          if (cols == 0) return;
          
-         zpl_isize rows = array_count(obj->nodes[0].nodes);
+         sw rows = array_count(obj->nodes[0].nodes);
          if (rows == 0) return;
          
          b32 has_headers = obj->nodes[0].name != NULL;
          
          if (has_headers) {
-             for (zpl_isize i = 0; i < cols; i++) {
+             for (sw i = 0; i < cols; i++) {
                  zpl__csv_write_header(file, &obj->nodes[i]);
                  if (i+1 != cols) {
                      zpl_fprintf(file, "%c", delimiter);
@@ -18228,8 +18228,8 @@ License:
              zpl_fprintf(file, "\n");
          }
          
-         for (zpl_isize r = 0; r < rows; r++) {
-             for (zpl_isize i = 0; i < cols; i++) {
+         for (sw r = 0; r < rows; r++) {
+             for (sw i = 0; i < cols; i++) {
                  zpl__csv_write_record(file, &obj->nodes[i].nodes[r]);
                  if (i+1 != cols) {
                      zpl_fprintf(file, "%c", delimiter);
@@ -18243,8 +18243,8 @@ License:
          zpl_file tmp;
          file_stream_new(&tmp, a);
          csv_write_delimiter(&tmp, obj, delimiter);
-         zpl_isize fsize;
-         zpl_u8* buf = file_stream_buf(&tmp, &fsize);
+         sw fsize;
+         u8* buf = file_stream_buf(&tmp, &fsize);
          string output = string_make_length(a, (char *)buf, fsize);
          file_close(&tmp);
          return output;
@@ -18270,24 +18270,24 @@ License:
 #endif
 
 #if defined(ZPL_EXPOSE_TYPES)
-    typedef zpl_u8 u8;
-    typedef zpl_i8 i8;
-    typedef zpl_u16 u16;
-    typedef zpl_i16 i16;
-    typedef zpl_u32 u32;
-    typedef zpl_i32 i32;
-    typedef zpl_u64 u64;
-    typedef zpl_i64 i64;
+    typedef u8 u8;
+    typedef s8 i8;
+    typedef u16 u16;
+    typedef s16 i16;
+    typedef u32 u32;
+    typedef s32 i32;
+    typedef u64 u64;
+    typedef s64 i64;
     typedef b8 b8;
     typedef b16 b16;
     typedef b32 b32;
     typedef f32 f32;
     typedef f64 f64;
     typedef rune rune;
-    typedef zpl_usize usize;
-    typedef zpl_isize isize;
-    typedef zpl_uintptr uintptr;
-    typedef zpl_intptr intptr;
+    typedef uw usize;
+    typedef sw isize;
+    typedef uptr uintptr;
+    typedef sptr intptr;
 #endif // ZPL_EXPOSE_TYPES
 
 #endif // ZPL_H

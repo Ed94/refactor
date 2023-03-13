@@ -73,20 +73,7 @@ do                    \
 while(0)              \
 
 
-using c8  = char;
-using u8  = zpl_u8;
-using u16 = zpl_u16;
-using u32 = zpl_u32;
-using u64 = zpl_u64;
-using s8  = zpl_i8;
-using s16 = zpl_i16;
-using s32 = zpl_i32;
-using s64 = zpl_i64;
-using uw  = zpl_usize;
-using sw  = zpl_isize;
-
-
-ct c8 const* Msg_Invalid_Value = "INVALID VALUE PROVIDED";
+ct char const* Msg_Invalid_Value = "INVALID VALUE PROVIDED";
 
 
 namespace Memory
