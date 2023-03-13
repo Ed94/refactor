@@ -1,0 +1,68 @@
+__VERSION 1
+
+// not   : Ignore
+// word  : Alphanumeric or underscore
+// regex : Unavailable in __VERSION 1. 
+
+// Precedence (highest to lowest):
+// word, namespace, regex
+
+// Header files
+not word zpl_hedley
+
+// Removes the namespace.
+namespace zpl_
+
+// Don't expose internals
+not namespace zpl__
+
+not word ZPL_IMPLEMENTATION
+
+word cast,        zpl_cast
+word zpl_strncmp, str_compare
+word zpl_strcmp,  str_compare
+
+// Undesired typedefs
+not word zpl_i8
+not word zpl_i16
+not word zpl_i32
+not word zpl_i64
+not word zpl_u8
+not word zpl_u16
+not word zpl_u32
+not word zpl_u64
+not word zpl_intptr
+not word zpl_uintptr
+not word zpl_usize
+not word zpl_isize
+
+// Undesired exposures.
+not word zpl_allocator
+not word zpl_arena
+not word zpl_array
+not word zpl_file
+not word zpl_list
+not word zpl_pool
+not word zpl_opts
+
+// Conflicts with refactor
+word alloc,     allocator
+word file_size, fsize
+
+// Conflicts with std.
+not word zpl_memchr
+not word zpl_memmove
+not word zpl_memset
+not word zpl_memswap
+not word zpl_memcopy
+not word zpl_printf
+not word zpl_printf_va
+not word zpl_printf_err
+not word zpl_printf_err_va
+not word zpl_fprintf
+not word zpl_fprintf_va
+not word zpl_snprintf
+not word zpl_snprintf_va
+not word zpl_strlen
+not word zpl_strnlen
+not word zpl_exit

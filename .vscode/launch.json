@@ -1,0 +1,40 @@
+{
+	// Use IntelliSense to learn about possible attributes.
+	// Hover to view descriptions of existing attributes.
+	// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Refactor ZPL",
+			"type": "cppvsdbg",
+			"request": "launch",
+			"program": "${workspaceFolder}/build/refactor.exe",
+			"args": [
+				"-source=./thirdparty/zpl.h",
+				"-destination=./Test/zpl.refactored.h",
+
+				"-specification=./Test/zpl.h.refactor"
+			],
+			"stopAtEntry": false,
+			"cwd": "${workspaceRoot}",
+			"environment": [],
+			"console": "externalTerminal"
+		}
+		{
+			"name": "Refactor refactor.c",
+			"type": "cppvsdbg",
+			"request": "launch",
+			"program": "${workspaceFolder}/build/refactor.exe",
+			"args": [
+				"-source=./refactor.cpp",
+				"-destination=./Test/refactor.cpp",
+
+				"-specification=./Test/zpl.h.refactor"
+			],
+			"stopAtEntry": false,
+			"cwd": "${workspaceRoot}",
+			"environment": [],
+			"console": "externalTerminal"
+		}
+	]
+}
