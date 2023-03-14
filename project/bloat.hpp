@@ -35,7 +35,7 @@
 // #	define ZPL_MODULE_DLL
 #	define ZPL_MODULE_OPTS
 // #	define ZPL_MODULE_PROCESS
-// #	define ZPL_MODULE_MATH
+// #	define ZPL_MODULE_MAT
 // #	define ZPL_MODULE_THREADING
 // #	define ZPL_MODULE_JOBS
 // #	define ZPL_MODULE_PARSER

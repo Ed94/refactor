@@ -37,32 +37,38 @@ word zpl_usize, uw
 word zpl_isize, sw
 
 // Undesired exposures.
-not word zpl_allocator
-not word zpl_arena
+//not word zpl_allocator
+//not word zpl_arena
 not word zpl_array
-not word zpl_file
-not word zpl_list
-not word zpl_pool
-not word zpl_opts
+//not word zpl_file
+//not word zpl_list
+//not word zpl_pool
+//not word zpl_opts
 
 // Conflicts with refactor
-word alloc,     allocator
+word arena,     a_arena
+word alloc,     a_allocator
+word file,      a_file
 word file_size, fsize
+word list,      a_list
+word opts,      a_opts
+word pool,      a_pool
 
-// Conflicts with std.
-not word zpl_memchr
-not word zpl_memmove
-not word zpl_memset
-not word zpl_memswap
-not word zpl_memcopy
-not word zpl_printf
-not word zpl_printf_va
-not word zpl_printf_err
-not word zpl_printf_err_va
-not word zpl_fprintf
-not word zpl_fprintf_va
-not word zpl_snprintf
-not word zpl_snprintf_va
-not word zpl_strlen
-not word zpl_strnlen
-not word zpl_exit
+// Conflicts with std. (Uncomment if using c externs)
+//not word zpl_memchr
+//not word zpl_memmove
+//not word zpl_memset
+//not word zpl_memswap
+//not word zpl_memcopy
+//not word zpl_printf
+//not word zpl_printf_va
+//not word zpl_printf_err
+//not word zpl_printf_err_va
+//not word zpl_fprintf
+//not word zpl_fprintf_va
+//not word zpl_snprintf
+//not word zpl_snprintf_va
+//not word zpl_strchr
+//not word zpl_strlen
+//not word zpl_strnlen
+//not word zpl_exit

@@ -25,6 +25,8 @@
 
 // #   define ZPL_HEAP_ANALYSIS
 #	define ZPL_NO_MATH_H
+#	define ZPL_DISABLE_C_DECLS
+#   define ZPL_WRAP_IN_NAMESPACE
 #	define ZPL_CUSTOM_MODULES
 #		define ZPL_MODULE_ESSENTIALS
 #		define ZPL_MODULE_CORE
@@ -78,7 +80,7 @@ ct char const* Msg_Invalid_Value = "INVALID VALUE PROVIDED";
 
 namespace Memory
 {
-	zpl_arena Global_Arena {};
+	zpl::arena Global_Arena {};
 	#define g_allocator arena_allocator( & Memory::Global_Arena)
 
 	void setup()
@@ -87,7 +89,7 @@ namespace Memory
 
 		if ( Global_Arena.total_size == 0 )
 		{
-			assert_crash( "Failed to reserve memory for Tests:: Global_Arena" );
+			zpl::assert_crash( "Failed to reserve memory for Tests:: Global_Arena" );
 		}
 	}
 
@@ -97,13 +99,13 @@ namespace Memory
 	}
 }
 
- sw log_fmt(char const *fmt, ...) 
- {
+zpl::sw log_fmt(char const *fmt, ...) 
+{
 #if Build_Debug
-	sw res;
+	zpl::sw res;
 	va_list va;
 	va_start(va, fmt);
-	res = zpl_printf_va(fmt, va);
+	res = zpl::printf_va(fmt, va);
 	va_end(va);
 	return res;
 
@@ -121,15 +123,15 @@ void fatal(char const *fmt, ...)
 
 #if Build_Debug
 	va_start(va, fmt);
-	zpl_snprintf_va(buf, ZPL_PRINTF_MAXLEN, fmt, va);
+	zpl::snprintf_va(buf, ZPL_PRINTF_MAXLEN, fmt, va);
 	va_end(va);
 
-	assert_crash(buf);
+	zpl::assert_crash(buf);
 #else
 	va_start(va, fmt);
-	zpl_printf_err_va( fmt, va);
+	zpl::printf_err_va( fmt, va);
 	va_end(va);
 
-	exit(1);
+	zpl::exit(1);
 #endif
 }

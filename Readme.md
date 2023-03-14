@@ -23,4 +23,6 @@ TODO:
 * Cleanup memory usage (it hogs quite a bit for what it does..)
 * Split lines of file and refactor it that way instead (better debug, problably negligable performance loss, worst case can have both depending on build type)
 * Accept multiple files at once `-files`
-
+* Add support for `macro` keyword (single out macro identifiers)
+* Add support for `include` keyword (single out include definitions)
+* Add support for auto-translating a namespace in a macro to a cpp namespace

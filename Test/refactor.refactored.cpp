@@ -4,11 +4,13 @@
 
 namespace File
 {
+	using namespace zpl;
+
 	string        Source        = nullptr;
 	string        Destination   = nullptr;
 	file_contents Content {};
 
-	zpl_arena Buffer;
+	arena Buffer;
 
 	void cleanup()
 	{
@@ -17,7 +19,7 @@ namespace File
 
 	void read()
 	{
-		zpl_file file_src = {};
+		file file_src = {};
 
 		Content.allocator = g_allocator;
 
@@ -51,7 +53,7 @@ namespace File
 		if ( refactored == nullptr)
 			return;
 
-		zpl_file       file_dest {};
+		file       file_dest {};
 		file_error error =  file_create( & file_dest, Destination );
 
 		if ( error != ZPL_FILE_ERROR_NONE )
@@ -65,6 +67,8 @@ namespace File
 
 namespace Spec
 {
+	using namespace zpl;
+
 	string File;
 
 	enum Tok 
@@ -124,7 +128,7 @@ namespace Spec
 		string Sub = nullptr; // Substitute
 	};
 
-	zpl_arena        Buffer {};
+	arena            Buffer {};
 	zpl_array(Entry) Word_Ignores;
 	zpl_array(Entry) Namespace_Ignores;
 	zpl_array(Entry) Words;
@@ -159,7 +163,7 @@ namespace Spec
 
 		// Get the contents of the file.
 		{
-             zpl_file   file {};
+             file   file {};
              file_error error = file_open( & file, File);
 
 			 if ( error != ZPL_FILE_ERROR_NONE )
@@ -408,6 +412,7 @@ namespace Spec
 	}
 }
 
+using namespace zpl;
 
 struct Token
 {
@@ -640,7 +645,7 @@ void refactor()
 	content = rcast( char*, File::Content.data);
 	
 	// Generate the refactored file content.
-	zpl_arena  buffer;
+	arena  buffer;
 	string refactored = nullptr;
 	{
 		Token* entry = tokens;
@@ -697,7 +702,7 @@ void refactor()
 inline
 void parse_options( int num, char** arguments )
 {
-	zpl_opts opts;
+	opts opts;
 	opts_init( & opts, g_allocator, "refactor");
 	opts_add(  & opts, "source"       , "src" , "File to refactor"             , ZPL_OPTS_STRING);
 	opts_add(  & opts, "destination"  , "dst" , "File post refactor"           , ZPL_OPTS_STRING);
