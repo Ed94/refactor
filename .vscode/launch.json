@@ -10,15 +10,15 @@
 			"request": "launch",
 			"program": "${workspaceFolder}/build/refactor.exe",
 			"args": [
-				"-source=./thirdparty/zpl.h",
-				"-destination=./Test/zpl.refactored.h",
+				"-src=./thirdparty/zpl.h",
+				"-dst=./Test/zpl.refactored.h",
 
-				"-specification=./Test/zpl.h.refactor"
+				"-spec=./Test/zpl.h.refactor"
 			],
 			"stopAtEntry": false,
 			"cwd": "${workspaceRoot}",
 			"environment": [],
-			"console": "externalTerminal"
+			"console": "integratedTerminal"
 		}
 		{
 			"name": "Refactor refactor.c",
@@ -34,7 +34,7 @@
 			"stopAtEntry": false,
 			"cwd": "${workspaceRoot}",
 			"environment": [],
-			"console": "externalTerminal"
+			"console": "integratedTerminal"
 		}
 	]
 }

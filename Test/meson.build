@@ -1,4 +1,3 @@
-
 project( 'refactor', 'c', 'cpp', default_options : ['buildtype=debug'] )
 
 # add_global_arguments('-E', language : 'cpp')
@@ -10,4 +9,3 @@ if get_option('buildtype').startswith('debug')
 endif
 
 executable( 'refactor', 'refactor.refactored.cpp' )
-

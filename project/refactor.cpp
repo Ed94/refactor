@@ -699,9 +699,9 @@ void parse_options( int num, char** arguments )
 {
 	zpl_opts opts;
 	zpl_opts_init( & opts, g_allocator, "refactor");
-	zpl_opts_add(  & opts, "source"       , "src" , "File to refactor"             , ZPL_OPTS_STRING);
-	zpl_opts_add(  & opts, "destination"  , "dst" , "File post refactor"           , ZPL_OPTS_STRING);
-	zpl_opts_add(  & opts, "specification", "spec", "Specification for refactoring", ZPL_OPTS_STRING);
+	zpl_opts_add(  & opts, "src" , "src" , "File to refactor"             , ZPL_OPTS_STRING);
+	zpl_opts_add(  & opts, "dst" , "dst" , "File post refactor"           , ZPL_OPTS_STRING);
+	zpl_opts_add(  & opts, "spec", "spec", "Specification for refactoring", ZPL_OPTS_STRING);
 
 	if (zpl_opts_compile( & opts, num, arguments))
 	{
@@ -758,6 +758,9 @@ int main( int num, char** arguments)
 	File::read();
 
 	refactor();
+
+	log_fmt("\n");
+	zpl_printf("Refacotred: %s using %s\n", File::Source, Spec::File);
 
 	Spec::  cleanup();
 	File::  cleanup();

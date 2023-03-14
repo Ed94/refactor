@@ -39,7 +39,6 @@
 // #	define ZPL_MODULE_THREADING
 // #	define ZPL_MODULE_JOBS
 // #	define ZPL_MODULE_PARSER
-// extern "C" {
 #include "zpl.h"
 // }
 
