@@ -85,7 +85,7 @@ namespace Memory
 
 	void setup()
 	{
-		arena_init_from_allocator( & Global_Arena, heap(), megabytes(10) );
+		arena_init_from_allocator( & Global_Arena, heap(), megabytes(1) );
 
 		if ( Global_Arena.total_size == 0 )
 		{

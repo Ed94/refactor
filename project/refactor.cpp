@@ -1,467 +1,238 @@
-#define ZPL_IMPLEMENTATION
+#define BLOAT_IMPL
 #include "bloat.hpp"
+#include "IO.cpp"
+#include "Spec.cpp"
 
 
-namespace File
+#define Build_Debug 1
+
+
+void parse_options( int num, char** arguments )
 {
-	zpl_string        Source        = nullptr;
-	zpl_string        Destination   = nullptr;
-	zpl_file_contents Content {};
+	zpl_opts opts;
+	zpl_opts_init( & opts, g_allocator, "refactor");
+	zpl_opts_add(  & opts, "num",  "num" , "Number of files to refactor"  , ZPL_OPTS_INT   );
+	zpl_opts_add(  & opts, "src" , "src" , "File/s to refactor"           , ZPL_OPTS_STRING);
+	zpl_opts_add(  & opts, "dst" , "dst" , "File/s post refactor"         , ZPL_OPTS_STRING);
+	zpl_opts_add(  & opts, "spec", "spec", "Specification for refactoring", ZPL_OPTS_STRING);
 
-	zpl_arena Buffer;
-
-	void cleanup()
+	if (zpl_opts_compile( & opts, num, arguments))
 	{
-		zpl_arena_free( & Buffer );
-	}
-
-	void read()
-	{
-		zpl_file file_src = {};
-
-		Content.allocator = g_allocator;
-
-		zpl_file_error error_src  = zpl_file_open( & file_src, Source );
-
-		if ( error_src == ZPL_FILE_ERROR_NONE ) 
+		sw num = 0;
+		
+		if ( zpl_opts_has_arg( & opts, "num" ) )
 		{
-			zpl_isize fsize = cast(zpl_isize) zpl_file_size( & file_src);
-
-			if ( fsize > 0 ) 
+			   num            = zpl_opts_integer( & opts, "num", -1 );
+			uw global_reserve = num * sizeof(zpl_string) * IO::Path_Size_Largest * 2 + 8;
+			
+			if ( global_reserve > zpl_megabytes(1) )
 			{
-				zpl_arena_init_from_allocator( & Buffer, zpl_heap(), (fsize + fsize % 64) * 4 );
-				
-				Content.data = zpl_alloc( zpl_arena_allocator( & Buffer), fsize);
-				Content.size = fsize;
-
-				zpl_file_read_at ( & file_src, Content.data, Content.size, 0);
+				Memory::resize( global_reserve + zpl_megabytes(2) );
 			}
-
-			zpl_file_close( & file_src);
+			
+			zpl_array_init_reserve( IO::Sources,      g_allocator, num );
+			zpl_array_init_reserve( IO::Destinations, g_allocator, num );			
 		}
-
-		if ( Content.data == nullptr )
+		else
 		{
-			fatal( "Unable to open source file: %s\n", Source );
-		}
-	}
-
-	void write(zpl_string refactored)
-	{
-		if ( refactored == nullptr)
-			return;
-
-		zpl_file       file_dest {};
-		zpl_file_error error =  zpl_file_create( & file_dest, Destination );
-
-		if ( error != ZPL_FILE_ERROR_NONE )
-		{
-			fatal( "Unable to open destination file: %s\n", Destination );
-		}
-
-		zpl_file_write( & file_dest, refactored, zpl_string_length(refactored) );
-	}
-}
-
-namespace Spec
-{
-	zpl_string File;
-
-	enum Tok 
-	{
-		Not,
-		Namespace,
-		Word,
-
-		Num_Tok
-	};
-
-	ct 
-	char const* str_tok( Tok tok )
-	{
-		ct 
-		char const*	tok_to_str[ Tok::Num_Tok ] = 
-		{
-			"not",
-			"namespace",
-			"word",
-		};
-
-		return tok_to_str[ tok ];
-	}
-
-	ct 
-	char strlen_tok( Tok tok )
-	{
-		ct 
-		const u8 tok_to_len[ Tok::Num_Tok ] = 
-		{
-			3,
-			9,
-			4,
-		};
-
-		return tok_to_len[ tok ];
-	}
-
-	forceinline
-	bool is_tok( Tok tok, zpl_string str, u32 length )
-	{
-		char const* tok_str = str_tok(tok);
-		const u8    tok_len = strlen_tok(tok);
-
-		if ( tok_len != length)
-			return false;
-
-		s32 result = zpl_strncmp( tok_str, str, tok_len );
-
-		return result == 0;
-	}
-
-	struct Entry
-	{
-		zpl_string Sig = nullptr; // Signature
-		zpl_string Sub = nullptr; // Substitute
-	};
-
-	zpl_arena        Buffer {};
-	zpl_array(Entry) Word_Ignores;
-	zpl_array(Entry) Namespace_Ignores;
-	zpl_array(Entry) Words;
-	zpl_array(Entry) Namespaces;
-
-	u32 Sig_Smallest = zpl_kilobytes(1);
-
-	forceinline
-	void find_next_token( zpl_string& token, char*& line, u32& length )
-	{
-		zpl_string_clear( token );
-		length = 0;
-		while ( zpl_char_is_alphanumeric( line[length] ) || line[length] == '_' )
-		{
-			length++;
-		}
-
-		if ( length == 0 )
-		{
-			fatal("Failed to find valid initial token");
-		}
-
-		token  = zpl_string_append_length( token, line, length );
-		line  += length;
-	}
-
-	void process()
-	{
-		char* content;
-
-		zpl_array(char*) lines;
-
-		// Get the contents of the file.
-		{
-             zpl_file       file {};
-             zpl_file_error error = zpl_file_open( & file, File);
-
-			 if ( error != ZPL_FILE_ERROR_NONE )
-			 {
-				fatal("Could not open the specification file: %s", File);
-			 }
-
-             sw fsize = scast( sw, zpl_file_size( & file ) );
-
-			 if ( fsize <= 0 )
-			 {
-				fatal("No content in specificaiton to process");
-			 }
-
-			 zpl_arena_init_from_allocator( & Buffer, zpl_heap(), (fsize + fsize % 64) * 10 + zpl_kilobytes(1) );
-
-             char* content = rcast( char*, zpl_alloc( zpl_arena_allocator( & Buffer), fsize + 1) );
-
-             zpl_file_read( & file, content, fsize);
-
-             content[fsize] = 0;
-
-             lines = zpl_str_split_lines( zpl_arena_allocator( & Buffer ), content, false );
-
-             zpl_file_close( & file );
+			num = 1;
 		}
 		
-		sw left = zpl_array_count( lines );
-
-		if ( left == 0 )
+		if ( zpl_opts_has_arg( & opts, "src" ) )
 		{
-			fatal("Spec::process: lines array imporoperly setup");
+			zpl_string opt = zpl_opts_string( & opts, "src", "INVALID SRC ARGUMENT" );
+			
+			if ( num == 1 )
+			{
+				IO::Sources[0] = zpl_string_make_length( g_allocator, opt, zpl_string_length( opt) );
+			}
+			else
+			{
+				char buffer[ IO::Path_Size_Largest ];
+
+				uw left = num;
+ 				do
+				{
+					char* path   = buffer;					
+					sw    length = 0;					
+
+					do
+					{
+						path[length] = *opt;
+					} 
+					while ( length++, opt++, *opt != ' ' );
+									
+					IO::Sources[num - left] = zpl_string_make_length( g_allocator, path, length );
+
+					opt++;
+				} 
+				while ( --left );
+			}
+		}
+		else
+		{
+			fatal( "-source not provided\n" );
 		}
 
-		// Skip the first line as its the version number and we only support __VERSION 1.
-		left--;
-		lines++;
-
-		zpl_array_init( Word_Ignores,      zpl_arena_allocator( & Buffer));
-		zpl_array_init( Namespace_Ignores, zpl_arena_allocator( & Buffer));
-		zpl_array_init( Words,             zpl_arena_allocator( & Buffer));
-		zpl_array_init( Namespaces,        zpl_arena_allocator( & Buffer));
-
-		// Limiting the maximum output of a token to 1 KB
-		zpl_string token = zpl_string_make_reserve( zpl_arena_allocator( & Buffer), zpl_kilobytes(1));
-
-		while ( left-- )
+		if ( zpl_opts_has_arg( & opts, "dst" ) )
 		{
-			char* line = * lines;
+			zpl_string opt = zpl_opts_string( & opts, "dst", "INVALID DST ARGUMENT" );
 
-			// Ignore line if its a comment
-			if ( line[0] == '/' && line[1] == '/')
+ 			if ( num == 1 )
 			{
-				lines++;
-				continue;
+				IO::Destinations[0] = zpl_string_make_length( g_allocator, opt, zpl_string_length( opt) );
 			}
-
-			// Remove indent
+			else
 			{
-				while ( zpl_char_is_space( line[0] ) )
-					line++;
+				char buffer[ IO::Path_Size_Largest ];
 
-				if ( line[0] == '\0' )
+				uw left = num;
+				do
 				{
-					lines++;
-					continue;
-				}
-			}
+					char* path   = buffer;
+					sw    length = 0;
 
-			u32 length = 0;
-
-			// Find a valid token
-			find_next_token( token, line, length );
-
-			Tok   type   = Tok::Num_Tok;
-			bool  ignore = false;
-			Entry entry {};
-
-			// Will be reguarded as an ignore.
-			if ( is_tok( Tok::Not, token, length ))
-			{
-				ignore = true;
-
-				while ( zpl_char_is_space( line[0] ) )
-					line++;
-
-				if ( line[0] == '\0' )
-				{
-					lines++;
-					continue;
-				}
-
-				// Find the category token
-				find_next_token( token, line, length );
-			}
-
-			if ( is_tok( Tok::Namespace, token, length ) )
-			{
-				type = Tok::Namespace;
-			}
-			else if ( is_tok( Tok::Word, token, length ) )
-			{
-				type = Tok::Word;
-			}
-
-			// Parse line.
-			{
-				// Find first argument
-				{
-
-					while ( zpl_char_is_space( line[0] ) )
-						line++;
-
-					if ( line[0] == '\0' )
+					do
 					{
-						lines++;
-						continue;
-					}
-				}
+						path[length] = *opt;
+					} 
+					while ( length++, opt++, *opt != ' ' );
+					
+					IO::Destinations[num - left] = zpl_string_make_length( g_allocator, path, length );
 
-				find_next_token( token, line, length );
-
-				// First argument is signature.
-				entry.Sig = zpl_string_make_length( g_allocator, token, length );
-
-				if ( length < Sig_Smallest )
-					Sig_Smallest = length;
-
-				if ( line[0] == '\0' || ignore )
-				{
-					switch ( type )
-					{
-						case Tok::Namespace:
-							if ( ignore)
-								zpl_array_append( Namespace_Ignores, entry );
-
-							else
-								zpl_array_append( Namespaces, entry );
-						break;
-
-						case Tok::Word:
-							if ( ignore)
-							{
-								zpl_array_append( Word_Ignores, entry );
-								u32 test = zpl_array_count( Word_Ignores );
-							}
-								
-
-							else
-								zpl_array_append( Words, entry );
-						break;
-					}
-
-					lines++;
-					continue;
-				}
-
-				// Look for second argument indicator
-				{
-					bool bSkip = false;
-
-					while ( line[0] != ',' )
-					{
-						if ( line[0] == '\0' )
-						{
-							switch ( type )
-							{
-								case Tok::Namespace:
-									zpl_array_append( Namespaces, entry );
-								break;
-
-								case Tok::Word:
-									zpl_array_append( Words, entry );
-								break;
-							}
-
-							bSkip = true;
-							break;
-						}
-
-						line++;
-					}
-
-					if ( bSkip )
-					{
-						lines++;
-						continue;
-					}
-				}
-
-				// Eat the argument delimiter.
-				line++;
-
-				// Remove spacing
-				{
-					bool bSkip = true;
-
-					while ( zpl_char_is_space( line[0] ) )
-						line++;
-
-					if ( line[0] == '\0' )
-					{
-						switch ( type )
-						{
-							case Tok::Namespace:
-								zpl_array_append( Namespaces, entry );
-							break;
-
-							case Tok::Word:
-								zpl_array_append( Words, entry );
-							break;
-						}
-
-						lines++;
-						continue;
-					}
-				}
-
-				find_next_token( token, line, length );
-
-				// Second argument is substitute.
-				entry.Sub = zpl_string_make_length( g_allocator, token, length );
-
-				switch ( type )
-				{
-					case Tok::Namespace:
-						zpl_array_append( Namespaces, entry );
-						lines++;
-						continue;
-
-					case Tok::Word:
-						zpl_array_append( Words, entry );
-						lines++;
-						continue;
-				}
+					opt++;
+				} 
+				while ( --left );
 			}
+		}
 
-			log_fmt("Specification Line: %d is missing valid keyword", zpl_array_count(lines) - left);
-			lines++;
+		if ( zpl_opts_has_arg( & opts, "spec" ) )
+		{
+			zpl_string opt = zpl_opts_string( & opts, "spec", "INVALID PATH" );
+
+			IO::Specification = zpl_string_make( g_allocator, "" );
+			IO::Specification = zpl_string_append( IO::Specification, opt );
 		}
 	}
-
-	void cleanup()
+	else
 	{
-		zpl_arena_free( & Buffer );
+		fatal( "Failed to parse arguments\n" );
 	}
+
+	zpl_opts_free( & opts);
 }
 
 
-struct Token
-{
-	u32 Start;
-	u32 End;
-
-	zpl_string Sig;
-	zpl_string Sub;
-};
+zpl_arena Refactor_Buffer;
 
 void refactor()
 {
-	sw buffer_size = File::Content.size;
-
-	zpl_array(Token) tokens;
-	zpl_array_init( tokens, g_allocator);
-
-	char* content = rcast( char*, File::Content.data );
-
-	zpl_string current = zpl_string_make( g_allocator, "");
-	zpl_string preview = zpl_string_make( g_allocator, "");
-
-	sw left = File::Content.size;
-	sw line = 0;
-
-	while ( left )
+	ct char const* include_sig = "#include \"";
+	
+	struct Token
 	{
-		if ( content[0] == '\n' )
+		u32 Start;
+		u32 End;
+
+		zpl_string Sig;
+		zpl_string Sub;
+	};
+
+	static zpl_array(Token) tokens  = nullptr;
+	static zpl_string       current = zpl_string_make( g_allocator, "");
+
+#if Build_Debug
+	static zpl_string preview = zpl_string_make( g_allocator, "");
+#endif
+
+	static bool Done = false;
+	if (! Done)
+	{
+		zpl_array_init( tokens, g_allocator );
+		Done = true;
+	}
+	else
+	{
+		zpl_array_clear( tokens );
+	}
+
+	// Prepare data and trackers.
+	Array_Line src   = IO::get_next_source();
+	Array_Line lines = src;
+
+	if ( src == nullptr )
+		return;
+
+	const sw num_lines = zpl_array_count( lines);
+
+	sw buffer_size = IO::Current_Size;
+
+	sw   left = num_lines;
+	Line line = *lines;
+	uw   pos  = 0;
+
+	do
+	{
+	Continue_Line:
+
+		// Includes to ignore
 		{
-			line++;
+			Spec::Entry* ignore       = Spec::Ignore_Words;
+			sw           ignores_left = zpl_array_count( Spec::Ignore_Words);
+
+			do
+			{
+				if ( include_sig[0] != line[0] )
+					continue;
+
+				u32 sig_length = zpl_string_length( ignore->Sig );
+
+				current = zpl_string_set( current, include_sig );
+				current = zpl_string_append_length( current, line, sig_length );
+				current = zpl_string_append_length( current, "\"", 2 );
+				// Formats current into: #include "<ignore->Sig>"
+
+				if ( zpl_string_are_equal( ignore->Sig, current ) )
+				{
+					log_fmt("\nIgnored   %-81s line %d", current, num_lines - left );
+
+					const sw length = zpl_string_length( current );
+
+					line += length;
+					pos  += length;
+
+					// Force end of line.
+					while ( line != '\0' )
+					{
+						line++;
+						pos++;
+					}
+
+					goto Skip;
+				}
+			}
+			while ( ignore++, --ignores_left );
 		}
 
 		// Word Ignores
 		{
-			Spec::Entry* ignore = Spec::Word_Ignores;
-
-			sw ignores_left = zpl_array_count( Spec::Word_Ignores);
+			Spec::Entry* ignore       = Spec::Ignore_Words;
+			sw           ignores_left = zpl_array_count( Spec::Ignore_Words);
 
 			do
 			{
-				if ( ignore->Sig[0] != content[0] )
-				{
+				if ( ignore->Sig[0] != line[0] )
 					continue;
-				}
 
 				zpl_string_clear( current );
 
 				u32 sig_length = zpl_string_length( ignore->Sig );
-				    current    = zpl_string_append_length( current, content, sig_length );
+				    current    = zpl_string_append_length( current, line, sig_length );
 
 				if ( zpl_string_are_equal( ignore->Sig, current ) )
 				{
-					char before = content[-1];
-					char after  = content[sig_length];
+					char before = line[-1];
+					char after  = line[sig_length];
 
 					if (   zpl_char_is_alphanumeric( before ) || before == '_'
 						|| zpl_char_is_alphanumeric( after  ) || after  == '_' )
@@ -469,10 +240,10 @@ void refactor()
 						continue;
 					}
 
-					log_fmt("\nIgnored   %-81s line %d", current, line );
+					log_fmt("\nIgnored   %-81s line %d", current, num_lines - left );
 
-					content += sig_length;
-					left    -= sig_length;
+					line += sig_length;
+					pos  += sig_length;
 					goto Skip;
 				}
 			}
@@ -481,26 +252,23 @@ void refactor()
 
 		// Namespace Ignores
 		{
-			Spec::Entry* ignore = Spec::Namespace_Ignores;
-
-			sw ignores_left = zpl_array_count( Spec::Namespace_Ignores);
+			Spec::Entry* ignore       = Spec::Ignore_Namespaces;
+			sw           ignores_left = zpl_array_count( Spec::Ignore_Namespaces);
 
 			do
 			{
-				if ( ignore->Sig[0] != content[0] )
-				{
+				if ( ignore->Sig[0] != line[0] )
 					continue;
-				}
 
 				zpl_string_clear( current );
 
 				u32 sig_length = zpl_string_length( ignore->Sig );
-				    current    = zpl_string_append_length( current, content, sig_length );
+				    current    = zpl_string_append_length( current, line, sig_length );
 				
 				if ( zpl_string_are_equal( ignore->Sig, current ) )
 				{
 					u32   length     = sig_length;
-					char* ns_content = content + sig_length;
+					char* ns_content = line + sig_length;
 
 					while ( zpl_char_is_alphanumeric( ns_content[0] ) || ns_content[0] == '_' )
 					{
@@ -508,40 +276,93 @@ void refactor()
 						ns_content++;
 					}
 
+				#if Build_Debug
 					zpl_string_clear( preview );
-					preview = zpl_string_append_length( preview, content, length );
-					log_fmt("\nIgnored   %-40s %-40s line %d", preview, ignore->Sig, line);
+					preview = zpl_string_append_length( preview, line, length );
+					log_fmt("\nIgnored   %-40s %-40s line %d", preview, ignore->Sig,  - left);
+				#endif
 
-					content += length;
-					left    -= length;
+					line += length;
+					pos  += length;
 					goto Skip;
 				}
 			}
 			while ( ignore++, --ignores_left );
 		}
 
-		// Words to match
+		// Includes to match
 		{
-			Spec::Entry* word = Spec::Words;
+			Spec::Entry* include = Spec::Includes;
 
-			sw words_left = zpl_array_count ( Spec::Words);
+			sw includes_left = zpl_array_count ( Spec::Includes);
 
 			do
 			{
-				if ( word->Sig[0] != content[0] )
-				{
+				if ( include_sig[0] != line[0] )
 					continue;
+
+				u32 sig_length = zpl_string_length( include->Sig );
+
+				current = zpl_string_set( current, include_sig );
+				current = zpl_string_append_length( current, line, sig_length );
+				current = zpl_string_append_length( current, "\"", 2 );
+				// Formats current into: #include "<ignore->Sig>"
+
+				if ( zpl_string_are_equal( include->Sig, current ) )
+				{
+					Token entry {};
+
+					const sw length = zpl_string_length( current );
+
+					entry.Start = pos;
+					entry.End   = pos + length;
+					entry.Sig   = include->Sig;
+
+					if ( include->Sub != nullptr )
+					{
+						entry.Sub    = include->Sub;
+						buffer_size += zpl_string_length( entry.Sub) - sig_length;
+					}
+
+					zpl_array_append( tokens, entry );
+
+					log_fmt("\nFound     %-81s line %d", current, num_lines - left);
+
+					line += length;
+					pos  += length;
+
+					// Force end of line.
+					while ( line != '\0' )
+					{
+						line++;
+						pos++;
+					}
+
+					goto Skip;
 				}
+			}
+			while ( include++, --includes_left );
+		}
+
+		// Words to match
+		{
+			Spec::Entry* word       = Spec::Words;
+			sw           words_left = zpl_array_count ( Spec::Words);
+
+			do
+			{
+				if ( word->Sig[0] != line[0] )
+					continue;
 
 				zpl_string_clear( current );
 
 				sw sig_length = zpl_string_length( word->Sig);
-				   current    = zpl_string_append_length( current, content, sig_length );
+				   current    = zpl_string_append_length( current, line, sig_length );
 
 				if ( zpl_string_are_equal( word->Sig, current ) )
 				{
-					char before = content[-1];
-					char after  = content[sig_length];
+					char before = line[-1];
+					char after  = line[sig_length];
 
 					if (   zpl_char_is_alphanumeric( before ) || before == '_'
 						|| zpl_char_is_alphanumeric( after  ) || after  == '_' )
@@ -551,8 +372,8 @@ void refactor()
 
 					Token entry {};
 
-					entry.Start = File::Content.size - left;
-					entry.End   = entry.Start + sig_length;
+					entry.Start = pos;
+					entry.End   = pos + sig_length;
 					entry.Sig   = word->Sig;
 
 					if ( word->Sub != nullptr )
@@ -563,10 +384,10 @@ void refactor()
 
 					zpl_array_append( tokens, entry );
 
-					log_fmt("\nFound     %-81s line %d", current, line);
+					log_fmt("\nFound     %-81s line %d", current, num_lines - left);
 
-					content += sig_length;
-					left    -= sig_length;
+					line += sig_length;
+					pos  += sig_length;
 					goto Skip;
 				}
 			}
@@ -581,20 +402,18 @@ void refactor()
 
 			do
 			{
-				if ( nspace->Sig[0] != content[0] )
-				{
+				if ( nspace->Sig[0] != line[0] )
 					continue;
-				}
 
 				zpl_string_clear( current );
 
 				u32 sig_length = zpl_string_length( nspace->Sig );
-				    current    = zpl_string_append_length( current, content, sig_length );
+				    current    = zpl_string_append_length( current, line, sig_length );
 
 				if ( zpl_string_are_equal( nspace->Sig, current ) )
 				{
 					u32   length     = sig_length;
-					char* ns_content = content + sig_length;
+					char* ns_content = line + sig_length;
 
 					while ( zpl_char_is_alphanumeric( ns_content[0] ) || ns_content[0] == '_' )
 					{
@@ -604,8 +423,8 @@ void refactor()
 
 					Token entry {};
 
-					entry.Start = File::Content.size - left;
-					entry.End   = entry.Start + length;
+					entry.Start = pos;
+					entry.End   = pos + length;
 					entry.Sig   = nspace->Sig;
 
 					buffer_size += sig_length;
@@ -618,53 +437,46 @@ void refactor()
 
 					zpl_array_append( tokens, entry );
 
+				#if Build_Debug
 					zpl_string_clear( preview );
-					preview = zpl_string_append_length( preview, content, length);
-					log_fmt("\nFound     %-40s %-40s line %d", preview, nspace->Sig, line);
+					preview = zpl_string_append_length( preview, line, length);
+					log_fmt("\nFound     %-40s %-40s line %d", preview, nspace->Sig, num_lines - left);
+				#endif
 
-					content += length;
-					left    -= length;
+					line += length;
+					pos  += length;
+					goto Skip;
 				}
 			}
 			while ( nspace++, --nspaces_left );
 		}
 
-		content++;
-		left--;
-
 	Skip:
-		continue;
-	}
+		if ( line != '\0' )
+			goto Continue_Line;
+	} 
+	while ( lines++, line = *lines, left );
 
-	left    = zpl_array_count( tokens);
-	content = rcast( char*, File::Content.data);
-	
+	// Prep data for building the content
+	left = IO::Current_Size;
+
+	char* content = IO::Current_Content; 
+
 	// Generate the refactored file content.
-	zpl_arena  buffer;
-	zpl_string refactored = nullptr;
+	static zpl_string 
+	refactored = zpl_string_make_reserve( zpl_arena_allocator( & Refactor_Buffer ), buffer_size );
 	{
-		Token* entry = tokens;
+		Token* entry        = tokens;
+		sw     previous_end = 0;
 
-		if ( entry == nullptr)
-			return;
-
-		zpl_arena_init_from_allocator( & buffer, zpl_heap(), buffer_size * 2 );
-
-		zpl_string 
-		new_string = zpl_string_make_reserve( zpl_arena_allocator( & buffer), zpl_kilobytes(1) );
-		refactored = zpl_string_make_reserve( zpl_arena_allocator( & buffer), buffer_size );
-
-		sw previous_end = 0;
-
-		while ( left-- )
+		do
 		{
 			sw segment_length = entry->Start - previous_end;
-
-			sw sig_length = zpl_string_length( entry->Sig );
+			sw sig_length     = zpl_string_length( entry->Sig );
 
 			// Append between tokens
-			refactored  = zpl_string_append_length( refactored, content, segment_length );
-			content    += segment_length + sig_length;
+			refactored  = zpl_string_append_length( refactored, line, segment_length );
+			line       += segment_length + sig_length;
 
 			segment_length = entry->End - entry->Start - sig_length;
 
@@ -672,97 +484,48 @@ void refactor()
 			if ( entry->Sub )
 				refactored  = zpl_string_append( refactored, entry->Sub );
 
-			refactored  = zpl_string_append_length( refactored, content, segment_length );
-			content    += segment_length;
+			refactored  = zpl_string_append_length( refactored, line, segment_length );
+			line       += segment_length;
 
 			previous_end = entry->End;
 			entry++;
 		}
+		while ( --left );
 
 		entry--;
 
-		if ( entry->End < File::Content.size ) 
+		if ( entry->End < IO::Current_Size ) 
 		{
-			refactored = zpl_string_append_length( refactored, content, File::Content.size - entry->End );
+			refactored = zpl_string_append_length( refactored, line, IO::Current_Size - entry->End );
 		}
 	}
-	
-	// Write refactored content to destination.
-	File::write( refactored );
 
-	zpl_arena_free( & buffer );
+	IO::write( refactored );
 }
 
-
-inline
-void parse_options( int num, char** arguments )
-{
-	zpl_opts opts;
-	zpl_opts_init( & opts, g_allocator, "refactor");
-	zpl_opts_add(  & opts, "src" , "src" , "File to refactor"             , ZPL_OPTS_STRING);
-	zpl_opts_add(  & opts, "dst" , "dst" , "File post refactor"           , ZPL_OPTS_STRING);
-	zpl_opts_add(  & opts, "spec", "spec", "Specification for refactoring", ZPL_OPTS_STRING);
-
-	if (zpl_opts_compile( & opts, num, arguments))
-	{
-		if ( zpl_opts_has_arg( & opts, "src" ) )
-		{
-			zpl_string opt = zpl_opts_string( & opts, "src", "INVALID PATH" );
-
-			File::Source = zpl_string_make( g_allocator, "" );
-			File::Source = zpl_string_append( File::Source, opt );
-		}
-		else
-		{
-			fatal( "-source not provided\n" );
-		}
-
-		if ( zpl_opts_has_arg( & opts, "dst" ) )
-		{
-			zpl_string opt = zpl_opts_string( & opts, "dst", "INVALID PATH" );
-
-			File::Destination = zpl_string_make( g_allocator, "" );
-			File::Destination = zpl_string_append( File::Destination, opt );
-		}
-		else if ( File::Source )
-		{
-			File::Destination = zpl_string_make( g_allocator, "" );
-			File::Destination = zpl_string_append( File::Destination, File::Source );
-		}
-
-		if ( zpl_opts_has_arg( & opts, "spec" ) )
-		{
-			zpl_string opt = zpl_opts_string( & opts, "spec", "INVALID PATH" );
-
-			Spec::File = zpl_string_make( g_allocator, "" );
-			Spec::File = zpl_string_append( Spec::File, opt );
-		}
-	}
-	else
-	{
-		fatal( "Failed to parse arguments\n" );
-	}
-
-	zpl_opts_free( & opts);
-}
-
-int main( int num, char** arguments)
+int main( int num, char** arguments )
 {
 	Memory::setup();
+	
+	parse_options( num, arguments);
 
-	parse_options( num, arguments );
+	IO::prepare();
 
-	if ( Spec::File )
-		Spec::process();
+	// Just reserving more than we'll ever problably need.
+	zpl_arena_init_from_allocator( & Refactor_Buffer, zpl_heap(), IO::Largest_Src_Size * 4 + 8);
 
-	File::read();
+	Spec::parse();
 
-	refactor();
+	sw left = zpl_array_count( IO::Sources );
+	do
+	{
+		refactor();
+	} 
+	while ( --left );
 
-	log_fmt("\n");
-	zpl_printf("Refacotred: %s using %s\n", File::Source, Spec::File);
+	zpl_arena_free( & Refactor_Buffer );
 
 	Spec::  cleanup();
-	File::  cleanup();
+	IO::    cleanup();
 	Memory::cleanup();
 }
