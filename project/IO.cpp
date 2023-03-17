@@ -13,23 +13,12 @@ namespace IO
 		
 		// Current source and destination index.
 		// Used to keep track of which file get_next_source or write refer to.
-		uw    Current          = 0;
+		sw    Current          = -1;
 		char* Current_Content  = nullptr;
 		uw    Current_Size     = 0;
 		uw    Largest_Src_Size = 0;
 
-		/*
-			Will persist throughout loading different file content.
-			Should hold a bit more than the largest source file's content,
-			As an array of lines.
-		*/
 		zpl_arena  MemPerist;
-		
-		/*
-			Temporary memory held while procesisng files to get their content.
-			zpl_files are stored here 
-		*/
-		// zpl_arena  MemTransient;
 	}
 	using namespace StaticData;
 	
@@ -48,7 +37,7 @@ namespace IO
 			                       
 			if ( error != ZPL_FILE_ERROR_NONE )
 			{
-				fatal("Could not open source file: %s", *path );
+				fatal("IO::Prepare - Could not open source file: %s", *path );
 			}
 			
 			const sw fsize = zpl_file_size( & src );
@@ -60,18 +49,16 @@ namespace IO
 
 			zpl_file_close( & src );
 		}
-		while ( --left );
+		while ( left--, left > 1 );
 			
 		uw persist_size = ZPL_ARRAY_GROW_FORMULA( Largest_Src_Size );
 			
 		zpl_arena_init_from_allocator( & MemPerist, zpl_heap(), persist_size );
-		// zpl_arena_init_from_allocator( & MemTransient, zpl_heap(), Largest_Src_Size );
 	}
 	
 	void cleanup()
 	{
 		zpl_arena_free( & MemPerist );
-		// zpl_arena_free( & MemTransient );
 	}
 
 	Array_Line get_specification()
@@ -102,25 +89,24 @@ namespace IO
 		return lines;
 	}
 
-	Array_Line get_next_source()
+	char* get_next_source()
 	{
-		// zpl_memset( MemTransient.physical_start, 0, MemTransient.total_allocated);
-		// MemTransient.total_allocated = 0;
-		// MemTransient.temp_count      = 0;
-
 		zpl_memset( MemPerist.physical_start, 0, MemPerist.total_allocated);
 		MemPerist.total_allocated = 0;
 		MemPerist.temp_count      = 0;
 
+		Current++;
+
 		zpl_file       file {};
-		zpl_file_error error = zpl_file_open( & file, Specification);
+		zpl_file_error error = zpl_file_open( & file, Sources[Current]);
 
 		if ( error != ZPL_FILE_ERROR_NONE )
 		{
-			fatal("Could not open the source file: %s", Sources[Current]);
+			fatal("IO::get_next_source - Could not open the source file: %s", Sources[Current]);
 		}
 
-		Current_Size = scast( sw, zpl_file_size( & file ) );
+		auto size = zpl_file_size( & file );
+		Current_Size = scast( sw, size );
 
 		if ( Current_Size <= 0 )
 			return nullptr;
@@ -133,8 +119,7 @@ namespace IO
 		Current_Content[Current_Size] = 0;
 		Current_Size++;
 
-		Array_Line lines = zpl_str_split_lines( zpl_arena_allocator( & MemPerist), Current_Content, ' ' );
-		return lines;
+		return Current_Content;
 	}
 
 	void write( zpl_string refacotred )

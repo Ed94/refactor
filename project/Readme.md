@@ -38,4 +38,4 @@ The `Path_Size_Largest` and `Token_Max_Length` are compile-time constraints that
 
 `Array_Reserve_Num` is used to dictate the assumed amount of tokens will be held in total for any of spec's arrays holding ignores and refactor entries. If any of the array's exceed 4 KB they will grow triggering a resize which will bog down the speed of the refactor. Adjust if you think you can increase or lower for use case.
 
-Initial Global arena size is a finicy thing, its most likely going to be custom allocator at one point so that it can handle growing properly, right now its just grows if the amount of memory file paths will need for sources is greater than 1 MB. 
+Initial Global arena size is a finicy thing, its most likely going to be custom allocator at one point so that it can handle growing properly, right now its just grows if the amount of memory file paths will need for sources is greater than 1 MB.  

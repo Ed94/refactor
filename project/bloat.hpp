@@ -5,7 +5,7 @@
 #pragma once	
 
 #ifdef BLOAT_IMPL
-#	define ZPL_IMPLEMEntATION
+#	define ZPL_IMPLEMENTATION
 #endif
 
 #if __clang__
@@ -70,6 +70,7 @@ do                     \
 while(0)               \
 
 
+using b32 = zpl_b32;
 using s8  = zpl_i8;
 using s32 = zpl_i32;
 using s64 = zpl_i64;
@@ -96,6 +97,9 @@ namespace Memory
 	void resize( uw new_size );
 	void cleanup();
 }
+
+// Had to be made to support multiple sub-arguments per "opt" argument.
+b32 opts_custom_compile(zpl_opts *opts, int argc, char **argv);
 
 inline
 sw log_fmt(char const *fmt, ...) 

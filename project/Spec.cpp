@@ -96,8 +96,6 @@ namespace Spec
 		left--;
 		lines++;
 
-		char token[ Token_Max_Length ];
-
 		do
 		{
 			char* line = * lines;

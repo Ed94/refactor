@@ -1,6 +1,6 @@
 #pragma once
 
-#include "bloat.hpp"
+#include "Bloat.hpp"
 
 
 namespace IO
@@ -18,7 +18,7 @@ namespace IO
 	Array_Line get_specification();
 	
 	// Provides the content of the next source, broken up as a series of lines.
-	Array_Line get_next_source();
+	char* get_next_source();
 
 	// Writes the refactored content ot the current corresponding destination.
 	void write( zpl_string refactored );

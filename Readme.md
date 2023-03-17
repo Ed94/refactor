@@ -2,14 +2,14 @@
 
 Refactor c/c++ files (and problably others) with ease.
 
-Parameters :
+## Parameters : 
 
 * `-num` : Used if more than one source file is provided (if used, number of destination files provided MUST MATCH).
 * `-src` : Source file to refactor
 * `-dst` : Destination file after the refactor (omit to use the same as source)
 * `-spec` : Specification containing rules to use for the refactor.
 
-Syntax :
+## Syntax : 
 
 * `not` Omit word or namespace.
 * `include` Preprocessor include <file> related identifiers.
@@ -30,7 +30,7 @@ you may want to have automated in a script.
 
 There are other programs more robust for doing that sort of thing but I was not able to find something this simple.
 
-**Note**  
+### Note
 
 * Building for debug provides some nice output with context on a per-line basis.  
 * Release will only show errors for asserts (that will kill the refactor early).  
@@ -40,6 +40,8 @@ Make sure to have the code backed up on a VCS or in some other way.
 * The scripts used for building and otherwise are in the scripts directory and are all in powershell (with exception to the meson.build). Techncially there should be a powershell package available on other platorms but worst case it should be pretty easy to port these scripts to w/e shell script you'd perfer.
 
 TODO:  
+
 * Possibly come up with a better name.
 * Test to see how much needs to be ported for other platforms (if at all)
+* Setup as api.
 * Provide binaries in the release page for github. (debug and release builds)

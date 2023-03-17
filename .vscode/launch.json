@@ -13,13 +13,34 @@
 				"-src=./thirdparty/zpl.h",
 				"-dst=./Test/zpl.refactored.h",
 
-				"-spec=./Test/zpl.h.refactor"
+				"-spec=./Test/zpl.refactor"
 			],
 			"stopAtEntry": false,
 			"cwd": "${workspaceRoot}",
 			"environment": [],
 			"console": "integratedTerminal"
-		}
+		},
+		// {
+		// 	"name": "Refactor ZPL files",
+		// 	"type": "cppvsdbg",
+		// 	"request": "launch",
+		// 	"program": "${workspaceFolder}/build/refactor.exe",
+		// 	"args": [
+		// 		"-num=2",
+
+		// 		"-src=./thirdparty/zpl.h",
+		// 		"./thirdparty/file.h",
+
+		// 		"-dst=./Test/zpl.refactored.h",
+		// 		"./thirdparty/file.refactored.h",
+
+		// 		"-spec=./Test/zpl.refactor"
+		// 	],
+		// 	"stopAtEntry": false,
+		// 	"cwd": "${workspaceRoot}",
+		// 	"environment": [],
+		// 	"console": "integratedTerminal"
+		// },
 		{
 			"name": "Refactor refactor.c",
 			"type": "cppvsdbg",
@@ -29,7 +50,7 @@
 				"-source=./refactor.cpp",
 				"-destination=./Test/refactor.cpp",
 
-				"-specification=./Test/zpl.h.refactor"
+				"-specification=./Test/zpl.refactor"
 			],
 			"stopAtEntry": false,
 			"cwd": "${workspaceRoot}",

@@ -1,14 +1,17 @@
 __VERSION 1
 
-// not   : Ignore
-// word  : Alphanumeric or underscore
-// regex : Unavailable in __VERSION 1. 
+// not       : Ignore
+// include   : #includes
+// word      : Alphanumeric or underscore
+// namespace : Prefix search and replace (c-namspaces).
+// regex     : Unavailable in __VERSION 1. 
 
 // Precedence (highest to lowest):
 // word, namespace, regex
 
 // Header files
-not word zpl_hedley
+not include zpl_hedley
+//not word zpl_hedley
 
 // Removes the namespace.
 namespace zpl_
@@ -16,30 +19,32 @@ namespace zpl_
 // Don't expose internals
 not namespace zpl__
 
-not word ZPL_IMPLEMENTATION
+// Macro exposure
+//namespace ZPL_
+//not word ZPL_IMPLEMENTATION
 
 word cast,        zpl_cast
 word zpl_strncmp, str_compare
 word zpl_strcmp,  str_compare
 
 // Undesired typedefs
-word zpl_i8,  s8
-word zpl_i16, s16
-word zpl_i32, s32
-word zpl_i64, s64
-word zpl_u8,  u8
-word zpl_u16, u16
-word zpl_u32, u32
-word zpl_u64, u64
-word zpl_intptr, sptr
+word zpl_i8,      s8
+word zpl_i16,     s16
+word zpl_i32,     s32
+word zpl_i64,     s64
+word zpl_u8,      u8
+word zpl_u16,     u16
+word zpl_u32,     u32
+word zpl_u64,     u64
+word zpl_intptr,  sptr
 word zpl_uintptr, uptr
-word zpl_usize, uw
-word zpl_isize, sw
+word zpl_usize,   uw
+word zpl_isize,   sw
 
 // Undesired exposures.
 //not word zpl_allocator
 //not word zpl_arena
-not word zpl_array
+//not word zpl_array
 //not word zpl_file
 //not word zpl_list
 //not word zpl_pool
@@ -47,6 +52,7 @@ not word zpl_array
 
 // Conflicts with refactor
 word arena,     a_arena
+word array,     a_array
 word alloc,     a_allocator
 word file,      a_file
 word file_size, fsize
