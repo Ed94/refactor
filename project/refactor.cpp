@@ -9,15 +9,27 @@
 void parse_options( int num, char** arguments )
 {
 	zpl_opts opts;
-	zpl_opts_init( & opts, g_allocator, "refactor");
+	zpl_opts_init( & opts, zpl_heap(), "refactor");
 	zpl_opts_add(  & opts, "num",  "num" , "Number of files to refactor"  , ZPL_OPTS_INT   );
 	zpl_opts_add(  & opts, "src" , "src" , "File/s to refactor"           , ZPL_OPTS_STRING);
 	zpl_opts_add(  & opts, "dst" , "dst" , "File/s post refactor"         , ZPL_OPTS_STRING);
 	zpl_opts_add(  & opts, "spec", "spec", "Specification for refactoring", ZPL_OPTS_STRING);
 
+#if Build_Debug
+	zpl_opts_add( & opts, "debug", "debug", "Allows for wait to attach", ZPL_OPTS_FLAG);
+#endif
+
 	if (opts_custom_compile( & opts, num, arguments))
 	{
 		sw num = 0;
+
+	#if Build_Debug
+		if ( zpl_opts_has_arg( & opts, "debug" ) )
+		{
+			zpl_printf("Will wait (pause available for attachment)");
+			char pause = getchar();
+		}
+	#endif
 		
 		if ( zpl_opts_has_arg( & opts, "num" ) )
 		{
@@ -158,7 +170,7 @@ zpl_arena Refactor_Buffer;
 
 void refactor()
 {
-	ct static char const* include_sig = "#include \"";
+	ct static char const* include_sig = "include";
 	
 	struct Token
 	{
@@ -220,12 +232,23 @@ void refactor()
 				if ( include_sig[0] != src[0] )
 					continue;
 
+				if ( zpl_strncmp( include_sig, src, sizeof(include_sig) - 1 ) != 0 )
+				{
+					break;
+				}
+
+				src += sizeof(include_sig) - 1;
+
+				// Ignore whitespace
+				while ( zpl_char_is_space( src[0] ) || src[0] == '\"' || src[0] == '<' )
+				{
+					src++;
+				}
+
 				u32 sig_length = zpl_string_length( ignore->Sig );
 
-				current = zpl_string_set( current, include_sig );
-				current = zpl_string_append_length( current, src, sig_length );
-				current = zpl_string_append_length( current, "\"", 1 );
-				// Formats current into: #include "<ignore->Sig>"
+				zpl_string_clear( current );
+				current = zpl_string_append_length( current, ignore->Sig, sig_length );
 
 				if ( zpl_string_are_equal( ignore->Sig, current ) )
 				{
@@ -233,7 +256,8 @@ void refactor()
 
 					const sw length = zpl_string_length( current );
 
-					move_forward( length );
+					// The + 1 is for the closing " or > of the include
+					move_forward( length + 1 );
 
 					// Force end of line.
 					while ( src[0] != '\n' )
@@ -332,21 +356,30 @@ void refactor()
 				if ( include_sig[0] != src[0] )
 					continue;
 
+				if ( zpl_strncmp( include_sig, src, sizeof(include_sig) - 1 ) != 0 )
+				{
+					break;
+				}
+
+				src += sizeof(include_sig) - 1;
+
+				// Ignore whitespace
+				while ( zpl_char_is_space( src[0] ) || src[0] == '\"' || src[0] == '<' )
+				{
+					src++;
+				}
+
 				u32 sig_length = zpl_string_length( include->Sig );
 
-				current = zpl_string_set( current, include_sig );
-				current = zpl_string_append_length( current, src, sig_length );
-				current = zpl_string_append_length( current, "\"", 1 );
-				// Formats current into: #include "<ignore->Sig>"
+				zpl_string_clear( current );
+				current = zpl_string_append_length( current, include->Sig, sig_length );
 
 				if ( zpl_string_are_equal( include->Sig, current ) )
 				{
 					Token entry {};
 
-					const sw length = zpl_string_length( current );
-
 					entry.Start = pos;
-					entry.End   = pos + length;
+					entry.End   = pos + sig_length;
 					entry.Sig   = include->Sig;
 
 					if ( include->Sub != nullptr )
@@ -359,10 +392,10 @@ void refactor()
 
 					log_fmt("\nFound     %-81s line %d, column %d", current, line, col );
 
-					move_forward( length );
+					move_forward( sig_length );
 
 					// Force end of line.
-					while ( src[0] != '\0' )
+					while ( src[0] != '\n' )
 					{
 						move_forward( 1 );
 					}
@@ -486,14 +519,19 @@ void refactor()
 	} 
 	while ( --left );
 
+	if (zpl_array_count( tokens ) == 0)
+	{
+		return;
+	}
+
 	// Prep data for building the content
 	left = zpl_array_count( tokens);
 
 	char* content = IO::Current_Content; 
 
+	zpl_string refactored = zpl_string_make_reserve( zpl_arena_allocator( & Refactor_Buffer ), buffer_size );
+
 	// Generate the refactored file content.
-	static zpl_string 
-	refactored = zpl_string_make_reserve( zpl_arena_allocator( & Refactor_Buffer ), buffer_size );
 	{
 		Token* entry        = tokens;
 		sw     previous_end = 0;
@@ -521,7 +559,7 @@ void refactor()
 			previous_end = entry->End;
 			entry++;
 		}
-		while ( --left );
+		while ( --left > 0 );
 
 		entry--;
 
@@ -533,7 +571,7 @@ void refactor()
 
 	IO::write( refactored );
 
-	zpl_string_clear( refactored );
+	zpl_free_all( zpl_arena_allocator( & Refactor_Buffer ));
 }
 
 int main( int num, char** arguments )

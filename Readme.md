@@ -8,6 +8,7 @@ Refactor c/c++ files (and problably others) with ease.
 * `-src` : Source file to refactor
 * `-dst` : Destination file after the refactor (omit to use the same as source)
 * `-spec` : Specification containing rules to use for the refactor.
+* `-debug` : Use only if on debug build and desire to attach to process.
 
 ## Syntax : 
 
@@ -45,3 +46,4 @@ TODO:
 * Test to see how much needs to be ported for other platforms (if at all)
 * Setup as api.
 * Provide binaries in the release page for github. (debug and release builds)
+* Directive to ignore comments (with a way to specify the comment signature). Right now comments that meet the signature of words or namespaces are refactored.

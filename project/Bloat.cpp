@@ -9,7 +9,7 @@ namespace Memory
 	
 	void setup()
 	{
-		zpl_arena_init_from_allocator( & Global_Arena, zpl_heap(), zpl_megabytes(2) );
+		zpl_arena_init_from_allocator( & Global_Arena, zpl_heap(), Initial_Reserve );
 
 		if ( Global_Arena.total_size == 0 )
 		{

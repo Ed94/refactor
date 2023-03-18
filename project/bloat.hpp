@@ -90,6 +90,8 @@ ct char const* Msg_Invalid_Value = "INVALID VALUE PROVIDED";
 
 namespace Memory
 {
+	ct uw Initial_Reserve = zpl_megabytes(2);
+
 	extern zpl_arena Global_Arena;
 	#define g_allocator zpl_arena_allocator( & Memory::Global_Arena)
 

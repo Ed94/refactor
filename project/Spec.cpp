@@ -38,15 +38,30 @@ namespace Spec
 
 	// Helper function for process().
 	forceinline
-	void find_next_token( zpl_string& token, char*& line, u32& length )
+	void find_next_token( Tok& type, zpl_string& token, char*& line, u32& length )
 	{
 		zpl_string_clear( token );
 		length = 0;
 
-		while ( zpl_char_is_alphanumeric( line[length] ) || line[length] == '_' )
+	#define current line[length]
+		if (type == Tok::Include)
 		{
-			length++;
+			// Allows for '.'
+			while ( zpl_char_is_alphanumeric( current ) 
+				|| current == '_' 
+				|| current == '.' )
+			{
+				length++;
+			}
 		}
+		else
+		{
+			while ( zpl_char_is_alphanumeric( current ) || current == '_' )
+			{
+				length++;
+			}
+		}
+	#undef current
 
 		if ( length == 0 )
 		{
@@ -119,14 +134,14 @@ namespace Spec
 				}
 			}
 
-			u32 length = 0;
-
-			// Find a valid token
-			find_next_token( token, line, length );
-
+			u32   length = 0;
 			Tok   type   = Tok::Num_Tok;
 			bool  ignore = false;
 			Entry entry {};
+
+
+			// Find a valid token
+			find_next_token( type, token, line, length );
 
 			// Will be reguarded as an ignore.
 			if ( is_tok( Tok::Not, token, length ))
@@ -143,7 +158,7 @@ namespace Spec
 				}
 
 				// Find the category token
-				find_next_token( token, line, length );
+				find_next_token( type, token, line, length );
 			}
 
 			if ( is_tok( Tok::Word, token, length ) )
@@ -174,8 +189,8 @@ namespace Spec
 				lines++;
 				continue;
 			}
-
-			find_next_token( token, line, length );
+		
+			find_next_token( type, token, line, length );
 
 			// First argument is signature.
 			entry.Sig = zpl_string_make_length( g_allocator, token, length );
@@ -285,7 +300,7 @@ namespace Spec
 				}
 			}
 
-			find_next_token( token, line, length );
+			find_next_token( type, token, line, length );
 
 			// Second argument is substitute.
 			entry.Sub = zpl_string_make_length( g_allocator, token, length );

@@ -18,7 +18,8 @@ namespace IO
 		uw    Current_Size     = 0;
 		uw    Largest_Src_Size = 0;
 
-		zpl_arena  MemPerist;
+		zpl_arena  MemSpec;
+		zpl_arena  MemSrc;
 	}
 	using namespace StaticData;
 	
@@ -49,16 +50,17 @@ namespace IO
 
 			zpl_file_close( & src );
 		}
-		while ( left--, left > 1 );
+		while ( path++, left--, left > 1 );
 			
-		uw persist_size = ZPL_ARRAY_GROW_FORMULA( Largest_Src_Size );
+		uw persist_size = Largest_Src_Size * 2 + 8;
 			
-		zpl_arena_init_from_allocator( & MemPerist, zpl_heap(), persist_size );
+		zpl_arena_init_from_allocator( & MemSrc, zpl_heap(), persist_size );
 	}
 	
 	void cleanup()
 	{
-		zpl_arena_free( & MemPerist );
+		zpl_arena_free( & MemSpec );
+		zpl_arena_free( & MemSrc );
 	}
 
 	Array_Line get_specification()
@@ -78,22 +80,23 @@ namespace IO
 			fatal("No content in specificaiton to process");
 		}
 
-		char* content = rcast( char*, zpl_alloc( zpl_arena_allocator( & MemPerist), fsize + 1) );
+		zpl_arena_init_from_allocator( & MemSpec, zpl_heap(), fsize * 2 + 8 );
+
+		char* content = rcast( char*, zpl_alloc( zpl_arena_allocator( & MemSpec), fsize + 1) );
 
 		zpl_file_read( & file, content, fsize);
 		zpl_file_close( & file );
 
 		content[fsize] = 0;
 
-		Array_Line lines = zpl_str_split_lines( zpl_arena_allocator( & MemPerist ), content, false );
+		Array_Line lines = zpl_str_split_lines( zpl_arena_allocator( & MemSpec ), content, false );
 		return lines;
 	}
 
 	char* get_next_source()
 	{
-		zpl_memset( MemPerist.physical_start, 0, MemPerist.total_allocated);
-		MemPerist.total_allocated = 0;
-		MemPerist.temp_count      = 0;
+		zpl_memset( MemSrc.physical_start, 0, MemSrc.total_allocated);
+		zpl_free_all( zpl_arena_allocator( & MemSrc) );
 
 		Current++;
 
@@ -111,7 +114,7 @@ namespace IO
 		if ( Current_Size <= 0 )
 			return nullptr;
 
-		Current_Content = rcast( char* , zpl_alloc( zpl_arena_allocator( & MemPerist), Current_Size + 1) );
+		Current_Content = rcast( char* , zpl_alloc( zpl_arena_allocator( & MemSrc), Current_Size + 1) );
 
 		zpl_file_read( & file, Current_Content, Current_Size );
 		zpl_file_close( & file );
@@ -138,7 +141,6 @@ namespace IO
 		}
 
 		zpl_file_write( & file_dest, refacotred, zpl_string_length(refacotred) );
-
 		zpl_file_close( & file_dest );
 	}
 }
