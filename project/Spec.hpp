@@ -7,6 +7,7 @@ namespace Spec
 	enum Tok 
 	{
 		Not,
+		Comment,
 		Include,
 		Namespace,
 		Word,
@@ -21,6 +22,7 @@ namespace Spec
 		char const*	tok_to_str[ Tok::Num_Tok ] = 
 		{
 			"not",
+			"comments",
 			"include",
 			"namespace",
 			"word",
@@ -36,6 +38,7 @@ namespace Spec
 		const u8 tok_to_len[ Tok::Num_Tok ] = 
 		{
 			3,
+			8,
 			7,
 			9,
 			4,

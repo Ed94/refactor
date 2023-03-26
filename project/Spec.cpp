@@ -11,6 +11,9 @@ namespace Spec
 
 	namespace StaticData
 	{
+		// Custom comment signatures not supported yet (only C/C++ comments for now)
+		bool Ignore_Comments = false;
+
 		Array_Entry Ignore_Includes;
 		Array_Entry Ignore_Words;
 		Array_Entry Ignore_Regexes;
@@ -49,7 +52,9 @@ namespace Spec
 			// Allows for '.'
 			while ( zpl_char_is_alphanumeric( current ) 
 				|| current == '_' 
-				|| current == '.' )
+				|| current == '.'
+				|| current == '/'
+				|| current == '\\' )
 			{
 				length++;
 			}
@@ -161,7 +166,15 @@ namespace Spec
 				find_next_token( type, token, line, length );
 			}
 
-			if ( is_tok( Tok::Word, token, length ) )
+			if ( is_tok( Tok::Comment, token, length ) )
+			{
+				// Custom comment signatures not supported yet (only C/C++ comments for now)
+				Ignore_Comments = true;
+
+				lines++;
+				continue;
+			}
+			else if ( is_tok( Tok::Word, token, length ) )
 			{
 				type = Tok::Word;
 			}
@@ -324,5 +337,15 @@ namespace Spec
 			}
 		}
 		while ( --left );
+
+		Spec::Entry* ignore       = Spec::Ignore_Includes;
+		sw           ignores_left = zpl_array_count( Spec::Ignore_Includes);
+
+		zpl_printf("\nIgnores: ");
+		for ( ; ignores_left; ignores_left--, ignore++ )
+		{
+			zpl_printf("\n%s", ignore->Sig);
+		}
+		zpl_printf("\n");
 	}
 }

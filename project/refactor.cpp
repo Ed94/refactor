@@ -216,12 +216,41 @@ void refactor()
 	#define pos (IO::Current_Size - left)
 
 	#define move_forward( Amount_ ) \
-		left -= Amount_; \
-		col  += Amount_; \
-		src  += Amount_  \
+		if ( left - Amount_ <= 0 )  \
+			goto End_Search;        \
+		                            \
+		left -= Amount_;            \
+		col  += Amount_;            \
+		src  += Amount_             \
 
 	do
 	{
+		if ( Spec::Ignore_Comments && src[0] == '/' && left - 2 > 0 )
+		{
+			if ( src[1] == '/' )
+			{
+				move_forward( 2 );
+
+				// Force end of line.
+				while ( src[0] != '\n' )
+				{
+					move_forward( 1 );
+				}
+
+				goto Skip;
+			}
+			else if ( src[1] == '*' )
+			{
+				do
+				{
+					move_forward( 2 );
+				}
+				while ( (left - 2) > 0 && !( src[0] == '*' && src[1] == '/' ) );
+
+				move_forward( 2 );
+			}
+		}
+
 		// Includes to ignore
 		{
 			Spec::Entry* ignore       = Spec::Ignore_Includes;
@@ -229,26 +258,34 @@ void refactor()
 
 			for ( ; ignores_left; ignores_left--, ignore++ )
 			{
-				if ( include_sig[0] != src[0] )
+				if ( '#' != src[0] )
 					continue;
+
+				move_forward( 1 );
+
+				// Ignore whitespace
+				while ( zpl_char_is_space( src[0] ) )
+				{
+					move_forward( 1 );
+				}
 
 				if ( zpl_strncmp( include_sig, src, sizeof(include_sig) - 1 ) != 0 )
 				{
 					break;
 				}
 
-				src += sizeof(include_sig) - 1;
+				move_forward( sizeof(include_sig) - 1 );
 
 				// Ignore whitespace
 				while ( zpl_char_is_space( src[0] ) || src[0] == '\"' || src[0] == '<' )
 				{
-					src++;
+					move_forward(1);
 				}
 
-				u32 sig_length = zpl_string_length( ignore->Sig );
-
 				zpl_string_clear( current );
-				current = zpl_string_append_length( current, ignore->Sig, sig_length );
+
+				u32 sig_length = zpl_string_length( ignore->Sig );
+				    current    = zpl_string_append_length( current, ignore->Sig, sig_length );
 
 				if ( zpl_string_are_equal( ignore->Sig, current ) )
 				{
@@ -353,8 +390,16 @@ void refactor()
 
 			for ( ; includes_left; includes_left--, include++ )
 			{
-				if ( include_sig[0] != src[0] )
+				if ( '#' != src[0] )
 					continue;
+
+				move_forward( 1 );
+
+				// Ignore whitespace
+				while ( zpl_char_is_space( src[0] ) )
+				{
+					move_forward( 1 );
+				}
 
 				if ( zpl_strncmp( include_sig, src, sizeof(include_sig) - 1 ) != 0 )
 				{
@@ -366,13 +411,13 @@ void refactor()
 				// Ignore whitespace
 				while ( zpl_char_is_space( src[0] ) || src[0] == '\"' || src[0] == '<' )
 				{
-					src++;
+					move_forward( 1 );
 				}
 
-				u32 sig_length = zpl_string_length( include->Sig );
-
 				zpl_string_clear( current );
-				current = zpl_string_append_length( current, include->Sig, sig_length );
+
+				u32 sig_length = zpl_string_length( include->Sig );
+				     current   = zpl_string_append_length( current, include->Sig, sig_length );
 
 				if ( zpl_string_are_equal( include->Sig, current ) )
 				{
@@ -392,7 +437,8 @@ void refactor()
 
 					log_fmt("\nFound     %-81s line %d, column %d", current, line, col );
 
-					move_forward( sig_length );
+					// The + 1 is for the closing " or > of the include
+					move_forward( sig_length + 1 );
 
 					// Force end of line.
 					while ( src[0] != '\n' )
@@ -515,9 +561,10 @@ void refactor()
 			col = 0;
 		}
 
-		src++;
+		move_forward( 1 );
 	} 
-	while ( --left );
+	while ( left );
+End_Search:
 
 	if (zpl_array_count( tokens ) == 0)
 	{
@@ -550,7 +597,7 @@ void refactor()
 			// Append token
 			if ( entry->Sub )
 			{
-				refactored = zpl_string_append( refactored, entry->Sub );
+				refactored  = zpl_string_append( refactored, entry->Sub );
 			}
 
 			refactored  = zpl_string_append_length( refactored, content, segment_length );
@@ -572,6 +619,9 @@ void refactor()
 	IO::write( refactored );
 
 	zpl_free_all( zpl_arena_allocator( & Refactor_Buffer ));
+
+	#undef pos
+	#undef move_forward
 }
 
 int main( int num, char** arguments )

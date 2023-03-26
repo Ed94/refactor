@@ -9,9 +9,17 @@ __VERSION 1
 // Precedence (highest to lowest):
 // word, namespace, regex
 
+// Comments
+not comments
+
 // Header files
-not include zpl_hedley
-//not word zpl_hedley
+not include zpl_hedley.h
+not include allocator.h
+not include array.h
+not include header/essentials/collections/array.h
+not include header/essentials/collections/list.h
+not include header/core/file.h
+not include header/opts.h
 
 // Removes the namespace.
 namespace zpl_
