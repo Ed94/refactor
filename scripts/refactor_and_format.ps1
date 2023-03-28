@@ -18,6 +18,8 @@ write-host "Beginning refactor...`n"
 
 $refactors = @(@())
 
+# TODO: Change this to support refactoring the other files in the project directory.
+# It needs two runs, one for the regular files, one for the zpl header.
 foreach ( $file in $targetFiles )
 {
     $destination = Join-Path $path_test (Split-Path $file -leaf)

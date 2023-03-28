@@ -243,11 +243,13 @@ void refactor()
 			{
 				do
 				{
-					move_forward( 2 );
+					move_forward( 1 );
 				}
 				while ( (left - 2) > 0 && !( src[0] == '*' && src[1] == '/' ) );
 
-				move_forward( 2 );
+				move_forward( 1 );
+
+				goto Skip;
 			}
 		}
 
