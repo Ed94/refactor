@@ -5,7 +5,7 @@
 
 namespace Memory
 {
-	static zpl_arena Global_Arena {};
+	zpl_arena Global_Arena {};
 	
 	void setup()
 	{
