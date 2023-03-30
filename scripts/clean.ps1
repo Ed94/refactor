@@ -18,4 +18,7 @@ if ( Test-Path $path_test_build )
 
 $files = Get-ChildItem -Recurse -Path $path_test -Include $include -Exclude $exclude
 
-Remove-Item $files
+if ( $files )
+{
+	Remove-Item $files
+}

@@ -1,6 +1,6 @@
-if ($PSVersionTable.PSEdition -ne "Core") 
+if ($Host.UI.RawUI -and $Host.UI.RawUI.CursorPosition) 
 { 
-	$Host.UI.RawUI.CursorPosition = @{X=0; Y=0} 
+	cls
 }
 
 
@@ -80,6 +80,8 @@ if ( $test -eq $true )
 	$args_ninja += "-C"
 	$args_ninja += $path_test_build
 
-	Start-Process ninja $args_ninja -Wait -NoNewWindow -WorkingDirectory $path_test
+	write-host $args_ninja
+
+	Start-Process ninja $args_ninja -Wait -NoNewWindow -WorkingDirectory $path_root
 	#endregion Test Build
 }

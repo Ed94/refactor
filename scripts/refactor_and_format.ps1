@@ -46,7 +46,7 @@ if ( $false ){
 }
 else {
     $refactorParams = @(
-        "-debug",
+        # "-debug",
         "-num=$($targetFiles.Count)"
         "-src=$($targetFiles)",
         "-dst=$($refactoredFiles)",
@@ -86,7 +86,7 @@ foreach ( $file in $targetFiles )
 }
 
 $refactorParams = @(
-    "-debug",
+    # "-debug",
     "-num=$($targetFiles.Count)"
     "-src=$($targetFiles)",
     "-dst=$($refactoredFiles)",
