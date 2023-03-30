@@ -12,3 +12,10 @@ if ( Test-Path $path_test_build )
 {
 	Remove-Item $path_test_build -Recurse
 }
+
+[string[]] $include = '*.h', '*.hpp', '*.cpp'
+[string[]] $exclude =
+
+$files = Get-ChildItem -Recurse -Path $path_test -Include $include -Exclude $exclude
+
+Remove-Item $files

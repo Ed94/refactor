@@ -12,28 +12,28 @@ __VERSION 1
 // Comments
 not comments
 
-// Header files
-not include zpl_hedley.h
-not include allocator.h
-not include array.h
-not include header/essentials/collections/array.h
-not include header/essentials/collections/list.h
-not include header/core/file.h
-not include header/opts.h
-not include source/core/file.c
-not include source/opts.c
+// Includes
+include zpl.h, zpl.refactored.h
+include Bloat.hpp, Bloat.refactored.hpp
+include Bloat.cpp, Bloat.refactored.cpp
+include IO.hpp, IO.refactored.hpp
+include IO.cpp, IO.refactored.cpp
+include Spec.hpp, Spec.refactored.hpp
+include Spec.cpp, Spec.refactored.cpp
 
-// Removes the namespace.
+// Remove the zpl namespace.
 namespace zpl_
 
-// Don't expose internals
+// Don't expose zpl internals
 not namespace zpl__
 
 // Macro exposure
 //namespace ZPL_
 //not word ZPL_IMPLEMENTATION
 
-word cast,        zpl_cast
+// Name conflicts
+word opts, options
+
 word zpl_strncmp, str_compare
 word zpl_strcmp,  str_compare
 
@@ -50,25 +50,6 @@ word zpl_intptr,  sptr
 word zpl_uintptr, uptr
 word zpl_usize,   uw
 word zpl_isize,   sw
-
-// Undesired exposures.
-//not word zpl_allocator
-//not word zpl_arena
-//not word zpl_array
-//not word zpl_file
-//not word zpl_list
-//not word zpl_pool
-//not word zpl_opts
-
-// Conflicts with refactor
-word arena,     a_arena
-word array,     a_array
-word alloc,     a_allocator
-word file,      a_file
-word file_size, fsize
-word list,      a_list
-word opts,      a_opts
-word pool,      a_pool
 
 // Conflicts with std. (Uncomment if using c externs)
 not word zpl_memchr

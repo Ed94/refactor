@@ -1,12 +1,12 @@
 /*
 	BLOAT.
-
-	ZPL requires ZPL_IMPLEMENTATION whereever this library is included.
-	
-	This file assumes it will be included in one compilation unit.
 */
 
 #pragma once	
+
+#ifdef BLOAT_IMPL
+#	define ZPL_IMPLEMENTATION
+#endif
 
 #if __clang__
 #	pragma clang diagnostic ignored "-Wunused-const-variable"
@@ -33,14 +33,13 @@
 // #	define ZPL_MODULE_REGEX
 // #	define ZPL_MODULE_EVENT
 // #	define ZPL_MODULE_DLL
-#	define ZPL_MODULE_OPTS
+#		define ZPL_MODULE_OPTS
 // #	define ZPL_MODULE_PROCESS
 // #	define ZPL_MODULE_MAT
 // #	define ZPL_MODULE_THREADING
 // #	define ZPL_MODULE_JOBS
 // #	define ZPL_MODULE_PARSER
 #include "zpl.h"
-// }
 
 #if __clang__
 #	pragma clang diagnostic pop
@@ -59,18 +58,19 @@
 #define rcast( Type_, Value_ )			   reinterpret_cast< Type_ >( Value_ )
 #define pcast( Type_, Value_ )             ( * (Type_*)( & Value_ ) )
 
-#define do_once()     \
-do                    \
-{                     \
-	static            \
-	bool Done = true; \
-	if ( Done )       \
-		return;       \
-	Done = false;     \
-}                     \
-while(0)              \
+#define do_once()      \
+do                     \
+{                      \
+	static             \
+	bool Done = false; \
+	if ( Done )        \
+		return;        \
+	Done = true;       \
+}                      \
+while(0)               \
 
 
+using b32 = zpl_b32;
 using s8  = zpl_i8;
 using s32 = zpl_i32;
 using s64 = zpl_i64;
@@ -81,39 +81,39 @@ using f64 = zpl_f64;
 using uw  = zpl_usize;
 using sw  = zpl_isize;
 
+using Line       = char*;
+using Array_Line = zpl_array( Line );
+
 
 ct char const* Msg_Invalid_Value = "INVALID VALUE PROVIDED";
 
 
 namespace Memory
 {
-	zpl_arena Global_Arena {};
+	ct uw Initial_Reserve = zpl_megabytes(2);
+
+	extern zpl_arena Global_Arena;
 	#define g_allocator zpl_arena_allocator( & Memory::Global_Arena)
 
-	void setup()
-	{
-		zpl_arena_init_from_allocator( & Global_Arena, zpl_heap(), zpl_megabytes(10) );
-
-		if ( Global_Arena.total_size == 0 )
-		{
-			zpl_assert_crash( "Failed to reserve memory for Tests:: Global_Arena" );
-		}
-	}
-
-	void cleanup()
-	{
-		zpl_arena_free( & Global_Arena);
-	}
+	void setup();
+	void resize( uw new_size );
+	void cleanup();
 }
 
- sw log_fmt(char const *fmt, ...) 
- {
+// Had to be made to support multiple sub-arguments per "opt" argument.
+b32 opts_custom_compile(zpl_opts *opts, int argc, char **argv);
+
+inline
+sw log_fmt(char const *fmt, ...) 
+{
 #if Build_Debug
 	sw res;
 	va_list va;
+	
 	va_start(va, fmt);
 	res = zpl_printf_va(fmt, va);
 	va_end(va);
+	
 	return res;
 
 #else
@@ -121,6 +121,7 @@ namespace Memory
 #endif
 }
 
+inline
 void fatal(char const *fmt, ...) 
 {
 	zpl_local_persist zpl_thread_local 
@@ -139,6 +140,6 @@ void fatal(char const *fmt, ...)
 	zpl_printf_err_va( fmt, va);
 	va_end(va);
 
-	exit(1);
+	zpl_exit(1);
 #endif
 }
