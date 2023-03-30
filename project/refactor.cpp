@@ -223,6 +223,11 @@ void refactor()
 		col  += Amount_;            \
 		src  += Amount_             \
 
+	#define move_back( Amount_ )    \
+		left += Amount_;            \
+		col  -= Amount_;            \
+		src  -= Amount_             \
+
 	do
 	{
 		if ( Spec::Ignore_Comments && src[0] == '/' && left - 2 > 0 )
@@ -254,40 +259,49 @@ void refactor()
 		}
 
 		// Includes to ignore
+		do
 		{
 			Spec::Entry* ignore       = Spec::Ignore_Includes;
 			sw           ignores_left = zpl_array_count( Spec::Ignore_Includes);
+			sw           rewind       = 0;
+
+			if ( '#' != src[0] )
+				break;
+
+			move_forward( 1 );
+			rewind++;
+
+			// Ignore whitespace
+			while ( zpl_char_is_space( src[0] ) )
+			{
+				move_forward( 1 );
+				rewind++;
+			}
+
+			if ( zpl_strncmp( include_sig, src, sizeof(include_sig) - 1 ) != 0 )
+			{
+				move_back( rewind );
+				break;
+			}
+
+			const u32 sig_size = sizeof(include_sig) - 1;
+
+			move_forward( sig_size );
+			rewind += sig_size;
+
+			// Ignore whitespace
+			while ( zpl_char_is_space( src[0] ) || src[0] == '\"' || src[0] == '<' )
+			{
+				move_forward(1);
+				rewind++;
+			}
 
 			for ( ; ignores_left; ignores_left--, ignore++ )
 			{
-				if ( '#' != src[0] )
-					continue;
-
-				move_forward( 1 );
-
-				// Ignore whitespace
-				while ( zpl_char_is_space( src[0] ) )
-				{
-					move_forward( 1 );
-				}
-
-				if ( zpl_strncmp( include_sig, src, sizeof(include_sig) - 1 ) != 0 )
-				{
-					break;
-				}
-
-				move_forward( sizeof(include_sig) - 1 );
-
-				// Ignore whitespace
-				while ( zpl_char_is_space( src[0] ) || src[0] == '\"' || src[0] == '<' )
-				{
-					move_forward(1);
-				}
-
 				zpl_string_clear( current );
 
 				u32 sig_length = zpl_string_length( ignore->Sig );
-				    current    = zpl_string_append_length( current, ignore->Sig, sig_length );
+				    current    = zpl_string_append_length( current, src, sig_length );
 
 				if ( zpl_string_are_equal( ignore->Sig, current ) )
 				{
@@ -307,7 +321,10 @@ void refactor()
 					goto Skip;
 				}
 			}
-		}
+
+			move_back( rewind );
+		} 
+		while (false);
 
 		// Word Ignores
 		{
@@ -385,41 +402,49 @@ void refactor()
 		}
 
 		// Includes to match
+		do
 		{
-			Spec::Entry* include = Spec::Includes;
+			Spec::Entry* include       = Spec::Includes;
+			sw           includes_left = zpl_array_count ( Spec::Includes);
+			sw           rewind       = 0;
 
-			sw includes_left = zpl_array_count ( Spec::Includes);
+			if ( '#' != src[0] )
+				break;
+
+			move_forward( 1 );
+			rewind++;
+
+			// Ignore whitespace
+			while ( zpl_char_is_space( src[0] ) )
+			{
+				move_forward( 1 );
+				rewind++;
+			}
+
+			if ( zpl_strncmp( include_sig, src, sizeof(include_sig) - 1 ) != 0 )
+			{
+				move_back( rewind );
+				break;
+			}
+
+			const u32 sig_size = sizeof(include_sig) - 1;
+
+			move_forward( sig_size );
+			rewind += sig_size;
+
+			// Ignore whitespace
+			while ( zpl_char_is_space( src[0] ) || src[0] == '\"' || src[0] == '<' )
+			{
+				move_forward( 1 );
+				rewind++;
+			}
 
 			for ( ; includes_left; includes_left--, include++ )
 			{
-				if ( '#' != src[0] )
-					continue;
-
-				move_forward( 1 );
-
-				// Ignore whitespace
-				while ( zpl_char_is_space( src[0] ) )
-				{
-					move_forward( 1 );
-				}
-
-				if ( zpl_strncmp( include_sig, src, sizeof(include_sig) - 1 ) != 0 )
-				{
-					break;
-				}
-
-				src += sizeof(include_sig) - 1;
-
-				// Ignore whitespace
-				while ( zpl_char_is_space( src[0] ) || src[0] == '\"' || src[0] == '<' )
-				{
-					move_forward( 1 );
-				}
-
 				zpl_string_clear( current );
 
 				u32 sig_length = zpl_string_length( include->Sig );
-				     current   = zpl_string_append_length( current, include->Sig, sig_length );
+				    current    = zpl_string_append_length( current, src, sig_length );
 
 				if ( zpl_string_are_equal( include->Sig, current ) )
 				{
@@ -451,7 +476,10 @@ void refactor()
 					goto Skip;
 				}
 			}
-		}
+
+			move_back( rewind );
+		} 
+		while (false);
 
 		// Words to match
 		{
@@ -564,6 +592,10 @@ void refactor()
 		}
 
 		move_forward( 1 );
+
+		// zpl_string_clear( preview );
+		// preview = zpl_string_append_length( preview, src, 100);
+		// log_fmt( "__PREVIEW: %d \nn%s\n\n__PREVIEW_END", left, preview );
 	} 
 	while ( left );
 End_Search:
