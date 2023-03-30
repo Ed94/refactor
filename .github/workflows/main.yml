@@ -1,0 +1,51 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      type:
+        description: 'Meson buildtype (release, debug, etc.)'
+        required: false
+      test:
+        description: 'Run tests (test)'
+        required: false
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v2
+
+    - name: Install Meson, Ninja, and Clang with Scoop
+      shell: pwsh
+      run: |
+        $ErrorActionPreference = "Stop"
+        iex (new-object net.webclient).downloadstring('https://get.scoop.sh')
+        scoop install meson ninja llvm
+
+    - name: Run PowerShell build script
+      shell: pwsh
+      env:
+        CC: clang
+        CXX: clang++
+        BUILD_TYPE: ${{ github.event.inputs.type }}
+        RUN_TESTS: ${{ github.event.inputs.test }}
+      run: |
+        $ErrorActionPreference = "Stop"
+
+        $type = $env:BUILD_TYPE
+        $test = $env:RUN_TESTS
+
+        $args = @()
+        if (-not [string]::IsNullOrEmpty($type)) { $args += $type }
+        if (-not [string]::IsNullOrEmpty($test)) { $args += $test }
+
+        & .\scripts\build.ps1 @args
