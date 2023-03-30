@@ -36,18 +36,18 @@ jobs:
     - name: Run PowerShell build script
       shell: pwsh
       env:
-        CC: clang
-        CXX: clang++
-        BUILD_TYPE: ${{ github.event.inputs.type }}
-        RUN_TESTS: ${{ github.event.inputs.test }}
+        # CC: clang
+        # CXX: clang++
+        # BUILD_TYPE: ${{ github.event.inputs.type }}
+        # RUN_TESTS: ${{ github.event.inputs.test }}
       run: |
-        $ErrorActionPreference = "Stop"
+        # $ErrorActionPreference = "Stop"
 
-        $type = $env:BUILD_TYPE
-        $test = $env:RUN_TESTS
+        # $type = $env:BUILD_TYPE
+        # $test = $env:RUN_TESTS
 
-        $args = @()
-        if (-not [string]::IsNullOrEmpty($type)) { $args += $type }
-        if (-not [string]::IsNullOrEmpty($test)) { $args += $test }
+        # $args = @()
+        # if (-not [string]::IsNullOrEmpty($type)) { $args += $type }
+        # if (-not [string]::IsNullOrEmpty($test)) { $args += $test }
 
-        & .\scripts\build.ps1 @args
+        & .\scripts\build.ps1 debug test
