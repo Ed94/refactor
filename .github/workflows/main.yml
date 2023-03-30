@@ -28,6 +28,7 @@ jobs:
       shell: pwsh
       run: |
         $ErrorActionPreference = "Stop"
+        $env:SCOOP_ALLOW_ADMIN_INSTALL = "1"
         iex (new-object net.webclient).downloadstring('https://get.scoop.sh')
         scoop install meson ninja llvm
 
