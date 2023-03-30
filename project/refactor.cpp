@@ -50,8 +50,6 @@ void parse_options( int num, char** arguments )
 			zpl_array_init_reserve( IO::Destinations, g_allocator, 1 );	
 		}
 
-		zpl_printf("NUM IS: %d", num);
-		
 		if ( zpl_opts_has_arg( & opts, "src" ) )
 		{
 			zpl_string opt = zpl_opts_string( & opts, "src", "INVALID SRC ARGUMENT" );
