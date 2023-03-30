@@ -3,9 +3,6 @@
 #include "Spec.cpp"
 
 
-#define Build_Debug 1
-
-
 void parse_options( int num, char** arguments )
 {
 	zpl_opts opts;

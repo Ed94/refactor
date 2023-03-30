@@ -123,7 +123,6 @@ namespace Spec
 			// Ignore line if its a comment
 			if ( line[0] == '/' && line[1] == '/')
 			{
-				lines++;
 				continue;
 			}
 
@@ -134,7 +133,6 @@ namespace Spec
 
 				if ( line[0] == '\0' )
 				{
-					lines++;
 					continue;
 				}
 			}
@@ -143,6 +141,8 @@ namespace Spec
 			Tok   type   = Tok::Num_Tok;
 			bool  ignore = false;
 			Entry entry {};
+
+			log_fmt("\nIGNORE WORD COUNT: %d", zpl_array_count(Ignore_Words));
 
 
 			// Find a valid token
@@ -158,7 +158,6 @@ namespace Spec
 
 				if ( line[0] == '\0' )
 				{
-					lines++;
 					continue;
 				}
 
@@ -171,7 +170,6 @@ namespace Spec
 				// Custom comment signatures not supported yet (only C/C++ comments for now)
 				Ignore_Comments = true;
 
-				lines++;
 				continue;
 			}
 			else if ( is_tok( Tok::Word, token, length ) )
@@ -189,7 +187,6 @@ namespace Spec
 			else
 			{
 				log_fmt( "Sec::Parse - Unsupported keyword: %s on line: %d", token, zpl_array_count(lines) - left );
-				lines++;
 				continue;
 			}
 
@@ -199,7 +196,6 @@ namespace Spec
 
 			if ( line[0] == '\0' )
 			{
-				lines++;
 				continue;
 			}
 		
@@ -240,7 +236,6 @@ namespace Spec
 					break;
 				}
 
-				lines++;
 				continue;
 			}
 
@@ -276,7 +271,6 @@ namespace Spec
 
 				if ( bSkip )
 				{
-					lines++;
 					continue;
 				}
 			}
@@ -308,7 +302,6 @@ namespace Spec
 						break;
 					}
 
-					lines++;
 					continue;
 				}
 			}
@@ -322,24 +315,21 @@ namespace Spec
 			{
 				case Tok::Word:
 					zpl_array_append( Words, entry );
-					lines++;
 					continue;
 
 				case Tok::Namespace:
 					zpl_array_append( Namespaces, entry );
-					lines++;
 					continue;
 
 				case Tok::Include:
 					zpl_array_append( Includes, entry );
-					lines++;
 					continue;
 			}
 		}
-		while ( --left );
+		while ( lines++, left--, left > 0 );
 
-		Spec::Entry* ignore       = Spec::Ignore_Includes;
-		sw           ignores_left = zpl_array_count( Spec::Ignore_Includes);
+		Spec::Entry* ignore       = Spec::Ignore_Words;
+		sw           ignores_left = zpl_array_count( Spec::Ignore_Words);
 
 		zpl_printf("\nIgnores: ");
 		for ( ; ignores_left; ignores_left--, ignore++ )

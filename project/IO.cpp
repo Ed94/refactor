@@ -80,7 +80,7 @@ namespace IO
 			fatal("No content in specificaiton to process");
 		}
 
-		zpl_arena_init_from_allocator( & MemSpec, zpl_heap(), fsize * 2 + 8 );
+		zpl_arena_init_from_allocator( & MemSpec, zpl_heap(), fsize * 3 + 8 );
 
 		char* content = rcast( char*, zpl_alloc( zpl_arena_allocator( & MemSpec), fsize + 1) );
 

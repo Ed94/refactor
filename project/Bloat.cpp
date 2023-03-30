@@ -60,7 +60,7 @@ b32 opts_custom_compile(zpl_opts *opts, int argc, char **argv)
 	
 		if (*arg) 
 		{
-			arg = cast(char*)zpl_str_trim(arg, false);
+			arg = (char*)zpl_str_trim(arg, false);
 
 			if (*arg == '-') 
 			{
@@ -132,7 +132,7 @@ b32 opts_custom_compile(zpl_opts *opts, int argc, char **argv)
 						}
 					}
 
-					e = cast(char *)zpl_str_control_skip(e, '\0');
+					e = (char *)zpl_str_control_skip(e, '\0');
 					zpl__opts_set_value(opts, entry, b);
 
 					if ( (i + 1) < argc )
