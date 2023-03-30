@@ -17,6 +17,11 @@ foreach ( $arg in $args )
 
 
 #region Regular Build
+if ($Host.UI.SupportsVirtualTerminal) 
+{
+	 cls 
+}
+
 write-host "Building project`n"
 
 $path_root    = git rev-parse --show-toplevel
