@@ -30,7 +30,8 @@ jobs:
         $ErrorActionPreference = "Stop"
         Set-ExecutionPolicy Bypass -Scope Process -Force
         iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
-        choco install -y meson ninja llvm
+        choco install -y python ninja llvm
+        python -m pip install meson
 
     - name: Run PowerShell build script
       shell: pwsh
