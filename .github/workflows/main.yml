@@ -81,4 +81,4 @@ jobs:
         if (-not [string]::IsNullOrEmpty($type)) { $args += $type }
         if (-not [string]::IsNullOrEmpty($test)) { $args += $test }
 
-        & .\scripts\build.ps1 debug test
+        & .\scripts\build.ci.ps1 debug test

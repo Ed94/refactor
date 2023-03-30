@@ -1,9 +1,3 @@
-if ( NOT_HEADLESSS ) 
-{ 
-	cls
-}
-
-
 [string] $type = $null
 [string] $test = $false
 
