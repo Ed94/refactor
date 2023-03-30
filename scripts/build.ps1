@@ -1,4 +1,7 @@
-cls
+if ($Host.UI.SupportsVirtualTerminal) 
+{
+	 cls 
+}
 
 [string] $type = $null
 [string] $test = $false
@@ -17,10 +20,6 @@ foreach ( $arg in $args )
 
 
 #region Regular Build
-if ($Host.UI.SupportsVirtualTerminal) 
-{
-	 cls 
-}
 
 write-host "Building project`n"
 
