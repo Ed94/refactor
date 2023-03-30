@@ -62,7 +62,7 @@ if ( $test -eq $true )
 	write-host "`n`nBuilding Test`n"
 
 	# Refactor thirdparty libraries
-	& .\refactor_and_format.ps1
+	& (Join-Path $PSScriptRoot 'refactor_and_format.ps1')
 
 	$path_test       = Join-Path $path_root test
 	$path_test_build = Join-Path $path_test build
