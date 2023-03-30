@@ -1,6 +1,8 @@
-if ($Host.UI.SupportsVirtualTerminal) { 
-	$Host.UI.RawUI.CursorPosition = @{X=0; Y=0}
- }
+if ($PSVersionTable.PSEdition -ne "Core") 
+{ 
+	$Host.UI.RawUI.CursorPosition = @{X=0; Y=0} 
+}
+
 
 [string] $type = $null
 [string] $test = $false
