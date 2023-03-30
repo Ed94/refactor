@@ -18,19 +18,19 @@ on:
 
 jobs:
   build:
-    runs-on: windows-2019
+    runs-on: windows-latest
 
     steps:
     - name: Check out repository
       uses: actions/checkout@v2
 
-    - name: Install Meson, Ninja, and Clang with winget
+    - name: Install Meson, Ninja, and Clang with Chocolatey
       shell: pwsh
       run: |
         $ErrorActionPreference = "Stop"
-        winget install --id=MesonBuild.Meson --exact
-        winget install --id=Ninja --exact
-        winget install --id=LLVM --exact
+        Set-ExecutionPolicy Bypass -Scope Process -Force
+        iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+        choco install -y meson ninja llvm
 
     - name: Run PowerShell build script
       shell: pwsh
