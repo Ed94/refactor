@@ -18,19 +18,19 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: windows-2019
 
     steps:
     - name: Check out repository
       uses: actions/checkout@v2
 
-    - name: Install Meson, Ninja, and Clang with Scoop
+    - name: Install Meson, Ninja, and Clang with winget
       shell: pwsh
       run: |
         $ErrorActionPreference = "Stop"
-        $env:SCOOP_ALLOW_ADMIN_INSTALL = "1"
-        iex (new-object net.webclient).downloadstring('https://get.scoop.sh')
-        scoop install meson ninja llvm
+        winget install --id=MesonBuild.Meson --exact
+        winget install --id=Ninja --exact
+        winget install --id=LLVM --exact
 
     - name: Run PowerShell build script
       shell: pwsh
