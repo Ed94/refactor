@@ -2,4 +2,6 @@
 
 build/*
 
-zpl.refactored.h
+Test/*.h
+Test/*.hpp
+Test/*.cpp

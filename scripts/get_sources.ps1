@@ -1,5 +1,5 @@
 [string[]] $include = 'refactor.cpp' #'*.c', '*.cc', '*.cpp'
-# [stirng[]] $exclude =
+# [string[]] $exclude =
 
 $path_root = git rev-parse --show-toplevel
 $path_proj = Join-Path $path_root project

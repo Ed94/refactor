@@ -4,7 +4,7 @@ project( 'refactor', 'c', 'cpp', default_options : ['buildtype=debug'] )
 
 if get_option('buildtype').startswith('debug')
 
-  add_project_arguments('-DBuild_Debug', language : 'cpp')
+  add_project_arguments('-DBuild_Debug', language : ['c', 'cpp'])
 
 endif
 

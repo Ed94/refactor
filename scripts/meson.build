@@ -1,4 +1,4 @@
-project( 'refactor', 'c', 'cpp', default_options : ['buildtype=debug'] )
+project( 'refactor', 'c', 'cpp', default_options : ['buildtype=release'] )
 
 # add_global_arguments('-E', language : 'cpp')
 

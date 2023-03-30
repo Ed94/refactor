@@ -1,0 +1,71 @@
+__VERSION 1
+
+// not       : Ignore
+// include   : #includes
+// word      : Alphanumeric or underscore
+// namespace : Prefix search and replace (c-namspaces).
+// regex     : Unavailable in __VERSION 1. 
+
+// Precedence (highest to lowest):
+// word, namespace, regex
+
+// Comments
+not comments
+
+// Includes
+include zpl.h, zpl.refactored.h
+include Bloat.hpp, Bloat.refactored.hpp
+include Bloat.cpp, Bloat.refactored.cpp
+include IO.hpp, IO.refactored.hpp
+include IO.cpp, IO.refactored.cpp
+include Spec.hpp, Spec.refactored.hpp
+include Spec.cpp, Spec.refactored.cpp
+
+// Remove the zpl namespace.
+namespace zpl_
+
+// Don't expose zpl internals
+not namespace zpl__
+
+// Macro exposure
+//namespace ZPL_
+//not word ZPL_IMPLEMENTATION
+
+// Name conflicts
+word opts, options
+
+word zpl_strncmp, str_compare
+word zpl_strcmp,  str_compare
+
+// Undesired typedefs
+word zpl_i8,      s8
+word zpl_i16,     s16
+word zpl_i32,     s32
+word zpl_i64,     s64
+word zpl_u8,      u8
+word zpl_u16,     u16
+word zpl_u32,     u32
+word zpl_u64,     u64
+word zpl_intptr,  sptr
+word zpl_uintptr, uptr
+word zpl_usize,   uw
+word zpl_isize,   sw
+
+// Conflicts with std. (Uncomment if using c externs)
+not word zpl_memchr
+not word zpl_memmove
+not word zpl_memset
+not word zpl_memswap
+not word zpl_memcopy
+not word zpl_printf
+not word zpl_printf_va
+not word zpl_printf_err
+not word zpl_printf_err_va
+not word zpl_fprintf
+not word zpl_fprintf_va
+not word zpl_snprintf
+not word zpl_snprintf_va
+not word zpl_strchr
+not word zpl_strlen
+not word zpl_strnlen
+not word zpl_exit

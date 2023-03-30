@@ -51,7 +51,7 @@ Start-Process ninja $args_ninja -Wait -NoNewWindow -WorkingDirectory $path_root
 #endregion Regular Build
 
 
-if ( $test -eq $true -and (Test-Path $path_build) )
+if ( $test -eq $true )
 {
 	#region Test Build
 	write-host "`n`nBuilding Test`n"
@@ -68,12 +68,12 @@ if ( $test -eq $true -and (Test-Path $path_build) )
 		$args_meson += "setup"
 		$args_meson += $path_test_build
 
-		Start-Process meson $args_meson -NoNewWindow -Wait -WorkingDirectory $path_scripts
+		Start-Process meson $args_meson -NoNewWindow -Wait -WorkingDirectory $path_test
 	}
 
 	$args_ninja = @()
 	$args_ninja += "-C"
-	$args_ninja += $path_build
+	$args_ninja += $path_test_build
 
 	Start-Process ninja $args_ninja -Wait -NoNewWindow -WorkingDirectory $path_test
 	#endregion Test Build

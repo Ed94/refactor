@@ -20,6 +20,8 @@ not include header/essentials/collections/array.h
 not include header/essentials/collections/list.h
 not include header/core/file.h
 not include header/opts.h
+not include source/core/file.c
+not include source/opts.c
 
 // Removes the namespace.
 namespace zpl_
@@ -69,20 +71,20 @@ word opts,      a_opts
 word pool,      a_pool
 
 // Conflicts with std. (Uncomment if using c externs)
-//not word zpl_memchr
-//not word zpl_memmove
-//not word zpl_memset
-//not word zpl_memswap
-//not word zpl_memcopy
-//not word zpl_printf
-//not word zpl_printf_va
-//not word zpl_printf_err
-//not word zpl_printf_err_va
-//not word zpl_fprintf
-//not word zpl_fprintf_va
-//not word zpl_snprintf
-//not word zpl_snprintf_va
-//not word zpl_strchr
-//not word zpl_strlen
-//not word zpl_strnlen
-//not word zpl_exit
+not word zpl_memchr
+not word zpl_memmove
+not word zpl_memset
+not word zpl_memswap
+not word zpl_memcopy
+not word zpl_printf
+not word zpl_printf_va
+not word zpl_printf_err
+not word zpl_printf_err_va
+not word zpl_fprintf
+not word zpl_fprintf_va
+not word zpl_snprintf
+not word zpl_snprintf_va
+not word zpl_strchr
+not word zpl_strlen
+not word zpl_strnlen
+not word zpl_exit
