@@ -8,14 +8,6 @@
 #	define ZPL_IMPLEMENTATION
 #endif
 
-#if __clang__
-#	pragma clang diagnostic ignored "-Wunused-const-variable"
-#	pragma clang diagnostic ignored "-Wswitch"
-#	pragma clang diagnostic ignored "-Wunused-variable"
-#endif
-
-
-
 #pragma region 									ZPL INCLUDE
 #if __clang__
 #	pragma clang diagnostic push 
@@ -45,6 +37,15 @@
 #	pragma clang diagnostic pop
 #endif
 #pragma endregion 								ZPL INCLUDE
+
+
+
+#if __clang__
+#	pragma clang diagnostic ignored "-Wunused-const-variable"
+#	pragma clang diagnostic ignored "-Wswitch"
+#	pragma clang diagnostic ignored "-Wunused-variable"
+#   pragma clang diagnostic ignored "-Wunknown-pragmas"
+#endif
 
 
 
@@ -88,6 +89,11 @@ using Array_Line = zpl_array( Line );
 ct char const* Msg_Invalid_Value = "INVALID VALUE PROVIDED";
 
 
+namespace Global
+{
+	extern bool ShouldShowDebug;
+}
+
 namespace Memory
 {
 	ct uw Initial_Reserve = zpl_megabytes(2);
@@ -103,10 +109,13 @@ namespace Memory
 // Had to be made to support multiple sub-arguments per "opt" argument.
 b32 opts_custom_compile(zpl_opts *opts, int argc, char **argv);
 
+
 inline
 sw log_fmt(char const *fmt, ...) 
 {
-#if Build_Debug
+	if ( Global::ShouldShowDebug == false )
+		return 0;
+
 	sw res;
 	va_list va;
 	
@@ -115,10 +124,6 @@ sw log_fmt(char const *fmt, ...)
 	va_end(va);
 	
 	return res;
-
-#else
-	return 0;
-#endif
 }
 
 inline

@@ -142,9 +142,6 @@ namespace Spec
 			bool  ignore = false;
 			Entry entry {};
 
-			log_fmt("\nIGNORE WORD COUNT: %d", zpl_array_count(Ignore_Words));
-
-
 			// Find a valid token
 			find_next_token( type, token, line, length );
 
@@ -327,15 +324,5 @@ namespace Spec
 			}
 		}
 		while ( lines++, left--, left > 0 );
-
-		Spec::Entry* ignore       = Spec::Ignore_Words;
-		sw           ignores_left = zpl_array_count( Spec::Ignore_Words);
-
-		zpl_printf("\nIgnores: ");
-		for ( ; ignores_left; ignores_left--, ignore++ )
-		{
-			zpl_printf("\n%s", ignore->Sig);
-		}
-		zpl_printf("\n");
 	}
 }

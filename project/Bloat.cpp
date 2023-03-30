@@ -1,7 +1,10 @@
 #define BLOAT_IMPL
 #include "Bloat.hpp"
 
-
+namespace Global
+{
+	bool ShouldShowDebug = false;
+}
 
 namespace Memory
 {

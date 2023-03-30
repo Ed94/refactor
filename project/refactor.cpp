@@ -3,6 +3,7 @@
 #include "Spec.cpp"
 
 
+
 void parse_options( int num, char** arguments )
 {
 	zpl_opts opts;
@@ -12,21 +13,21 @@ void parse_options( int num, char** arguments )
 	zpl_opts_add(  & opts, "dst" , "dst" , "File/s post refactor"         , ZPL_OPTS_STRING);
 	zpl_opts_add(  & opts, "spec", "spec", "Specification for refactoring", ZPL_OPTS_STRING);
 
-#if Build_Debug
 	zpl_opts_add( & opts, "debug", "debug", "Allows for wait to attach", ZPL_OPTS_FLAG);
-#endif
 
 	if (opts_custom_compile( & opts, num, arguments))
 	{
 		sw num = 0;
 
-	#if Build_Debug
 		if ( zpl_opts_has_arg( & opts, "debug" ) )
 		{
+		#if Build_Debug
 			zpl_printf("Will wait (pause available for attachment)");
 			char pause = getchar();
+		#endif
+
+			Global::ShouldShowDebug = true;
 		}
-	#endif
 		
 		if ( zpl_opts_has_arg( & opts, "num" ) )
 		{
@@ -589,10 +590,6 @@ void refactor()
 		}
 
 		move_forward( 1 );
-
-		// zpl_string_clear( preview );
-		// preview = zpl_string_append_length( preview, src, 100);
-		// log_fmt( "__PREVIEW: %d \nn%s\n\n__PREVIEW_END", left, preview );
 	} 
 	while ( left );
 End_Search:
