@@ -96,13 +96,13 @@ jobs:
         New-Item -ItemType Directory -Path "./artifact"
         Copy-Item "./build/refactor.exe" -Destination "./artifact/refactor.exe"
 
-        Compress-Archive -Path "./artifact/*" -DestinationPath "./artifact/refactor-${env:SHORT_SHA}.zip"
+        Compress-Archive -Path "./artifact/*" -DestinationPath "./artifact/refactor-$($env:SHORT_SHA).zip"
 
     - name: Upload Release
       uses: ncipollo/release-action@v1
       with:
         tag: Release
-        artifacts: ./artifact/refactor-${env:SHORT_SHA}.zip
+        artifacts: ./artifact/refactor-${{env:SHORT_SHA}}.zip
         omitBody: true
         # bodyFile: "body.md"
         allowUpdates: true
