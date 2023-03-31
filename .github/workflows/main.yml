@@ -83,7 +83,7 @@ jobs:
         if (-not [string]::IsNullOrEmpty($type)) { $args += $type }
         if (-not [string]::IsNullOrEmpty($test)) { $args += $test }
 
-        & .\scripts\build.ci.ps1 debug test
+        Invoke-Expression "& .\scripts\build.ci.ps1 $args"
 
     - name: Get Short Commit SHA
       shell: pwsh
