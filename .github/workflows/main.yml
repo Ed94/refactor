@@ -115,18 +115,18 @@ jobs:
     #   run: |
     #     unzip ./artifact/artifact.zip -d ./artifact
 
-    - name: Create GitHub release
-      id: create_release
-      uses: actions/create-release@v1
+    # - name: Create GitHub release
+    #   id: create_release
+    #   uses: actions/create-release@v1
 
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      with:
-        tag_name: release 
-        release_name: Release 
-        draft: false
-        prerelease: false
+    #   with:
+    #     tag_name: release 
+    #     release_name: Release 
+    #     draft: false
+    #     prerelease: false
 
     # - name: Upload refactor.exe to the release
     #   uses: actions/upload-release-asset@v1
