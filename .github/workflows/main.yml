@@ -150,6 +150,6 @@ jobs:
 
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./artifact/README.md
-        asset_name: README.md
+        asset_path: ./artifact/Readme.md
+        asset_name: Readme.md
         asset_content_type: text/markdown
