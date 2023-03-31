@@ -123,8 +123,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       with:
-        tag_name: ${{ github.ref }}/release
-        release_name: Release ${{ github.ref }}-${{ github.sha }}
+        tag_name: release-${{ github.sha | slice(0, 7) }}
+        release_name: Release ${{ github.sha }}
         draft: false
         prerelease: false
 
