@@ -111,9 +111,9 @@ jobs:
         name: artifact
         path: ./artifact
 
-    - name: Extract artifact
-      run: |
-        unzip ./artifact/artifact.zip -d ./artifact
+    # - name: Extract artifact
+    #   run: |
+    #     unzip ./artifact/artifact.zip -d ./artifact
 
     - name: Create GitHub release
       id: create_release
@@ -123,19 +123,29 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       with:
-        tag_name: release ${{ github.sha }}{{ github.sha | slice(0, 7) }}
-        release_name: Release ${{ github.sha }}{{ github.sha | slice(0, 7) }}
+        tag_name: release 
+        release_name: Release 
         draft: false
         prerelease: false
 
-    - name: Upload refactor.exe to the release
-      uses: actions/upload-release-asset@v1
+    # - name: Upload refactor.exe to the release
+    #   uses: actions/upload-release-asset@v1
 
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+    #   with:
+    #     upload_url: ${{ steps.create_release.outputs.upload_url }}
+    #     asset_path: ./artifact/refactor.exe
+    #     asset_name: refactor.exe
+    #     asset_content_type: application/octet-stream
+
+    - name: Upload release build
+      uses: ncipollo/release-action@v1.12.0
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./artifact/refactor.exe
-        asset_name: refactor.exe
-        asset_content_type: application/octet-stream
+        name: "Release"
+        tag: release
+        artifacts: /artifact/artifact.zip
+        bodyFile: Readme.md
+        allowUpdates: true
+        token: ${{ secrets.GITHUB_TOKEN }}
