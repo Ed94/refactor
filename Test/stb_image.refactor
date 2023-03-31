@@ -1,0 +1,6 @@
+__VERSION 1
+
+not comments
+
+namespace stbi_
+not namepsace stbi__
