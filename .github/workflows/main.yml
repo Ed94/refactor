@@ -82,3 +82,74 @@ jobs:
         if (-not [string]::IsNullOrEmpty($test)) { $args += $test }
 
         & .\scripts\build.ci.ps1 debug test
+
+
+    - name: Create 
+      shell: pwsh
+      run: |
+        New-Item -ItemType Directory -Path "./artifact"
+        Copy-Item "./build/refactor.exe" -Destination "./artifact/refactor.exe"
+
+        Copy-Item "./Readme.md" -Destination "./artifact/Readme.md"
+
+        Compress-Archive -Path "./artifact/*" -DestinationPath "./artifact/artifact.zip"
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+
+      with:
+        name: artifact
+        path: ./artifact/artifact.zip
+
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Download artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: artifact
+        path: ./artifact
+
+    - name: Extract artifact
+      run: |
+        unzip ./artifact/artifact.zip -d ./artifact
+
+    - name: Create GitHub release
+      id: create_release
+      uses: actions/create-release@v1
+
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: false
+
+    - name: Upload refactor.exe to the release
+      uses: actions/upload-release-asset@v1
+
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./artifact/refactor.exe
+        asset_name: refactor.exe
+        asset_content_type: application/octet-stream
+
+    - name: Upload README to the release
+      uses: actions/upload-release-asset@v1
+
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./artifact/README.md
+        asset_name: README.md
+        asset_content_type: text/markdown

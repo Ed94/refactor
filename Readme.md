@@ -26,8 +26,7 @@ However, the rest of the categorical keywords (word, namespace), can really be u
 There is no semantic awareness this is truely just a simple find and replace, but with some filters specifiable, and  
 words/namespaces only being restricted to the rules for C/C++ identifiers (alphanumeric or underscores only)
 
-The main benefit for using this over alts is its problably more ergonomic and performant for large refactors on libraries that  
-you may want to have automated in a script.
+The main benefit for using this over alts is its problably more ergonomic and performant for large refactors on libraries you may want to have automated in a script.
 
 There are other programs more robust for doing that sort of thing but I was not able to find something this simple.
 
@@ -44,6 +43,7 @@ TODO:
 
 * Possibly come up with a better name.
 * Test to see how much needs to be ported for other platforms (if at all)
-* Setup as api.
 * Provide binaries in the release page for github. (debug and release builds)
 * Directive to ignore comments (with a way to specify the comment signature). Right now comments that meet the signature of words or namespaces are refactored.
+* Provide a GUI build.
+* Provide as a single-header library.
