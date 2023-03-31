@@ -146,6 +146,5 @@ jobs:
         name: "Release"
         tag: release
         artifacts: /artifact/artifact.zip
-        bodyFile: Readme.md
         allowUpdates: true
         token: ${{ secrets.GITHUB_TOKEN }}
