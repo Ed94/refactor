@@ -12,7 +12,7 @@ Refactor c/c++ files (and problably others) with ease.
 
 ## Syntax
 
-* `not` Omit word or namespace.
+* `not` Omit an a signature. (Modifies include, word, namespace, etc)
 * `include` Preprocessor include `<file path>` related identifiers.
 * `word` Fixed sized identifier.
 * `namespace` Variable sized identifiers, mainly intended to redefine c-namespace of an identifier.
@@ -68,7 +68,7 @@ If the `test` parameter is provided to the build scripts, the project and thirdp
 
 With the refactors applied a meson configuraiton is setup (`meson.build` in test) and run to build. So long as it compiles, the feature set of the current version should work fine.
 
-* There is an extra file `stb_image` that is currently be parsed but its unused.
+* There is an extra file `stb_image` that is parsed but unused during compilation.
   * Planned for use in the namespace addition todo.
 
 ## TODO:  
@@ -87,3 +87,5 @@ meet the signature of words or namespaces are refactored.
   * This can honestly be done also with placing words on specific lines..  
 * Provide a GUI build.
 * Provide as a single-header library.
+* Better tests:
+  * Automatically pull the zpl repo, refactor and format the library, and package the single header before using it in testing.

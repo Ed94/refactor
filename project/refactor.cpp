@@ -224,14 +224,19 @@ void refactor()
 		uw          Line;
 	};
 
-	#define move_forward( Amount_ )               \
-		if ( left - Amount_ <= 0 )                \
-			goto End_Search;                      \
-		                                          \
-		line += src[0] == '\n';                   \
-		left -= Amount_;                          \
-		col   = (col + Amount_) * src[0] != '\n'; \
-		src  += Amount_                           \
+	#define move_forward( Amount_ )                 \
+	do {                                            \
+		if ( left - Amount_ <= 0 )                  \
+			goto End_Search;                        \
+                                                    \
+		const sw end = Amount_ - 1;                 \
+		                                            \
+		line += src[end] == '\n';                   \
+		left -= Amount_;                            \
+		col   = (col + Amount_) * src[end] != '\n'; \
+		src  += Amount_;                            \
+	}                                               \
+	while (0)                                       \
 
 	#define restore( Snapshot_ ) \
 		src  = Snapshot_.Src;    \
@@ -589,12 +594,6 @@ void refactor()
 		}
 
 	Skip:
-		if ( src[0] == '\n' )
-		{
-			line++;
-			col = 0;
-		}
-
 		move_forward( 1 );
 	} 
 	while ( left );

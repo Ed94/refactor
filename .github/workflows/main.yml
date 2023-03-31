@@ -16,10 +16,12 @@ on:
     inputs:
       type:
         description: 'Meson buildtype (release, debug, etc.)'
+        default: release
         required: false
         
       test:
         description: 'Run tests (test)'
+        default: test
         required: false
 
 jobs:
