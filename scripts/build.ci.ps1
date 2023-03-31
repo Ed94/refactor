@@ -29,7 +29,10 @@ if ( -not( Test-Path $path_build ) )
 	$args_meson += "setup"
 	$args_meson += $path_build
 
-	Start-Process meson $args_meson -NoNewWindow -Wait -WorkingDirectory $path_scripts
+	# Start-Process meson $args_meson -NoNewWindow -Wait -WorkingDirectory $path_scripts
+	Push-Location $path_scripts
+	& meson $args_meson
+	Pop-Location
 }
 
 if ( $type )
@@ -39,14 +42,19 @@ if ( $type )
 	$args_meson += $path_build
 	$args_meson += "--buildtype $($type)"
 
-	Start-Process meson $args_meson -NoNewWindow -Wait -WorkingDirectory $path_scripts
+	# Start-Process meson $args_meson -NoNewWindow -Wait -WorkingDirectory $path_scripts
+	Push-Location $path_scripts
+	meson $args_meson
+	Pop-Location
 }
 
 $args_ninja = @()
 $args_ninja += "-C"
 $args_ninja += $path_build
 
-Start-Process ninja $args_ninja -Wait -NoNewWindow -WorkingDirectory $path_root
+Push-Location $path_root
+ninja $args_ninja
+Pop-Location
 #endregion Regular Build
 
 
@@ -56,7 +64,8 @@ if ( $test -eq $true )
 	write-host "`n`nBuilding Test`n"
 
 	# Refactor thirdparty libraries
-	& (Join-Path $PSScriptRoot 'refactor_and_format.ps1')
+	Invoke-Expression "& $(Join-Path $PSScriptRoot 'refactor_and_format.ps1') $args" 
+
 
 	$path_test       = Join-Path $path_root test
 	$path_test_build = Join-Path $path_test build
@@ -67,15 +76,17 @@ if ( $test -eq $true )
 		$args_meson += "setup"
 		$args_meson += $path_test_build
 
-		Start-Process meson $args_meson -NoNewWindow -Wait -WorkingDirectory $path_test
+		Push-Location $path_test
+		& meson $args_meson
+		Pop-Location
 	}
 
 	$args_ninja = @()
 	$args_ninja += "-C"
 	$args_ninja += $path_test_build
 
-	write-host $args_ninja
-
-	Start-Process ninja $args_ninja -Wait -NoNewWindow -WorkingDirectory $path_root
+	Push-Location $path_root
+	ninja $args_ninja
+	Pop-Location
 	#endregion Test Build
 }

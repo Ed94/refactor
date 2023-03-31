@@ -50,7 +50,7 @@ namespace IO
 
 			zpl_file_close( & src );
 		}
-		while ( path++, left--, left > 1 );
+		while ( path++, left--, left > 0 );
 			
 		uw persist_size = Largest_Src_Size * 2 + 8;
 			

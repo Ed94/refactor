@@ -25,56 +25,49 @@ foreach ( $file in $targetFiles )
 }
 
 
-write-host "Beginning thirdpary refactor...`n"
+write-host "Beginning thirdpary refactor..."
 
 $refactors = @(@())
 
-if ( $false ){
-    foreach ( $file in $targetFiles )
-    {
-        $destination = Join-Path $path_test (Split-Path $file -leaf)
-        $destination = $destination.Replace( '.h', '.refactored.h' )
-        
-        $refactorParams = @(
-            "-src=$($file)",
-            "-dst=$($destination)"
-            "-spec=$($file_spec)"
-        )
-
-        $refactors += (Start-Process $refactor $refactorParams -NoNewWindow -PassThru)
-    }
-}
-else {
-    $refactorParams = @(
-        # "-debug",
-        "-num=$($targetFiles.Count)"
-        "-src=$($targetFiles)",
-        "-dst=$($refactoredFiles)",
-        "-spec=$($file_spec)"
-    )
-
-    Start-Process $refactor $refactorParams -NoNewWindow -PassThru -Wait
-}
-
-foreach ( $process in $refactors )
+if ( $args.Contains( "debug" ) )
 {
-    if ( $process )
-    {
-        $process.WaitForExit()
-    }
+    $refactorParams += "-debug"
 }
 
-Write-Host "`nRefactoring complete`n`n"
+$refactorParams = @(
+    "-src=$(Join-Path $path_thirdparty "zpl.h")",
+    "-dst=$(Join-Path $path_test "zpl.refactored.h")",
+    "-spec=$($file_spec)"
+)
 
-write-host "Beginning project refactor...`n"
+& $refactor $refactorParams
+
+$refactors = @(@())
+$file_spec = Join-Path $path_test "stb_image.refactor"
+
+if ( $args.Contains( "debug" ) )
+{
+    $refactorParams += "-debug"
+}
+
+$refactorParams = @(
+    "-src=$(Join-Path $path_thirdparty "stb_image.h")",
+    "-dst=$(Join-Path $path_test "stb_image.refactored.h")",
+    "-spec=$($file_spec)"
+)
+
+& $refactor $refactorParams
+
+Write-Host "`nRefactoring complete`n"
+
+
+write-host "Beginning project refactor..."
 
 # Gather the files to be formatted.
 $targetFiles  = @(Get-ChildItem -Recurse -Path $path_project -Include $include -Exclude $exclude | Select-Object -ExpandProperty FullName)
 $refactoredFiles = @()
 
 $file_spec = Join-Path $path_test project.refactor
-
-write-host "FILE SPEC:" $file_spec
 
 foreach ( $file in $targetFiles )
 {
@@ -86,16 +79,20 @@ foreach ( $file in $targetFiles )
 }
 
 $refactorParams = @(
-    # "-debug",
     "-num=$($targetFiles.Count)"
     "-src=$($targetFiles)",
     "-dst=$($refactoredFiles)",
     "-spec=$($file_spec)"
 )
 
-Start-Process $refactor $refactorParams -NoNewWindow -PassThru -Wait
+if ( $args.Contains( "debug" ) )
+{
+    $refactorParams += "-debug"
+}
 
-write-host "`nRefactoring complete`n`n"
+& $refactor $refactorParams
+
+write-host "`nRefactoring complete`n"
 
 
 # Can't format zpl library... (It hangs clang format)
@@ -115,3 +112,4 @@ clang-format $formatParams $targetFiles
 
 Write-Host "`nFormatting complete"
 }
+
