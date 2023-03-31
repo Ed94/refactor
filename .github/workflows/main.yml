@@ -96,7 +96,7 @@ jobs:
         New-Item -ItemType Directory -Path "./artifact"
         Copy-Item "./build/refactor.exe" -Destination "./artifact/refactor.exe"
 
-        Compress-Archive -Path "./artifact/*" -DestinationPath "./artifact/refactor-$(env:SHORT_SHA).zip"
+        Compress-Archive -Path "./artifact/*" -DestinationPath "./artifact/refactor-${env:SHORT_SHA}.zip"
 
     - name: Upload Release
       uses: ncipollo/release-action@v1
@@ -106,58 +106,3 @@ jobs:
         # bodyFile: "body.md"
         allowUpdates: true
 
-    # - name: Upload artifact
-    #   uses: actions/upload-artifact@v2
-
-    #   with:
-    #     name: artifact
-    #     path: ./artifact/artifact.zip
-
-
-  # release:
-  #   needs: build
-  #   runs-on: ubuntu-latest
-
-  #   steps:
-  #   - name: Download artifact
-  #     uses: actions/download-artifact@v2
-  #     with:
-  #       name: artifact
-  #       path: ./artifact
-
-  #   - name: Extract artifact
-  #     run: |
-  #       unzip ./artifact/artifact.zip -d ./artifact
-
-
-    # - name: Create Git Tag
-    #   uses: anothrNick/github-tag-action@v1.61.0
-    #   with:
-    #     github_token: ${{ secrets.GITHUB_TOKEN }}
-    #     WITH_V: true
-
-
-    # - name: Create GitHub release
-    #   id: create_release
-    #   uses: actions/create-release@v1
-
-    #   env:
-    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    #   with:
-    #     tag_name: v${{ steps.get_commit_count.outputs.commit_count }}
-    #     release_name: Release v${{ steps.get_commit_count.outputs.commit_count }}
-    #     draft: false
-    #     prerelease: false
-
-    # - name: Upload refactor.exe to the release
-    #   uses: actions/upload-release-asset@v1
-
-    #   env:
-    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    #   with:
-    #     upload_url: ${{ steps.create_release.outputs.upload_url }}
-    #     asset_path: ./artifact/refactor-${env:SHORT_SHA}.zip
-    #     asset_name: refactor-${env:SHORT_SHA}.zip
-    #     asset_content_type: application/octet-stream
