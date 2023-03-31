@@ -115,20 +115,32 @@ jobs:
       run: |
         unzip ./artifact/artifact.zip -d ./artifact
 
+
+    - name: Get Commit Count
+      run: echo ::set-output name=commit_count::$(git rev-list --count HEAD)
+
+    - name: Create Git Tag
+      uses: anothrNick/github-tag-action@v1.19
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        tag_name: v${{ steps.get_commit_count.outputs.commit_count }}
+
+
     - name: Create GitHub release
       id: create_release
-      uses: avakar/tag-and-release@v1
+      uses: actions/create-release@v3
 
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       with:
-        tag_name: ${{ ... }} 
+        tag_name: v${{ steps.get_commit_count.outputs.commit_count }}
+        release_name: Release v${{ steps.get_commit_count.outputs.commit_count }}
         draft: false
         prerelease: false
 
     - name: Upload refactor.exe to the release
-      uses: actions/upload-release-asset@v1
+      uses: actions/upload-release-asset@v3
 
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -138,4 +150,3 @@ jobs:
         asset_path: ./artifact/refactor.exe
         asset_name: refactor.exe
         asset_content_type: application/octet-stream
-
