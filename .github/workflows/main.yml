@@ -128,7 +128,7 @@ jobs:
 
     - name: Create GitHub release
       id: create_release
-      uses: actions/create-release@v3
+      uses: actions/create-release@v1
 
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -140,7 +140,7 @@ jobs:
         prerelease: false
 
     - name: Upload refactor.exe to the release
-      uses: actions/upload-release-asset@v3
+      uses: actions/upload-release-asset@v1
 
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
