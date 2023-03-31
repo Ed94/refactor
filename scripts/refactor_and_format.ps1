@@ -8,7 +8,6 @@ $path_project    = Join-Path $path_root project
 $path_test       = Join-Path $path_root test
 $path_thirdparty = Join-Path $path_root thirdparty
 
-$file_spec = Join-Path $path_test zpl.refactor
 $refactor  = Join-Path $path_build refactor.exe
 
 # Gather the files to be formatted.
@@ -27,12 +26,7 @@ foreach ( $file in $targetFiles )
 
 write-host "Beginning thirdpary refactor..."
 
-$refactors = @(@())
-
-if ( $args.Contains( "debug" ) )
-{
-    $refactorParams += "-debug"
-}
+$file_spec = Join-Path $path_test zpl.refactor
 
 $refactorParams = @(
     "-src=$(Join-Path $path_thirdparty "zpl.h")",
@@ -40,15 +34,15 @@ $refactorParams = @(
     "-spec=$($file_spec)"
 )
 
-& $refactor $refactorParams
-
-$refactors = @(@())
-$file_spec = Join-Path $path_test "stb_image.refactor"
-
 if ( $args.Contains( "debug" ) )
 {
     $refactorParams += "-debug"
 }
+
+write-host "`zpl refactor: " $refactorParams
+& $refactor $refactorParams
+
+$file_spec = Join-Path $path_test "stb_image.refactor"
 
 $refactorParams = @(
     "-src=$(Join-Path $path_thirdparty "stb_image.h")",
@@ -56,6 +50,12 @@ $refactorParams = @(
     "-spec=$($file_spec)"
 )
 
+if ( $args.Contains( "debug" ) )
+{
+    $refactorParams += "-debug"
+}
+
+write-host "`n`nstb_image refactor: " $refactorParams
 & $refactor $refactorParams
 
 Write-Host "`nRefactoring complete`n"

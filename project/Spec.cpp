@@ -7,7 +7,7 @@
 namespace Spec
 {
 	ct uw Array_Reserve_Num = zpl_kilobytes(4);
-	ct uw Token_Max_Length  = zpl_kilobytes(1); 
+	ct uw Token_Max_Length  = 128; 
 
 	namespace StaticData
 	{

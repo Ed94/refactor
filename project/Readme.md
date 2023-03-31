@@ -30,11 +30,11 @@ The program execution is pretty much outlined quite clearly in `int main()`.
 There are constraints for specific variables;
 
 * `Path_Size_Largest` : Longest path size is set to 1 KB of characters.
-* `Token_Max_Length` : Set to 1 KB characters as well.
+* `Token_Max_Length` : Set to 128 KB.
 * `Array_Reserve_Num` : Is set to 4 KB. 
 * Initial Global arena size : Set to 2 megabytes.
 
-The `Path_Size_Largest` and `Token_Max_Length` are compile-time constraints that the runtime will not have a fallback for, if 1 KB is not enough it will need to be changed for your use case.
+The `Path_Size_Largest` and `Token_Max_Length` are compile-time constraints that the runtime will not have a fallback for, if current size is not enough it will need to be changed for your use case.
 
 `Array_Reserve_Num` is used to dictate the assumed amount of tokens will be held in total for any of spec's arrays holding ignores and refactor entries. If any of the array's exceed 4 KB they will grow triggering a resize which will bog down the speed of the refactor. Adjust if you think you can increase or lower for use case.
 

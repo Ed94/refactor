@@ -162,6 +162,11 @@ void parse_options( int num, char** arguments )
 }
 
 
+/*
+	Refactor will problably have the execution and arg parsing (main and opts) 
+	moved to a separate file.
+*/
+
 zpl_arena Refactor_Buffer;
 
 void refactor()
@@ -211,21 +216,32 @@ void refactor()
 
 	#define pos (IO::Current_Size - left)
 
-	#define move_forward( Amount_ ) \
-		if ( left - Amount_ <= 0 )  \
-			goto End_Search;        \
-		                            \
-		left -= Amount_;            \
-		col  += Amount_;            \
-		src  += Amount_             \
+	struct Snapshot
+	{
+		char const* Src;
+		sw          Left;
+		uw          Col;
+		uw          Line;
+	};
 
-	#define move_back( Amount_ )    \
-		left += Amount_;            \
-		col  -= Amount_;            \
-		src  -= Amount_             \
+	#define move_forward( Amount_ )               \
+		if ( left - Amount_ <= 0 )                \
+			goto End_Search;                      \
+		                                          \
+		line += src[0] == '\n';                   \
+		left -= Amount_;                          \
+		col   = (col + Amount_) * src[0] != '\n'; \
+		src  += Amount_                           \
+
+	#define restore( Snapshot_ ) \
+		src  = Snapshot_.Src;    \
+		left = Snapshot_.Left;   \
+		col  = Snapshot_.Col;    \
+		line = Snapshot_.Line    \
 
 	do
 	{
+		// Check for comments if ignoring.
 		if ( Spec::Ignore_Comments && src[0] == '/' && left - 2 > 0 )
 		{
 			if ( src[1] == '/' )
@@ -259,37 +275,33 @@ void refactor()
 		{
 			Spec::Entry* ignore       = Spec::Ignore_Includes;
 			sw           ignores_left = zpl_array_count( Spec::Ignore_Includes);
-			sw           rewind       = 0;
+			Snapshot      backup      = { src, left, col, line };
 
 			if ( '#' != src[0] )
 				break;
 
 			move_forward( 1 );
-			rewind++;
 
 			// Ignore whitespace
 			while ( zpl_char_is_space( src[0] ) )
 			{
 				move_forward( 1 );
-				rewind++;
 			}
 
 			if ( zpl_strncmp( include_sig, src, sizeof(include_sig) - 1 ) != 0 )
 			{
-				move_back( rewind );
+				restore( backup );
 				break;
 			}
 
 			const u32 sig_size = sizeof(include_sig) - 1;
 
 			move_forward( sig_size );
-			rewind += sig_size;
 
 			// Ignore whitespace
 			while ( zpl_char_is_space( src[0] ) || src[0] == '\"' || src[0] == '<' )
 			{
 				move_forward(1);
-				rewind++;
 			}
 
 			for ( ; ignores_left; ignores_left--, ignore++ )
@@ -318,7 +330,7 @@ void refactor()
 				}
 			}
 
-			move_back( rewind );
+			restore( backup );
 		} 
 		while (false);
 
@@ -402,37 +414,33 @@ void refactor()
 		{
 			Spec::Entry* include       = Spec::Includes;
 			sw           includes_left = zpl_array_count ( Spec::Includes);
-			sw           rewind       = 0;
+			Snapshot     backup        = { src, left, col, line };
 
 			if ( '#' != src[0] )
 				break;
 
 			move_forward( 1 );
-			rewind++;
 
 			// Ignore whitespace
 			while ( zpl_char_is_space( src[0] ) )
 			{
 				move_forward( 1 );
-				rewind++;
 			}
 
 			if ( zpl_strncmp( include_sig, src, sizeof(include_sig) - 1 ) != 0 )
 			{
-				move_back( rewind );
+				restore( backup );
 				break;
 			}
 
 			const u32 sig_size = sizeof(include_sig) - 1;
 
 			move_forward( sig_size );
-			rewind += sig_size;
 
 			// Ignore whitespace
 			while ( zpl_char_is_space( src[0] ) || src[0] == '\"' || src[0] == '<' )
 			{
 				move_forward( 1 );
-				rewind++;
 			}
 
 			for ( ; includes_left; includes_left--, include++ )
@@ -473,7 +481,7 @@ void refactor()
 				}
 			}
 
-			move_back( rewind );
+			restore( backup );
 		} 
 		while (false);
 

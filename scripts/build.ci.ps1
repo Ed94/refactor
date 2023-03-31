@@ -31,7 +31,7 @@ if ( -not( Test-Path $path_build ) )
 
 	# Start-Process meson $args_meson -NoNewWindow -Wait -WorkingDirectory $path_scripts
 	Push-Location $path_scripts
-	& meson $args_meson
+	Invoke-Expression "& meson $args_meson"
 	Pop-Location
 }
 
@@ -44,7 +44,7 @@ if ( $type )
 
 	# Start-Process meson $args_meson -NoNewWindow -Wait -WorkingDirectory $path_scripts
 	Push-Location $path_scripts
-	meson $args_meson
+	Invoke-Expression "& meson $args_meson"
 	Pop-Location
 }
 
