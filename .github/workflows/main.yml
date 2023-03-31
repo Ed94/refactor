@@ -101,8 +101,8 @@ jobs:
     - name: Upload Release
       uses: ncipollo/release-action@v1
       with:
+        tag: Release
         artifacts: ./artifact/refactor-${env:SHORT_SHA}.zip
         omitBody: true
         # bodyFile: "body.md"
         allowUpdates: true
-
