@@ -90,8 +90,6 @@ jobs:
         New-Item -ItemType Directory -Path "./artifact"
         Copy-Item "./build/refactor.exe" -Destination "./artifact/refactor.exe"
 
-        Copy-Item "./Readme.md" -Destination "./artifact/Readme.md"
-
         Compress-Archive -Path "./artifact/*" -DestinationPath "./artifact/artifact.zip"
 
     - name: Upload artifact
@@ -141,15 +139,3 @@ jobs:
         asset_path: ./artifact/refactor.exe
         asset_name: refactor.exe
         asset_content_type: application/octet-stream
-
-    - name: Upload README to the release
-      uses: actions/upload-release-asset@v1
-
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./artifact/Readme.md
-        asset_name: Readme.md
-        asset_content_type: text/markdown
