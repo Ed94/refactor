@@ -55,8 +55,8 @@
 #define gen( ... )                         template< __VA_ARGS__ >
 #define forceinline                        ZPL_ALWAYS_INLINE
 #define print_nl( _)                       zpl_printf("\n")
-#define scast( Type_, Value_ )			   static_cast< Type_ >( Value_ )
-#define rcast( Type_, Value_ )			   reinterpret_cast< Type_ >( Value_ )
+#define scast( Type_, Value_ )             static_cast< Type_ >( Value_ )
+#define rcast( Type_, Value_ )             reinterpret_cast< Type_ >( Value_ )
 #define pcast( Type_, Value_ )             ( * (Type_*)( & Value_ ) )
 
 #define do_once()      \

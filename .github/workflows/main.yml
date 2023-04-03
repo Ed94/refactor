@@ -22,7 +22,7 @@ on:
       test:
         description: 'Run tests (test)'
         default: test
-        required: false
+        required: true
 
 jobs:
   build:

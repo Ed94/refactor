@@ -30,11 +30,11 @@ The main benefit for using this over alts is its problably more ergonomic and pe
 
 There are other programs more robust for doing that sort of thing but I was not able to find something this simple.
 
-### Example script
+### Example scripts
 
-See `scripts/template_reafactor.ps1` and the `test/*.refactor` related scripts in on intended usage.
+See `scripts/template_reafactor.ps1` and the `test/*.refactor` related scripts on intended usage.
 
-This is not setup to really be ergonomically used directly from a virtual terminal, instead run from a script after globbing the files you want.
+This app is not very nice to use directly from CLI. Instead run from a script after gathering the arguments.
 
 There is a desire also to get this setup as a single-header library and also alternative with a minimalist GUI for simple refactors.
 
@@ -53,7 +53,7 @@ The project has all build configuration in the `scripts` directory.
 * `build.ci.ps1` is intended for a continuous intergration setup (GH-worfklow for now).  
 * `build.ps1` is just a wrap of build.ci that just calls cls.
 * `clean.ps1` will clean the workspace of all generated files.
-* `get_sources.ps1` is used to glob sources since meson devs refuse to add dynamic retrival of sources for a build.
+* `get_sources.ps1` is used to gather sources since meson devs refuse to add dynamic retrival of sources for a build.
 
 The project uses [meson](https://github.com/mesonbuild/meson) as the build tool.  
 Compiler : clang  
@@ -76,7 +76,7 @@ With the refactors applied a meson configuraiton is setup (`meson.build` in test
 * Possibly come up with a better name.
 * Test to see how much needs to be ported for other platforms (if at all)
 * Provide binaries in the release page for github. (debug and release builds)
-* Ability to run and not emit any changes to files unless all files sucesffully are refactored.
+* Ability to run and not emit any changes to files unless all files sucessfully are refactored.
   * Would fix issue where a refactor overwrites files but failed to complete
   * Can have a heavy memory cost, so most likely do not want on by default.
 * Directive to ignore comments (with a way to specify the comment signature). Right now comments that
@@ -87,5 +87,6 @@ meet the signature of words or namespaces are refactored.
   * This can honestly be done also with placing words on specific lines..  
 * Provide a GUI build.
 * Provide as a single-header library.
+  * Could add a test case where this library is refactored into pure C (most likely c99 or c11).
 * Better tests:
   * Automatically pull the zpl repo, refactor and format the library, and package the single header before using it in testing.
