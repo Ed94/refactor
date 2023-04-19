@@ -4,7 +4,7 @@ __VERSION 1
 // include   : #includes
 // word      : Alphanumeric or underscore
 // namespace : Prefix search and replace (c-namspaces).
-// regex     : Unavailable in __VERSION 1. 
+// regex     : Unavailable in __VERSION 1.
 
 // Precedence (highest to lowest):
 // word, namespace, regex
@@ -21,21 +21,168 @@ include IO.cpp, IO.refactored.cpp
 include Spec.hpp, Spec.refactored.hpp
 include Spec.cpp, Spec.refactored.cpp
 
-// Remove the zpl namespace.
+// Removes the namespace.
 namespace zpl_
-
-// Don't expose zpl internals
-not namespace zpl__
+namespace zpl_re_,            regex_
+namespace zpl_random_,        rng_
+namespace zpl_pr,             process_
+namespace zpl__,              __
+namespace ZPL_ADT_,           EADT
+namespace ZPL_ALLOCATION_,    EAllocation
+namespace ZPL_CSV_ERROR,      ECSV_Error
+namespace ZPL_FILE_MODE_,     EFileMode_
+namespace ZPL_FILE_ERROR_,    EFileError_
+namespace ZPL_SEEK_WHENCE_,   ESeekWhence_
+namespace ZPL_FILE_STANDARD_, EFileStandard_
+namespace ZPL_FILE_STREAM_,   EFileStream_
+namespace ZPL_JSON_ERROR_,    EJSON_Error_
+namespace ZPL_RE_ERROR_,      ERegexError_
+namespace ZPL_OPTS_,          EOpts_
+namespace ZPL_OPTS_ERR,       EOptsError_
+namespace ZPL_PR_OPTS_,       EProcessOpts_
 
 // Macro exposure
 //namespace ZPL_
 //not word ZPL_IMPLEMENTATION
 
-// Name conflicts
-word opts, options
+// Type Renames
+word zpl_aabb2,                   AABB2
+word zpl_aabb3,                   AABB3
+word zpl_adt_assign_style,        ADT_AssignStyle
+word zpl_adt_delim_style,         ADT_DelimStyle
+word zpl_adt_error,               ADT_Error
+word zpl_adt_naming_style,        ADT_NamingStyle
+word zpl_adt_node,                ADT_Node
+word zpl_adt_props,               ADT_Props
+word zpl_adt_type,                ADT_Type
+word zpl_affinity,                Affinity
+word zpl_allocation_header_event, AllocationHeaderEvent
+word zpl_allocator,               AllocatorInfo
+word zpl_allocator_proc,          AllocatorProc
+word zpl_alloc_flags,             AllocFlags
+word zpl_alloc_type,              AllocType
+word zpl_arena,                   Arena
+word zpl_arena_snapshot,          ArenaSnapshot
+word zpl_array,                   Array
+word zpl_array_header,            ArrayHeader
+word zpl_buffer,                  Buffer
+word zpl_buffer_header,           BufferHeader
+word zpl_compare_proc,            CompareProc
+word zpl_csv_error,               CSV_Error
+word zpl_csv_object,              CSV_Object
+word zpl_dll_handle,              DLLHandle
+word zpl_dll_proc,                DLLProc
+word zpl_dir_type,                DirType
+word zpl_dir_entry,               DirEntry
+word zpl_dir_info,				  DirInfo
+word zpl_file_contents,           FileContents
+word zpl_file_descriptor,         FileDescriptor
+word zpl_file_error,              FileError
+word zpl_file,                    FileInfo
+word zpl_file_mode,               FileMode
+word zpl_file_mode_flag,          FileModeFlag
+word zpl_file_operations,         FileOperations
+word zpl_file_close_proc,         FileCloseProc
+word zpl_file_read_proc,          FileReadProc
+word zpl_file_seek_proc,          FileSeekProc
+word zpl_file_write_proc,         FileWriteProc
+word zpl_file_standard_type,      FileStandardType
+word zpl_file_stream_flags,       FileStreamFlags
+word zpl_float2,                  Float2
+word zpl_float3,                  Float3
+word zpl_float4,                  Float4
+word zpl_frustum,                 Frustum
+word zpl_half,                    Half
+word zpl_jobs_priority,           JobsPriority
+word zpl_jobs_status,             JobsStatus
+word zpl_jobs_system,             JobsSystem
+word zpl_json_error,              JSON_Error
+word zpl_json_object,             JSON_Object
+word zpl_list,                    List
+word zpl_mat2,                    Mat2
+word zpl_mat3,                    Mat3
+word zpl_mat4,                    Mat4
+word zpl_mutex,                   Mutex
+word zpl_plane,                   Plane
+word zpl_pool,                    Pool
+word zpl_pr,                      Process
+word zpl_pr_si,                   ProcessStartupInfo
+word zpl_quat,                    Quat
+word zpl_rect2,                   Rect2
+word zpl_rect3,                   Rect3
+word zpl_re,                      Regex
+word zpl_re_capture,              RegexCapture
+word zpl_regex_error,             RegexError
+wrod zpl_random,                  RNG
+word zpl_rune,                    Rune
+word zpl_scratch_memory,          ScratchMemory
+word zpl_seek_whence_type,        SeekWhenceType
+word zpl_semaphore,               Semaphore
+word zpl_string,                  String
+word zpl_string_header,           StringHeader
+word zpl_sync,                    Sync
+word zpl_opts,                    Opts
+word zpl_opts_entry,              OptsEntry
+word zpl_opts_err,                OptsError
+word zpl_opts_err_type,           OptsErrorType
+word zpl_opts_types,              OptsTypes
+word zpl_tar_errors,              TarErrors
+word zpl_tar_file_type,           TarFileType
+word zpl_tar_record,              TarRecord
+word zpl_tar_unpack_proc,         TarUnpackProc
+word zpl_thread,                  Thread
+word zpl_thread_job,              ThreadJob
+word zpl_thread_proc,             ThreadProc
+word zpl_thread_queue,            ThreadQueue
+word zpl_thread_worker,           ThreadWorker
+word zpl_vec2,                    Vec2
+word zpl_vec3,                    Vec3
+word zpl_vec4,                    Vec4
+word zpl_virtual_memory,          VirtualMemory
 
-word zpl_strncmp, str_compare
-word zpl_strcmp,  str_compare
+// Function Renames
+word zpl_lfence,        fence_load
+word zpl_mfence,        fence_memory
+word zpl_sfence,        fence_store
+word zpl_memchr,        mem_find
+word zpl_memcopy,       mem_copy
+word zpl_memmove,       mem_move
+word zpl_memset,        mem_set
+word zpl_memswap,       mem_swap
+word zpl_exit,          process_exit
+word zpl_rdtsc,         read_cpu_time_stamp_counter
+word zpl_strcmp,        str_compare
+word zpl_strncmp,       str_compare
+word zpl_strcat,        str_concat
+word zpl_strcpy,        str_copy
+word zpl_strncpy,       str_copy
+word zpl_strlcpy,       str_copy_nulpad
+word zpl_strdup,        str_dup
+word zpl_strchr,        str_find
+word zpl_strrchr,       str_find_last
+word zpl_strstr,        str_find_substr
+word zpl_snprintf,      str_fmt
+word zpl_snprintf_va,   str_fmt_va
+word zpl_asprintf,      str_fmt_alloc
+word zpl_asprintf_va,   str_fmt_alloc_va
+word zpl_bprintf,       str_fmt_buf
+word zpl_bprintf_va,    str_fmt_buf_va
+word zpl_printf,        str_fmt_out
+word zpl_printf_va,     str_fmt_out_va
+word zpl_printf_err,    str_fmt_out_err
+word zpl_printf_err_va, str_fmt_out_err_va
+word zpl_fprintf,       str_fmt_file
+word zpl_fprintf_va,    str_fmt_file_va
+word zpl_strlen,        str_len
+word zpl_strnlen,       str_len
+word zpl_strrev,        str_reverse
+word zpl_strtok,        str_tok
+word zpl_strtok_r,      str_tok_reentrant
+word zpl_sleep,         thread_sleep
+word zpl_sleep_ms,      thread_sleep_ms
+word zpl_yield_thread,  thread_yield
+word zpl_utf8_strlen,   utf8_len
+word zpl_utf8_strnlen,  utf8_len
 
 // Undesired typedefs
 word zpl_i8,      s8
@@ -51,21 +198,7 @@ word zpl_uintptr, uptr
 word zpl_usize,   uw
 word zpl_isize,   sw
 
-// Conflicts with std. (Uncomment if using c externs)
-not word zpl_memchr
-not word zpl_memmove
-not word zpl_memset
-not word zpl_memswap
-not word zpl_memcopy
-not word zpl_printf
-not word zpl_printf_va
-not word zpl_printf_err
-not word zpl_printf_err_va
-not word zpl_fprintf
-not word zpl_fprintf_va
-not word zpl_snprintf
-not word zpl_snprintf_va
-not word zpl_strchr
-not word zpl_strlen
-not word zpl_strnlen
-not word zpl_exit
+// Undesired exposures.
+word cast, zpl_cast
+
+not word zpl_thread_local
