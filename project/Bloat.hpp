@@ -2,7 +2,7 @@
 	BLOAT.
 */
 
-#pragma once	
+#pragma once
 
 #ifdef BLOAT_IMPL
 #	define ZPL_IMPLEMENTATION
@@ -10,7 +10,7 @@
 
 #pragma region 									ZPL INCLUDE
 #if __clang__
-#	pragma clang diagnostic push 
+#	pragma clang diagnostic push
 #	pragma clang diagnostic ignored "-Wmissing-braces"
 #	pragma clang diagnostic ignored "-Wbraced-scalar-init"
 #endif
@@ -111,25 +111,25 @@ b32 opts_custom_compile(zpl_opts *opts, int argc, char **argv);
 
 
 inline
-sw log_fmt(char const *fmt, ...) 
+sw log_fmt(char const *fmt, ...)
 {
 	if ( Global::ShouldShowDebug == false )
 		return 0;
 
 	sw res;
 	va_list va;
-	
+
 	va_start(va, fmt);
 	res = zpl_printf_va(fmt, va);
 	va_end(va);
-	
+
 	return res;
 }
 
 inline
-void fatal(char const *fmt, ...) 
+void fatal(char const *fmt, ...)
 {
-	zpl_local_persist zpl_thread_local 
+	zpl_local_persist zpl_thread_local
 	char buf[ZPL_PRINTF_MAXLEN] = { 0 };
 
 	va_list va;

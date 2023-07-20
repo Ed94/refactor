@@ -4,7 +4,7 @@
 
 namespace Spec
 {
-	enum Tok 
+	enum Tok
 	{
 		Not,
 		Comment,
@@ -19,7 +19,7 @@ namespace Spec
 	char const* str_tok( Tok tok )
 	{
 		static
-		char const*	tok_to_str[ Tok::Num_Tok ] = 
+		char const*	tok_to_str[ Tok::Num_Tok ] =
 		{
 			"not",
 			"comments",
@@ -35,7 +35,7 @@ namespace Spec
 	char strlen_tok( Tok tok )
 	{
 		static
-		const u8 tok_to_len[ Tok::Num_Tok ] = 
+		const u8 tok_to_len[ Tok::Num_Tok ] =
 		{
 			3,
 			8,

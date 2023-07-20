@@ -4,13 +4,13 @@
 namespace IO
 {
 	using array_string = zpl_array( zpl_string );
-	
+
 	namespace StaticData
 	{
 		array_string Sources       = nullptr;
 		array_string Destinations  = nullptr;
 		zpl_string   Specification = nullptr;
-		
+
 		// Current source and destination index.
 		// Used to keep track of which file get_next_source or write refer to.
 		sw    Current          = -1;
@@ -22,12 +22,12 @@ namespace IO
 		zpl_arena  MemSrc;
 	}
 	using namespace StaticData;
-	
-	 
+
+
 	void prepare()
 	{
 		const sw num_srcs = zpl_array_count( Sources );
-		
+
 		// Determine the largest content size.
 		sw          left = num_srcs;
 		zpl_string* path = Sources;
@@ -35,14 +35,14 @@ namespace IO
 		{
 			zpl_file       src   = {};
 			zpl_file_error error = zpl_file_open( & src, *path );
-			                       
+
 			if ( error != ZPL_FILE_ERROR_NONE )
 			{
 				fatal("IO::Prepare - Could not open source file: %s", *path );
 			}
-			
+
 			const sw fsize = zpl_file_size( & src );
-			                 
+
 			if ( fsize > Largest_Src_Size )
 			{
 				Largest_Src_Size = fsize;
@@ -51,12 +51,12 @@ namespace IO
 			zpl_file_close( & src );
 		}
 		while ( path++, left--, left > 0 );
-			
+
 		uw persist_size = Largest_Src_Size * 2 + 8;
-			
+
 		zpl_arena_init_from_allocator( & MemSrc, zpl_heap(), persist_size );
 	}
-	
+
 	void cleanup()
 	{
 		zpl_arena_free( & MemSpec );

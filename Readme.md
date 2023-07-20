@@ -79,8 +79,6 @@ With the refactors applied a meson configuraiton is setup (`meson.build` in test
   * Can have a heavy memory cost, so most likely do not want on by default.
 * Make comments ignored by default, and just have ability to specify custom comments.
   * Would need a directive to add refactors to comments.
-* Directive to add cpp namespaces on specific lines of a file, or near specific signatures.
-  * This can honestly be done also with placing words on specific lines..
 * Provide a GUI build.
 * Provide as a single-header library.
   * Could add a test case where this library is refactored into pure C (most likely c99 or c11).

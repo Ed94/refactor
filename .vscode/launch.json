@@ -47,10 +47,10 @@
 			"request": "launch",
 			"program": "${workspaceFolder}/build/refactor.exe",
 			"args": [
-				"-source=./refactor.cpp",
-				"-destination=./Test/refactor.cpp",
+				"-src=./project/refactor.cpp",
+				"-dst=./Test/refactor.cpp",
 
-				"-specification=./Test/zpl.refactor"
+				"-spec=./Test/zpl.refactor"
 			],
 			"stopAtEntry": false,
 			"cwd": "${workspaceRoot}",

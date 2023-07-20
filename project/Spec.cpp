@@ -195,7 +195,7 @@ namespace Spec
 			{
 				continue;
 			}
-		
+
 			find_next_token( type, token, line, length );
 
 			// First argument is signature.
@@ -211,7 +211,7 @@ namespace Spec
 					case Tok::Word:
 						if ( ignore)
 							zpl_array_append( Ignore_Words, entry );
-							
+
 						else
 							zpl_array_append( Words, entry );
 					break;
@@ -248,7 +248,7 @@ namespace Spec
 						{
 							case Tok::Word:
 								zpl_array_append( Words, entry );
-							break;		
+							break;
 
 							case Tok::Namespace:
 								zpl_array_append( Namespaces, entry );
@@ -288,7 +288,7 @@ namespace Spec
 					{
 						case Tok::Word:
 							zpl_array_append( Words, entry );
-						break;		
+						break;
 
 						case Tok::Namespace:
 							zpl_array_append( Namespaces, entry );

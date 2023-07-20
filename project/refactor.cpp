@@ -28,32 +28,32 @@ void parse_options( int num, char** arguments )
 
 			Global::ShouldShowDebug = true;
 		}
-		
+
 		if ( zpl_opts_has_arg( & opts, "num" ) )
 		{
 			   num            = zpl_opts_integer( & opts, "num", -1 );
 			uw global_reserve = num * sizeof(zpl_string) * IO::Path_Size_Largest * 2 + 8;
-			
+
 			if ( global_reserve > zpl_megabytes(1) )
 			{
 				Memory::resize( global_reserve + zpl_megabytes(2) );
 			}
-			
+
 			zpl_array_init_reserve( IO::Sources,      g_allocator, num );
-			zpl_array_init_reserve( IO::Destinations, g_allocator, num );			
+			zpl_array_init_reserve( IO::Destinations, g_allocator, num );
 		}
 		else
 		{
 			num = 1;
 
 			zpl_array_init_reserve( IO::Sources,      g_allocator, 1 );
-			zpl_array_init_reserve( IO::Destinations, g_allocator, 1 );	
+			zpl_array_init_reserve( IO::Destinations, g_allocator, 1 );
 		}
 
 		if ( zpl_opts_has_arg( & opts, "src" ) )
 		{
 			zpl_string opt = zpl_opts_string( & opts, "src", "INVALID SRC ARGUMENT" );
-			
+
 			if ( num == 1 )
 			{
 				zpl_string path = zpl_string_make_length( g_allocator, opt, zpl_string_length( opt ));
@@ -66,15 +66,15 @@ void parse_options( int num, char** arguments )
 				uw left = num;
  				do
 				{
-					char* path   = buffer;					
-					sw    length = 0;					
+					char* path   = buffer;
+					sw    length = 0;
 
 					do
 					{
 						path[length] = *opt;
 					} 
 					while ( length++, opt++, *opt != ' ' && *opt != '\0' );
-									
+
 					zpl_string path_string = zpl_string_make_length( g_allocator, path, length );
 					zpl_array_append( IO::Sources, path_string );
 
@@ -110,14 +110,14 @@ void parse_options( int num, char** arguments )
 					do
 					{
 						path[length] = *opt;
-					} 
+					}
 					while ( length++, opt++, *opt != ' ' && *opt != '\0' );
-					
+
 					zpl_string path_string = zpl_string_make_length( g_allocator, path, length );
 					zpl_array_append( IO::Destinations, path_string );
 
 					opt++;
-				} 
+				}
 				while ( --left );
 
 				if ( zpl_array_count(IO::Destinations) != zpl_array_count( IO::Sources ) )
@@ -336,7 +336,7 @@ void refactor()
 			}
 
 			restore( backup );
-		} 
+		}
 		while (false);
 
 		// Word Ignores
@@ -390,7 +390,7 @@ void refactor()
 
 				u32 sig_length = zpl_string_length( ignore->Sig );
 				    current    = zpl_string_append_length( current, src, sig_length );
-				
+
 				if ( zpl_string_are_equal( ignore->Sig, current ) )
 				{
 					u32         length     = sig_length;
@@ -568,7 +568,7 @@ void refactor()
 					Token entry {};
 
 					entry.Start = pos;
-					entry.End   = pos + length;
+					entry.End   = pos + sig_length;
 					entry.Sig   = nspace->Sig;
 
 					buffer_size += sig_length;
@@ -576,7 +576,7 @@ void refactor()
 					if ( nspace->Sub != nullptr )
 					{
 						entry.Sub    = nspace->Sub;
-						buffer_size += zpl_string_length( entry.Sub ) - length;
+						buffer_size += zpl_string_length( entry.Sub ) - sig_length;
 					}
 
 					zpl_array_append( tokens, entry );
@@ -660,7 +660,7 @@ End_Search:
 int main( int num, char** arguments )
 {
 	Memory::setup();
-	
+
 	parse_options( num, arguments);
 
 	IO::prepare();
