@@ -2,8 +2,6 @@
 #include "IO.cpp"
 #include "Spec.cpp"
 
-
-
 void parse_options( int num, char** arguments )
 {
 	zpl_opts opts;
@@ -72,14 +70,14 @@ void parse_options( int num, char** arguments )
 					do
 					{
 						path[length] = *opt;
-					} 
+					}
 					while ( length++, opt++, *opt != ' ' && *opt != '\0' );
 
 					zpl_string path_string = zpl_string_make_length( g_allocator, path, length );
 					zpl_array_append( IO::Sources, path_string );
 
 					opt++;
-				} 
+				}
 				while ( --left );
 			}
 		}
@@ -132,7 +130,7 @@ void parse_options( int num, char** arguments )
 			do
 			{
 				zpl_array_append( IO::Destinations, IO::Sources[num - left] );
-			} 
+			}
 			while ( --left );
 		}
 
@@ -163,7 +161,7 @@ void parse_options( int num, char** arguments )
 
 
 /*
-	Refactor will problably have the execution and arg parsing (main and opts) 
+	Refactor will problably have the execution and arg parsing (main and opts)
 	moved to a separate file.
 */
 
@@ -172,7 +170,7 @@ zpl_arena Refactor_Buffer;
 void refactor()
 {
 	ct static char const* include_sig = "include";
-	
+
 	struct Token
 	{
 		u32 Start;
@@ -280,7 +278,7 @@ void refactor()
 		{
 			Spec::Entry* ignore       = Spec::Ignore_Includes;
 			sw           ignores_left = zpl_array_count( Spec::Ignore_Includes);
-			Snapshot      backup      = { src, left, col, line };
+			Snapshot     backup       = { src, left, col, line };
 
 			if ( '#' != src[0] )
 				break;
@@ -381,6 +379,12 @@ void refactor()
 			for ( ; ignores_left; ignores_left--, ignore++ )
 			{
 				if ( ignore->Sig[0] != src[0] )
+				{
+					ignore++;
+					continue;
+				}
+
+				if (( zpl_char_is_alphanumeric( src[-1] ) || src[-1] == '_') )
 				{
 					ignore++;
 					continue;
@@ -487,7 +491,7 @@ void refactor()
 			}
 
 			restore( backup );
-		} 
+		}
 		while (false);
 
 		// Words to match
@@ -549,6 +553,9 @@ void refactor()
 				if ( nspace->Sig[0] != src[0] )
 					continue;
 
+				if (( zpl_char_is_alphanumeric( src[-1] ) || src[-1] == '_') )
+					continue;
+
 				zpl_string_clear( current );
 
 				u32 sig_length = zpl_string_length( nspace->Sig );
@@ -595,7 +602,7 @@ void refactor()
 
 	Skip:
 		move_forward( 1 );
-	} 
+	}
 	while ( left );
 End_Search:
 
@@ -607,7 +614,7 @@ End_Search:
 	// Prep data for building the content
 	left = zpl_array_count( tokens);
 
-	char* content = IO::Current_Content; 
+	char* content = IO::Current_Content;
 
 	zpl_string refactored = zpl_string_make_reserve( zpl_arena_allocator( & Refactor_Buffer ), buffer_size );
 
@@ -643,7 +650,7 @@ End_Search:
 
 		entry--;
 
-		if ( entry->End < IO::Current_Size ) 
+		if ( entry->End < IO::Current_Size )
 		{
 			refactored = zpl_string_append_length( refactored, content, IO::Current_Size - 1 - entry->End );
 		}
@@ -676,7 +683,7 @@ int main( int num, char** arguments )
 		refactor();
 
 		zpl_printf("\nRefactored: %s", IO::Sources[IO::Current]);
-	} 
+	}
 	while ( --left );
 
 	zpl_arena_free( & Refactor_Buffer );
