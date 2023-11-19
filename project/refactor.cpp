@@ -337,87 +337,6 @@ void refactor()
 		}
 		while (false);
 
-		// Word Ignores
-		{
-			Spec::Entry* ignore       = Spec::Ignore_Words;
-			sw           ignores_left = zpl_array_count( Spec::Ignore_Words);
-
-			for ( ; ignores_left; ignores_left--, ignore++ )
-			{
-				if ( ignore->Sig[0] != src[0] )
-					continue;
-
-				zpl_string_clear( current );
-
-				u32 sig_length = zpl_string_length( ignore->Sig );
-				    current    = zpl_string_append_length( current, src, sig_length );
-
-				if ( zpl_string_are_equal( ignore->Sig, current ) )
-				{
-					char before = src[-1];
-					char after  = src[sig_length];
-
-					if (   zpl_char_is_alphanumeric( before ) || before == '_'
-						|| zpl_char_is_alphanumeric( after  ) || after  == '_' )
-					{
-						continue;
-					}
-
-					log_fmt("\nIgnored   %-81s line %d, col %d", current, line, col );
-
-					move_forward( sig_length );
-					goto Skip;
-				}
-			}
-		}
-
-		// Namespace Ignores
-		{
-			Spec::Entry* ignore       = Spec::Ignore_Namespaces;
-			sw           ignores_left = zpl_array_count( Spec::Ignore_Namespaces);
-
-			for ( ; ignores_left; ignores_left--, ignore++ )
-			{
-				if ( ignore->Sig[0] != src[0] )
-				{
-					ignore++;
-					continue;
-				}
-
-				if (( zpl_char_is_alphanumeric( src[-1] ) || src[-1] == '_') )
-				{
-					ignore++;
-					continue;
-				}
-
-				zpl_string_clear( current );
-
-				u32 sig_length = zpl_string_length( ignore->Sig );
-				    current    = zpl_string_append_length( current, src, sig_length );
-
-				if ( zpl_string_are_equal( ignore->Sig, current ) )
-				{
-					u32         length     = sig_length;
-					char const* ns_content = src + sig_length;
-
-					while ( zpl_char_is_alphanumeric( ns_content[0] ) || ns_content[0] == '_' )
-					{
-						length++;
-						ns_content++;
-					}
-
-				#if Build_Debug
-					zpl_string_clear( preview );
-					preview = zpl_string_append_length( preview, src, length );
-					log_fmt("\nIgnored   %-40s %-40s line %d, column %d", preview, ignore->Sig, line, col );
-				#endif
-
-					move_forward( length );
-					goto Skip;
-				}
-			}
-		}
-
 		// Includes to match
 		do
 		{
@@ -494,6 +413,40 @@ void refactor()
 		}
 		while (false);
 
+		// Word Ignores
+		{
+			Spec::Entry* ignore       = Spec::Ignore_Words;
+			sw           ignores_left = zpl_array_count( Spec::Ignore_Words);
+
+			for ( ; ignores_left; ignores_left--, ignore++ )
+			{
+				if ( ignore->Sig[0] != src[0] )
+					continue;
+
+				zpl_string_clear( current );
+
+				u32 sig_length = zpl_string_length( ignore->Sig );
+				    current    = zpl_string_append_length( current, src, sig_length );
+
+				if ( zpl_string_are_equal( ignore->Sig, current ) )
+				{
+					char before = src[-1];
+					char after  = src[sig_length];
+
+					if (   zpl_char_is_alphanumeric( before ) || before == '_'
+						|| zpl_char_is_alphanumeric( after  ) || after  == '_' )
+					{
+						continue;
+					}
+
+					log_fmt("\nIgnored   %-81s line %d, col %d", current, line, col );
+
+					move_forward( sig_length );
+					goto Skip;
+				}
+			}
+		}
+
 		// Words to match
 		{
 			Spec::Entry* word       = Spec::Words;
@@ -537,6 +490,53 @@ void refactor()
 					log_fmt("\nFound     %-81s line %d, column %d", current, line, col );
 
 					move_forward( sig_length );
+					goto Skip;
+				}
+			}
+		}
+
+		// Namespace Ignores
+		{
+			Spec::Entry* ignore       = Spec::Ignore_Namespaces;
+			sw           ignores_left = zpl_array_count( Spec::Ignore_Namespaces);
+
+			for ( ; ignores_left; ignores_left--, ignore++ )
+			{
+				if ( ignore->Sig[0] != src[0] )
+				{
+					ignore++;
+					continue;
+				}
+
+				if (( zpl_char_is_alphanumeric( src[-1] ) || src[-1] == '_') )
+				{
+					ignore++;
+					continue;
+				}
+
+				zpl_string_clear( current );
+
+				u32 sig_length = zpl_string_length( ignore->Sig );
+				    current    = zpl_string_append_length( current, src, sig_length );
+
+				if ( zpl_string_are_equal( ignore->Sig, current ) )
+				{
+					u32         length     = sig_length;
+					char const* ns_content = src + sig_length;
+
+					while ( zpl_char_is_alphanumeric( ns_content[0] ) || ns_content[0] == '_' )
+					{
+						length++;
+						ns_content++;
+					}
+
+				#if Build_Debug
+					zpl_string_clear( preview );
+					preview = zpl_string_append_length( preview, src, length );
+					log_fmt("\nIgnored   %-40s %-40s line %d, column %d", preview, ignore->Sig, line, col );
+				#endif
+
+					move_forward( length );
 					goto Skip;
 				}
 			}
